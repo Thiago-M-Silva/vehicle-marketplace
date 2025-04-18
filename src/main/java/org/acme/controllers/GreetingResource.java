@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.controllers;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
