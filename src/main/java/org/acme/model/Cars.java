@@ -17,13 +17,8 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Cars extends Vehicles {
 
-    private String make;
-    private String model;
-    private int year;
-    private String color;
-    private String engineType;
+    private String carType;
     private int horsepower;
     private String transmissionType;
-    private int numberOfDoors;
-    private boolean isElectric;
+    private int numberOfTires;
 }

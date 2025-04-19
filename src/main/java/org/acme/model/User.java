@@ -2,6 +2,8 @@ package org.acme.model;
 
 import java.util.Date;
 
+import org.acme.enums.EUserType;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,15 +19,20 @@ import lombok.ToString;
 @NoArgsConstructor
 public class User {
 
-    public String name;
-    public String email;
-    public String password;
-    public String phoneNumber;
-    public String address;
-    public String city;
-    public String state;
-    public String country;
-    public String cpf;
-    public String rg;
-    public Date birthDate;
+    private int id;
+    private String name;
+    private String email;
+    private String password;
+    private String phoneNumber;
+    private String address;
+    private String city;
+    private String state;
+    private String country;
+    private String cpf;
+    private String rg;
+    private Date birthDate;
+    private Date createDate;
+    private Date updateDate;
+    private EUserType userType;
+    private Payment[] payment;
 }

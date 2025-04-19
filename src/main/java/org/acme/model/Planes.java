@@ -17,14 +17,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Planes extends Vehicles {
 
-    private String make;
-    private String model;
-    private int year;
-    private String color;
-    private String engineType;
+    private String planeType;
     private int horsepower;
-    private String transmissionType;
-    private int numberOfDoors;
-    private boolean isElectric;
 
 }

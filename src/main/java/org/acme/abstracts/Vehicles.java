@@ -1,5 +1,7 @@
 package org.acme.abstracts;
 
+import java.util.Date;
+
 import org.acme.enums.*;
 
 /**
@@ -8,12 +10,16 @@ import org.acme.enums.*;
  */
 public abstract class Vehicles {
 
-    String name;
-    String brand;
-    int age;
-    float price;
-    EStatus status; //enum
-    ECategory category; //enum
-    EColors color;//enum
-    EFuelType fuelType; //enum
+    private int id;
+    private String name;
+    private String brand;
+    private int year;
+    private float price;
+    private EStatus status;
+    private ECategory category;
+    private EColors color;
+    private EFuelType fuelType;
+    private Date createDate;
+    private Date updateDate;
+    private String description;
 }
