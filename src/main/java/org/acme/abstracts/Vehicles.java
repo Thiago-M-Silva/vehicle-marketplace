@@ -1,15 +1,23 @@
 package org.acme.abstracts;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.acme.enums.*;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * Abstract class representing a vehicle. This class serves as a base for all
  * vehicle types.
  */
-public abstract class Vehicles {
+@MappedSuperclass
+public abstract class Vehicles extends PanacheEntity {
 
+    @Id
+    @GeneratedValue
     private int id;
     private String name;
     private String brand;
@@ -19,7 +27,7 @@ public abstract class Vehicles {
     private ECategory category;
     private EColors color;
     private EFuelType fuelType;
-    private Date createDate;
-    private Date updateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime updateDate;
     private String description;
 }

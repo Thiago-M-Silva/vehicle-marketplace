@@ -1,4 +1,4 @@
-package org.acme.model;
+package org.acme.model.Cars;
 
 import org.acme.abstracts.Vehicles;
 
@@ -15,13 +15,10 @@ import lombok.ToString;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class Boats extends Vehicles {
+public class Cars extends Vehicles {
 
-    private String model;
-    private String engineType;
+    private String carType;
     private int horsepower;
     private String transmissionType;
-    private int numberOfCabins;
-    private String boatType;
-
+    private int numberOfTires;
 }

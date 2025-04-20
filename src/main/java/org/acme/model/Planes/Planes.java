@@ -1,4 +1,4 @@
-package org.acme.model;
+package org.acme.model.Planes;
 
 import org.acme.abstracts.Vehicles;
 

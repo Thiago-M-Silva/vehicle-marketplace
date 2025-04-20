@@ -4,6 +4,11 @@ import java.util.Date;
 
 import org.acme.enums.EPaymentMethods;
 import org.acme.enums.EPaymentStatus;
+import org.acme.model.Bikes.Bikes;
+import org.acme.model.Boats.Boats;
+import org.acme.model.Cars.Cars;
+import org.acme.model.Planes.Planes;
+import org.acme.model.Users.User;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

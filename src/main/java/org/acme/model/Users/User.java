@@ -1,8 +1,9 @@
-package org.acme.model;
+package org.acme.model.Users;
 
 import java.util.Date;
 
 import org.acme.enums.EUserType;
+import org.acme.model.Payment;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
