@@ -10,24 +10,33 @@ import org.acme.model.Cars.Cars;
 import org.acme.model.Planes.Planes;
 import org.acme.model.Users.User;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
-public class Payment {
+@Entity
+public class Payment extends PanacheEntityBase {
 
+    @Id
+    private int id;
     private String paymentId;
     private EPaymentMethods paymentMethod;
     private EPaymentStatus paymentStatus;
     private String paymentDate;
     private double amount;
-    private User user;
+
+    @OneToMany
+    private User[] user;
+
+    @ManyToOne
     private Bikes[] bike;
+    @ManyToOne
     private Cars[] car;
+    @ManyToOne
     private Boats[] boat;
+    @ManyToOne
     private Planes[] plane;
     private Date createDate;
     private Date updateDate;

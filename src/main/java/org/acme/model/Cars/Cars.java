@@ -2,19 +2,9 @@ package org.acme.model.Cars;
 
 import org.acme.abstracts.Vehicles;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.Entity;
 
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity
 public class Cars extends Vehicles {
 
     private String carType;

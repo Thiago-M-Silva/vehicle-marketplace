@@ -5,21 +5,15 @@ import java.util.Date;
 import org.acme.enums.EUserType;
 import org.acme.model.Payment;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
-@NoArgsConstructor
-public class User {
+@Entity
+public class User extends PanacheEntityBase {
 
+    @Id
     private int id;
     private String name;
     private String email;
@@ -35,5 +29,6 @@ public class User {
     private Date createDate;
     private Date updateDate;
     private EUserType userType;
+    @ManyToOne
     private Payment[] payment;
 }

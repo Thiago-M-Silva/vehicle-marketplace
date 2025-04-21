@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import org.acme.enums.*;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
@@ -14,7 +14,7 @@ import jakarta.persistence.MappedSuperclass;
  * vehicle types.
  */
 @MappedSuperclass
-public abstract class Vehicles extends PanacheEntity {
+public abstract class Vehicles extends PanacheEntityBase {
 
     @Id
     @GeneratedValue
