@@ -15,8 +15,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/bikes")
-public class BikeController {
+@Path("/vehicles")
+public class VehicleController {
 
     @Inject
     BikesRepository bikesRepository;

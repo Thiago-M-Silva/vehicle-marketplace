@@ -8,7 +8,7 @@ import org.acme.model.Bikes.Bikes;
 import org.acme.model.Boats.Boats;
 import org.acme.model.Cars.Cars;
 import org.acme.model.Planes.Planes;
-import org.acme.model.Users.User;
+import org.acme.model.Users.Users;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
@@ -28,7 +28,7 @@ public class Payment extends PanacheEntityBase {
     private double amount;
 
     @OneToMany
-    private User[] user;
+    private Users[] user;
 
     @ManyToOne
     private Bikes[] bike;

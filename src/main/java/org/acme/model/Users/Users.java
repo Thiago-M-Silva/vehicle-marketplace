@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class User extends PanacheEntityBase {
+public class Users extends PanacheEntityBase {
 
     @Id
     private int id;
