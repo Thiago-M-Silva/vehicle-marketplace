@@ -1,5 +1,3 @@
 package org.acme.model.Bikes;
 
-public record BikesResponseDTO() {
-
-}
+public record BikesResponseDTO(String name, String brand, int year) {}
