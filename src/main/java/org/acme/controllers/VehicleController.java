@@ -33,6 +33,13 @@ public class VehicleController {
         bikesRepository.persist(bike);
     }
 
+    // @POST
+    // @Consumes(MediaType.APPLICATION_JSON)
+    // public void updateBike(Bikes bike) {
+    //     return bikesRepository.update(null, null);
+    // }
+
+
     @DELETE
     @Path("/{id}")
     public void deleteBike(@PathParam("id") Long id) {

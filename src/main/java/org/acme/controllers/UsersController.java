@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.acme.model.Users.Users;
 import org.acme.model.Users.UsersRepository;
+import org.acme.model.Users.UsersRequestDTO;
+import org.acme.model.Users.UsersResponseDTO;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
@@ -19,6 +21,12 @@ import jakarta.ws.rs.core.MediaType;
 public class UsersController {
     @Inject
     UsersRepository usersRepository;
+
+    @Inject 
+    UsersRequestDTO userRequestDTO;
+
+    @Inject 
+    UsersResponseDTO userResponseDTO;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -27,8 +35,10 @@ public class UsersController {
     }
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public void addUser(Users user) {
-        usersRepository.persist(user);
+    public void addUser( UsersRequestDTO data) {
+        Users users = new Users(data);
+
+        usersRepository.persist( users);
     }
     @DELETE
     @Path("/{id}")
