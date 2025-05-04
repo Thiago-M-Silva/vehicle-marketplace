@@ -1,13 +1,14 @@
 package org.acme.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.acme.model.Users.Users;
-import org.acme.model.Users.UsersRepository;
 import org.acme.model.Users.UsersRequestDTO;
-import org.acme.model.Users.UsersResponseDTO;
+import org.acme.services.UserService;
 
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -18,34 +19,34 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UsersController {
+
     @Inject
-    UsersRepository usersRepository;
+    UserService userService;
 
-    @Inject 
-    UsersRequestDTO userRequestDTO;
-
-    @Inject 
-    UsersResponseDTO userResponseDTO;
-    
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     public List<Users> getAllUsers() {
-        return usersRepository.listAll();
+        return userService.getAllUsers();
     }
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void addUser( UsersRequestDTO data) {
-        Users users = new Users(data);
 
-        usersRepository.persist( users);
+    @GET
+    @Path("/{id}")
+    public Users getUserById(@PathParam("id") UUID id) {
+        return userService.getUserById(id);
     }
+
+    @POST
+    @Transactional
+    public Users addUser(UsersRequestDTO data) {
+        return userService.createUser(data);
+    }
+
     @DELETE
     @Path("/{id}")
-    public void deleteUser(@PathParam("id") Long id) {
-        Users user = usersRepository.findById(id);
-        if (user != null) {
-            usersRepository.delete(user);
-        }
+    @Transactional
+    public void deleteUser(@PathParam("id") UUID id) {
+        userService.deleteUser(id);
     }
 }
