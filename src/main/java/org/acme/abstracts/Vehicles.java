@@ -1,6 +1,7 @@
 package org.acme.abstracts;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.acme.enums.*;
 
@@ -18,7 +19,7 @@ public abstract class Vehicles extends PanacheEntityBase {
 
     @Id
     @GeneratedValue
-    private int id;
+    private UUID id;
     private String name;
     private String brand;
     private int year;

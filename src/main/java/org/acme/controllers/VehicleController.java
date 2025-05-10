@@ -1,11 +1,14 @@
 package org.acme.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.acme.model.Bikes.Bikes;
-import org.acme.model.Bikes.BikesRepository;
+import org.acme.model.Bikes.BikesRequestDTO;
+import org.acme.services.VehicleService;
 
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -16,36 +19,35 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/vehicles")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class VehicleController {
 
     @Inject
-    BikesRepository bikesRepository;
+    VehicleService vehicleService;
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     public List<Bikes> getAllBikes() {
-        return bikesRepository.listAll();
+        return vehicleService.getAllBikes();
     }
+
+     @GET
+     @Path("/{id}")
+    public Bikes getAllBikes(@PathParam("id") UUID id) {
+        return vehicleService.getBikesById(id);
+    }
+
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void addBike(Bikes bike) {
-        bikesRepository.persist(bike);
+    @Transactional
+    public Bikes addBike(BikesRequestDTO bike) {
+        return vehicleService.createBikes(bike);
     }
-
-    // @POST
-    // @Consumes(MediaType.APPLICATION_JSON)
-    // public void updateBike(Bikes bike) {
-    //     return bikesRepository.update(null, null);
-    // }
-
 
     @DELETE
     @Path("/{id}")
-    public void deleteBike(@PathParam("id") Long id) {
-        Bikes bike = bikesRepository.findById(id);
-        if (bike != null) {
-            bikesRepository.delete(bike);
-        }
+    @Transactional
+    public void deleteBike(@PathParam("id") UUID id) {
+        vehicleService.deleteBikes(id);
     }
 }
