@@ -3,6 +3,7 @@ package org.acme.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import org.acme.abstracts.Vehicles;
 import org.acme.model.Bikes.Bikes;
 import org.acme.model.Bikes.BikesRequestDTO;
 import org.acme.services.VehicleService;
@@ -22,6 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class VehicleController {
+    // TODO: test this controller and verify if service is working as expected
 
     @Inject
     VehicleService vehicleService;
@@ -37,11 +39,11 @@ public class VehicleController {
         return vehicleService.getBikesById(id);
     }
 
-
     @POST
+    @Path("/{vehicleType}")
     @Transactional
-    public Bikes addBike(BikesRequestDTO bike) {
-        return vehicleService.createBikes(bike);
+    public Vehicles addBike(@PathParam("vehicleType") String vehicleType, Vehicles vehicles) {
+        return vehicleService.createVehicles(vehicleType, vehicles);
     }
 
     @DELETE
