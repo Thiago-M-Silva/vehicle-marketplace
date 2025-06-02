@@ -27,24 +27,20 @@ public class VehicleService {
         try {
             switch (vehicleType) {
             case "bikes":
-                Bikes bikes = new Bikes();
-                bikesRepository.persist(bikes);
-                return bikes;
+                bikesRepository.persist((Bikes) vehicles);
+                return vehicles;
             
             case "boats":
-                Boats boats = new Boats();
-                boatsRepository.persist(boats);
-                return boats;
+                boatsRepository.persist((Boats) vehicles);
+                return vehicles;
 
             case "cars":
-                Cars cars = new Cars();
-                carsRepository.persist(cars);
-                return cars;
+                carsRepository.persist((Cars) vehicles);
+                return vehicles;
             
             case "planes":
-                Planes planes = new Planes();
-                planesRepository.persist(planes);
-                return planes;
+                planesRepository.persist((Planes) vehicles);
+                return vehicles;
 
             default:
                 break;
@@ -52,19 +48,36 @@ public class VehicleService {
             return null;
         } catch (Exception e) {
             // TODO: handle exception
+            System.out.println(e);
             return null;
         }
     }
 
-    public Bikes createBikes(BikesRequestDTO data) {
-        Bikes bikes = new Bikes();
-        bikesRepository.persist(bikes);
-        return bikes;
-    }
+    // public List<Vehicles> getAllVehicles(String vehicleType) {
+    //      try {
+    //         switch (vehicleType) {
+    //         case "bikes":
+    //             return bikesRepository.listAll();
+            
+    //         case "boats":
+    //             return boatsRepository.;
 
-    public List<Bikes> getAllBikes() {
-        return bikesRepository.listAll();
-    }
+    //         case "cars":
+    //             return carsRepository.;
+            
+    //         case "planes":
+    //             return planesRepository.;
+
+    //         default:
+    //             break;
+    //         }
+    //         return null;
+    //     } catch (Exception e) {
+    //         // TODO: handle exception
+    //         System.out.println(e);
+    //         return null;
+    //     }
+    // }
 
     public Bikes getBikesById(UUID id) {
         return bikesRepository.findById(id);

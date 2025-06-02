@@ -28,10 +28,10 @@ public class VehicleController {
     @Inject
     VehicleService vehicleService;
 
-    @GET
-    public List<Bikes> getAllBikes() {
-        return vehicleService.getAllBikes();
-    }
+    // @GET
+    // public List<Bikes> getAllBikes() {
+    //     return vehicleService.getAllBikes();
+    // }
 
      @GET
      @Path("/{id}")

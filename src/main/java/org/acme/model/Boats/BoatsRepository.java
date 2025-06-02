@@ -1,10 +1,12 @@
 package org.acme.model.Boats;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import java.util.UUID;
+
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class BoatsRepository implements PanacheRepository<Boats> {
+public class BoatsRepository implements PanacheRepositoryBase<Boats, UUID> {
     // @Inject
     // PanacheRepository<Bikes> bikesRepository;
     // @Override
