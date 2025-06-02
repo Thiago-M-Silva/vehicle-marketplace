@@ -29,14 +29,15 @@ public class VehicleController {
     VehicleService vehicleService;
 
     @GET
-    public List<Bikes> getAllBikes() {
-        return vehicleService.getAllBikes();
+    @Path("/{vehicleType}")
+    public List<Vehicles> getAllVehicles(@PathParam("vehicleType") String vehicleType) {
+        return vehicleService.getAllVehicles(vehicleType);
     }
 
-     @GET
-     @Path("/{id}")
-    public Bikes getAllBikes(@PathParam("id") UUID id) {
-        return vehicleService.getBikesById(id);
+    @GET
+    @Path("/{vehicleTpe}/{id}")
+    public Vehicles getAllVehiclesById(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
+        return vehicleService.getVehiclesById(id, vehicleType);
     }
 
     @POST
@@ -47,9 +48,9 @@ public class VehicleController {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{vehicleTpe}/{id}")
     @Transactional
-    public void deleteBike(@PathParam("id") UUID id) {
-        vehicleService.deleteBikes(id);
+    public void deleteBike(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
+        vehicleService.deleteVehicle(id, vehicleType);
     }
 }

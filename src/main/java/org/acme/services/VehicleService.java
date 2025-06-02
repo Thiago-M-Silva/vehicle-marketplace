@@ -2,16 +2,13 @@ package org.acme.services;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.acme.abstracts.Vehicles;
-import org.acme.model.Bikes.Bikes;
 import org.acme.model.Bikes.BikesRepository;
-import org.acme.model.Bikes.BikesRequestDTO;
-import org.acme.model.Boats.Boats;
 import org.acme.model.Boats.BoatsRepository;
-import org.acme.model.Cars.Cars;
 import org.acme.model.Cars.CarsRepository;
-import org.acme.model.Planes.Planes;
 import org.acme.model.Planes.PlanesRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,57 +20,56 @@ public class VehicleService {
     private final CarsRepository carsRepository = new CarsRepository();
     private final PlanesRepository planesRepository = new PlanesRepository();
 
+    private final Map<String, Object> repositoryMap = Map.of(
+        "bikes", bikesRepository,
+        "boats", boatsRepository,
+        "cars", carsRepository,
+        "planes", planesRepository
+    );
+
     public Vehicles createVehicles(String vehicleType, Vehicles vehicles) {
+        Object repo = repositoryMap.get(vehicleType);
+        if (repo == null) return null;
         try {
-            switch (vehicleType) {
-            case "bikes":
-                Bikes bikes = new Bikes();
-                bikesRepository.persist(bikes);
-                return bikes;
-            
-            case "boats":
-                Boats boats = new Boats();
-                boatsRepository.persist(boats);
-                return boats;
-
-            case "cars":
-                Cars cars = new Cars();
-                carsRepository.persist(cars);
-                return cars;
-            
-            case "planes":
-                Planes planes = new Planes();
-                planesRepository.persist(planes);
-                return planes;
-
-            default:
-                break;
-            }
-            return null;
+            repo.getClass().getMethod("persist", vehicles.getClass()).invoke(repo, vehicles);
+            return vehicles;
         } catch (Exception e) {
-            // TODO: handle exception
+            System.out.println(e);
             return null;
         }
     }
 
-    public Bikes createBikes(BikesRequestDTO data) {
-        Bikes bikes = new Bikes();
-        bikesRepository.persist(bikes);
-        return bikes;
+    public List<Vehicles> getAllVehicles(String vehicleType) {
+        Object repo = repositoryMap.get(vehicleType);
+        if (repo == null) return null;
+        try {
+            List<?> list = (List<?>) repo.getClass().getMethod("listAll").invoke(repo);
+            return new ArrayList<Vehicles>((List<Vehicles>) list);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
     }
 
-    public List<Bikes> getAllBikes() {
-        return bikesRepository.listAll();
+    public Vehicles getVehiclesById(UUID id, String vehicleType) {
+        Object repo = repositoryMap.get(vehicleType);
+        if (repo == null) return null;
+        try {
+            return (Vehicles) repo.getClass().getMethod("findById", UUID.class).invoke(repo, id);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
     }
 
-    public Bikes getBikesById(UUID id) {
-        return bikesRepository.findById(id);
-    }
-
-    public void deleteBikes(UUID id) {
-        Bikes bikes = bikesRepository.findById(id);
-        if (bikes != null) {
-            bikesRepository.delete(bikes);
+    public Vehicles deleteVehicle(UUID id, String vehicleType) {
+        Object repo = repositoryMap.get(vehicleType);
+        if(repo == null) return null;
+        try{
+            return (Vehicles) repo.getClass().getMethod("deleteById", UUID.class).invoke(repo, id);
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
         }
     }
 }
