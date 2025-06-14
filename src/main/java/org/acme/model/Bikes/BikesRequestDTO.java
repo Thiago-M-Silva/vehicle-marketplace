@@ -13,7 +13,7 @@ public record BikesRequestDTO(
     int year,
     float price,
     EStatus status,
-    ECategory category,
+    // ECategory category,
     EColors color,
     EFuelType fuelType,
     LocalDateTime createDate,

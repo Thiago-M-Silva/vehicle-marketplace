@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
-import org.acme.model.Bikes.Bikes;
-import org.acme.model.Bikes.BikesRequestDTO;
 import org.acme.services.VehicleService;
 
 import jakarta.inject.Inject;
@@ -23,34 +21,33 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class VehicleController {
-    // TODO: test this controller and verify if service is working as expected
 
     @Inject
     VehicleService vehicleService;
 
     @GET
     @Path("/{vehicleType}")
-    public List<Vehicles> getAllVehicles(@PathParam("vehicleType") String vehicleType) {
-        return vehicleService.getAllVehicles(vehicleType);
+    public List<? extends Vehicles> getAllVehicles(@PathParam("vehicleType") String vehicleType) {
+        return vehicleService.listAll(vehicleType);
     }
 
     @GET
-    @Path("/{vehicleTpe}/{id}")
-    public Vehicles getAllVehiclesById(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
-        return vehicleService.getVehiclesById(id, vehicleType);
+    @Path("/{vehicleType}/{id}")
+    public Vehicles getVehiclesById(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
+        return vehicleService.findById(vehicleType, id);
     }
 
     @POST
     @Path("/{vehicleType}")
     @Transactional
-    public Vehicles addBike(@PathParam("vehicleType") String vehicleType, Vehicles vehicles) {
-        return vehicleService.createVehicles(vehicleType, vehicles);
+    public Vehicles addVehicle(@PathParam("vehicleType") String vehicleType, Vehicles vehicles) {
+        return vehicleService.save(vehicleType, vehicles);
     }
 
     @DELETE
-    @Path("/{vehicleTpe}/{id}")
+    @Path("/{vehicleType}/{id}")
     @Transactional
-    public void deleteBike(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
-        vehicleService.deleteVehicle(id, vehicleType);
+    public void deleteVehicle(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
+        vehicleService.deleteById(vehicleType, id);
     }
 }

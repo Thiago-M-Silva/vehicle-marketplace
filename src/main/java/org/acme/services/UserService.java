@@ -6,17 +6,15 @@ import java.util.UUID;
 import org.acme.model.Users.Users;
 import org.acme.model.Users.UsersRepository;
 import org.acme.model.Users.UsersRequestDTO;
+import org.acme.model.Users.UsersResponseDTO;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class UserService {
 
-    private final UsersRepository usersRepository;
-
-    public UserService(UsersRepository usersRepository) {
-        this.usersRepository = usersRepository;
-    }
+    @Inject UsersRepository usersRepository;
 
     public Users createUser(UsersRequestDTO data) {
         Users user = new Users(data);
@@ -24,12 +22,16 @@ public class UserService {
         return user;
     }
 
-    public List<Users> getAllUsers() {
-        return usersRepository.listAll();
+    public List<UsersResponseDTO> getAllUsers() {
+        List<Users> users = usersRepository.listAll();
+        return users.stream()
+                .map(UsersResponseDTO::new)
+                .toList();
     }
 
-    public Users getUserById(UUID id) {
-        return usersRepository.findById(id);
+    public UsersResponseDTO getUserById(UUID id) {
+        Users user =  usersRepository.findById(id);
+        return user != null ? new UsersResponseDTO(user) : null;
     }
 
     public void deleteUser(UUID id) {

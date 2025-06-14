@@ -4,6 +4,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.acme.enums.*;
+import org.acme.model.Bikes.Bikes;
+import org.acme.model.Boats.Boats;
+import org.acme.model.Cars.Cars;
+import org.acme.model.Planes.Planes;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +22,17 @@ import jakarta.persistence.MappedSuperclass;
  * vehicle types.
  */
 @MappedSuperclass
+@JsonTypeInfo(
+  use = JsonTypeInfo.Id.NAME,
+  include = JsonTypeInfo.As.PROPERTY,
+  property = "type"
+)
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = Bikes.class, name = "bikes"),
+  @JsonSubTypes.Type(value = Cars.class, name = "cars"),
+  @JsonSubTypes.Type(value = Boats.class, name = "boats"),
+  @JsonSubTypes.Type(value = Planes.class, name = "planes")
+})
 public abstract class Vehicles extends PanacheEntityBase {
 
     @Id

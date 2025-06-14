@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.acme.model.Users.Users;
 import org.acme.model.Users.UsersRequestDTO;
+import org.acme.model.Users.UsersResponseDTO;
 import org.acme.services.UserService;
 
 import jakarta.inject.Inject;
@@ -27,13 +28,13 @@ public class UsersController {
     UserService userService;
 
     @GET
-    public List<Users> getAllUsers() {
+    public List<UsersResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GET
     @Path("/{id}")
-    public Users getUserById(@PathParam("id") UUID id) {
+    public UsersResponseDTO getUserById(@PathParam("id") UUID id) {
         return userService.getUserById(id);
     }
 

@@ -2,74 +2,59 @@ package org.acme.services;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.ArrayList;
-import java.util.Map;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.model.Bikes.Bikes;
 import org.acme.model.Bikes.BikesRepository;
+import org.acme.model.Boats.Boats;
 import org.acme.model.Boats.BoatsRepository;
+import org.acme.model.Cars.Cars;
 import org.acme.model.Cars.CarsRepository;
+import org.acme.model.Planes.Planes;
 import org.acme.model.Planes.PlanesRepository;
 
+import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class VehicleService {
-    private final BikesRepository bikesRepository = new BikesRepository();
-    private final BoatsRepository boatsRepository = new BoatsRepository();
-    private final CarsRepository carsRepository = new CarsRepository();
-    private final PlanesRepository planesRepository = new PlanesRepository();
 
-    private final Map<String, Object> repositoryMap = Map.of(
-        "bikes", bikesRepository,
-        "boats", boatsRepository,
-        "cars", carsRepository,
-        "planes", planesRepository
-    );
+    @Inject BikesRepository bikesRepository;
+    @Inject CarsRepository carsRepository;
+    @Inject BoatsRepository boatsRepository;
+    @Inject PlanesRepository planesRepository;
 
-    public Vehicles createVehicles(String vehicleType, Vehicles vehicles) {
-        Object repo = repositoryMap.get(vehicleType);
-        if (repo == null) return null;
-        try {
-            repo.getClass().getMethod("persist", vehicles.getClass()).invoke(repo, vehicles);
-            return vehicles;
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
+    public PanacheRepositoryBase<? extends Vehicles, UUID> getRepository(String vehicleType) {
+        return switch (vehicleType.toLowerCase()) {
+            case "bikes" -> bikesRepository;
+            case "cars"  -> carsRepository;
+            case "boats" -> boatsRepository;
+            case "planes"-> planesRepository;
+            default      -> throw new IllegalArgumentException("Unknown vehicle type: " + vehicleType);
+        };
     }
 
-    public List<Vehicles> getAllVehicles(String vehicleType) {
-        Object repo = repositoryMap.get(vehicleType);
-        if (repo == null) return null;
-        try {
-            List<?> list = (List<?>) repo.getClass().getMethod("listAll").invoke(repo);
-            return new ArrayList<Vehicles>((List<Vehicles>) list);
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
+    public Vehicles save(String type, Vehicles vehicle) {
+        switch (type.toLowerCase()) {
+            case "bikes" -> ((BikesRepository) bikesRepository).persist((Bikes) vehicle);
+            case "cars"  -> ((CarsRepository) carsRepository).persist((Cars) vehicle);
+            case "boats" -> ((BoatsRepository) boatsRepository).persist((Boats) vehicle);
+            case "planes"-> ((PlanesRepository) planesRepository).persist((Planes) vehicle);
+            default      -> throw new IllegalArgumentException("Unknown vehicle type: " + type);
         }
+        return vehicle;
     }
 
-    public Vehicles getVehiclesById(UUID id, String vehicleType) {
-        Object repo = repositoryMap.get(vehicleType);
-        if (repo == null) return null;
-        try {
-            return (Vehicles) repo.getClass().getMethod("findById", UUID.class).invoke(repo, id);
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
+    public List<? extends Vehicles> listAll(String type) {
+        return getRepository(type).listAll();
     }
 
-    public Vehicles deleteVehicle(UUID id, String vehicleType) {
-        Object repo = repositoryMap.get(vehicleType);
-        if(repo == null) return null;
-        try{
-            return (Vehicles) repo.getClass().getMethod("deleteById", UUID.class).invoke(repo, id);
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
+    public Vehicles findById(String type, UUID id) {
+        return getRepository(type).findById(id);
+    }
+
+    public boolean deleteById(String type, UUID id) {
+        return getRepository(type).deleteById(id);
     }
 }
