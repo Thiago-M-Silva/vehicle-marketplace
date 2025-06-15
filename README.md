@@ -1,3 +1,7 @@
+#TODO:
+[ ]Testar e corrigir os erros da API
+
+
 # vehicle-marketplace
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.

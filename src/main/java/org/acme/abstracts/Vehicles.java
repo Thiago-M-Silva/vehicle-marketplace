@@ -16,6 +16,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract class representing a vehicle. This class serves as a base for all
@@ -33,6 +35,9 @@ import jakarta.persistence.MappedSuperclass;
   @JsonSubTypes.Type(value = Boats.class, name = "boats"),
   @JsonSubTypes.Type(value = Planes.class, name = "planes")
 })
+
+@Getter
+@Setter
 public abstract class Vehicles extends PanacheEntityBase {
 
     @Id

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.middlewares.ApiMiddleware;
 import org.acme.model.Bikes.Bikes;
 import org.acme.model.Bikes.BikesRepository;
 import org.acme.model.Boats.Boats;
@@ -19,14 +20,24 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class VehicleService {
+    @Inject 
+    ApiMiddleware apiMiddleware;
 
-    @Inject BikesRepository bikesRepository;
-    @Inject CarsRepository carsRepository;
-    @Inject BoatsRepository boatsRepository;
-    @Inject PlanesRepository planesRepository;
+    @Inject 
+    BikesRepository bikesRepository;
+    
+    @Inject 
+    CarsRepository carsRepository;
+    
+    @Inject 
+    BoatsRepository boatsRepository;
+    
+    @Inject 
+    PlanesRepository planesRepository;
 
-    public PanacheRepositoryBase<? extends Vehicles, UUID> getRepository(String vehicleType) {
-        return switch (vehicleType.toLowerCase()) {
+    @SuppressWarnings("unchecked")
+    private <T extends Vehicles> PanacheRepositoryBase<T, UUID> getRepository(String vehicleType) {
+        return (PanacheRepositoryBase<T, UUID>) switch (vehicleType.toLowerCase()) {
             case "bikes" -> bikesRepository;
             case "cars"  -> carsRepository;
             case "boats" -> boatsRepository;
@@ -35,26 +46,38 @@ public class VehicleService {
         };
     }
 
-    public Vehicles save(String type, Vehicles vehicle) {
-        switch (type.toLowerCase()) {
-            case "bikes" -> ((BikesRepository) bikesRepository).persist((Bikes) vehicle);
-            case "cars"  -> ((CarsRepository) carsRepository).persist((Cars) vehicle);
-            case "boats" -> ((BoatsRepository) boatsRepository).persist((Boats) vehicle);
-            case "planes"-> ((PlanesRepository) planesRepository).persist((Planes) vehicle);
-            default      -> throw new IllegalArgumentException("Unknown vehicle type: " + type);
+    public <T extends Vehicles> T save(String type, T vehicle) {
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Vehicle cannot be null");
         }
+        var repository = getRepository(type);
+        repository.persist(vehicle);
         return vehicle;
     }
 
-    public List<? extends Vehicles> listAll(String type) {
-        return getRepository(type).listAll();
+    public List<Vehicles> listAll(String type) {
+        try {
+            List<Vehicles> vehicles = getRepository(type).listAll();
+            return vehicles;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to list vehicles for type: " + type, e);
+        }
     }
 
-    public Vehicles findById(String type, UUID id) {
-        return getRepository(type).findById(id);
+    @SuppressWarnings("unchecked")
+    public <T extends Vehicles> T findById(String type, UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        var repository = getRepository(type);
+        return (T) repository.findById(id);
     }
 
     public boolean deleteById(String type, UUID id) {
-        return getRepository(type).deleteById(id);
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        var repository = getRepository(type);
+        return repository.deleteById(id);
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.VehicleService;
 
 import jakarta.inject.Inject;
@@ -16,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/vehicles")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,10 +27,15 @@ public class VehicleController {
     @Inject
     VehicleService vehicleService;
 
+    @Inject
+    ApiMiddleware apiMiddleware;
+
     @GET
     @Path("/{vehicleType}")
-    public List<? extends Vehicles> getAllVehicles(@PathParam("vehicleType") String vehicleType) {
-        return vehicleService.listAll(vehicleType);
+    public List<?> getAllVehicles(@PathParam("vehicleType") String vehicleType) {
+        List<Vehicles> vehicles = vehicleService.listAll(vehicleType);
+        List<?> responseDTOs = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
+        return (List<?>) Response.ok(responseDTOs).build();
     }
 
     @GET
@@ -41,7 +48,8 @@ public class VehicleController {
     @Path("/{vehicleType}")
     @Transactional
     public Vehicles addVehicle(@PathParam("vehicleType") String vehicleType, Vehicles vehicles) {
-        return vehicleService.save(vehicleType, vehicles);
+        var vehicleRequestDTO = apiMiddleware.manageVehicleTypeRequestDTO(vehicleType, vehicles);
+        return vehicleService.save(vehicleType, (Vehicles) vehicleRequestDTO);
     }
 
     @DELETE
