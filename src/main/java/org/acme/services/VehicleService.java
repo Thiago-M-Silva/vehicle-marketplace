@@ -5,13 +5,9 @@ import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
 import org.acme.middlewares.ApiMiddleware;
-import org.acme.model.Bikes.Bikes;
 import org.acme.model.Bikes.BikesRepository;
-import org.acme.model.Boats.Boats;
 import org.acme.model.Boats.BoatsRepository;
-import org.acme.model.Cars.Cars;
 import org.acme.model.Cars.CarsRepository;
-import org.acme.model.Planes.Planes;
 import org.acme.model.Planes.PlanesRepository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;

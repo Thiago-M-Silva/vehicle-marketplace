@@ -1,5 +1,4 @@
-#TODO:
-[ ]Testar e corrigir os erros da API
+Swagger-ui url: http://localhost:8080/q/swagger-ui/
 
 
 # vehicle-marketplace
