@@ -1,8 +1,12 @@
-package org.acme.model.Users;
+package org.acme.dtos;
 
 import java.util.Date;
+import java.util.UUID;
+
+import org.acme.model.Users;
 
 public record UsersResponseDTO(
+        UUID id,
         String name,
         String email,
         String password,
@@ -21,6 +25,7 @@ public record UsersResponseDTO(
 
     public UsersResponseDTO(Users user){
         this(
+            user.getId(),
             user.getName(),
             user.getEmail(),
             user.getPassword(),

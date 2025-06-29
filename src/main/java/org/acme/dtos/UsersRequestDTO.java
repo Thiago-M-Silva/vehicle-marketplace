@@ -1,4 +1,4 @@
-package org.acme.model.Users;
+package org.acme.dtos;
 
 import java.util.Date;
 

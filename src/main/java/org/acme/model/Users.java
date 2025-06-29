@@ -1,10 +1,10 @@
-package org.acme.model.Users;
+package org.acme.model;
 
 import java.util.Date;
 import java.util.UUID;
 
+import org.acme.dtos.UsersRequestDTO;
 import org.acme.enums.EUserType;
-import org.acme.model.Payment;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

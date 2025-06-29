@@ -1,4 +1,4 @@
-package org.acme.model.Bikes;
+package org.acme.model;
 
 import org.acme.abstracts.Vehicles;
 

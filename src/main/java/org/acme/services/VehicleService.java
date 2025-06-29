@@ -5,10 +5,10 @@ import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
 import org.acme.middlewares.ApiMiddleware;
-import org.acme.model.Bikes.BikesRepository;
-import org.acme.model.Boats.BoatsRepository;
-import org.acme.model.Cars.CarsRepository;
-import org.acme.model.Planes.PlanesRepository;
+import org.acme.repositories.BikesRepository;
+import org.acme.repositories.BoatsRepository;
+import org.acme.repositories.CarsRepository;
+import org.acme.repositories.PlanesRepository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;

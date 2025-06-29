@@ -1,4 +1,4 @@
-package org.acme.model.Boats;
+package org.acme.dtos;
 
 public record BoatsResponseDTO(
     String name, 

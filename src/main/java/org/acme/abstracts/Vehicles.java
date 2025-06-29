@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.acme.enums.*;
-import org.acme.model.Bikes.Bikes;
-import org.acme.model.Boats.Boats;
-import org.acme.model.Cars.Cars;
-import org.acme.model.Planes.Planes;
+import org.acme.model.Bikes;
+import org.acme.model.Boats;
+import org.acme.model.Cars;
+import org.acme.model.Planes;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -51,7 +51,7 @@ public abstract class Vehicles extends PanacheEntityBase {
     private ECategory category;
     private EColors color;
     private EFuelType fuelType;
-    private LocalDateTime createDate;
-    private LocalDateTime updateDate;
+    private LocalDateTime createDate = LocalDateTime.now();;
+    private LocalDateTime updateDate = LocalDateTime.now();;
     private String description;
 }

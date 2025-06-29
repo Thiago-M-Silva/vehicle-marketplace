@@ -1,4 +1,4 @@
-package org.acme.model.Cars;
+package org.acme.dtos;
 
 public record CarsResponseDTO(
     String name, 

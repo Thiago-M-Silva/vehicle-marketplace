@@ -1,4 +1,4 @@
-package org.acme.model.Planes;
+package org.acme.dtos;
 
 public record PlanesResponseDTO(
     String name, 

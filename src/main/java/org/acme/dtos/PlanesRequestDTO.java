@@ -1,4 +1,4 @@
-package org.acme.model.Bikes;
+package org.acme.dtos;
 
 import java.time.LocalDateTime;
 
@@ -7,7 +7,7 @@ import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
 
-public record BikesRequestDTO(
+public record PlanesRequestDTO(
     String name, 
     String brand, 
     int year,
@@ -20,7 +20,7 @@ public record BikesRequestDTO(
     LocalDateTime updateDate,
     String description,
     int horsepower,
-    String bikeType
+    String planeType
 ) {
 
 }

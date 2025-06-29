@@ -4,18 +4,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.acme.abstracts.Vehicles;
-import org.acme.model.Bikes.Bikes;
-import org.acme.model.Bikes.BikesRequestDTO;
-import org.acme.model.Bikes.BikesResponseDTO;
-import org.acme.model.Boats.Boats;
-import org.acme.model.Boats.BoatsRequestDTO;
-import org.acme.model.Boats.BoatsResponseDTO;
-import org.acme.model.Cars.Cars;
-import org.acme.model.Cars.CarsRequestDTO;
-import org.acme.model.Cars.CarsResponseDTO;
-import org.acme.model.Planes.Planes;
-import org.acme.model.Planes.PlanesRequestDTO;
-import org.acme.model.Planes.PlanesResponseDTO;
+import org.acme.model.Bikes;
+import org.acme.model.Cars;
+import org.acme.model.Boats;
+import org.acme.model.Planes;
+import org.acme.dtos.BikesResponseDTO;
+import org.acme.dtos.CarsResponseDTO;
+import org.acme.dtos.BoatsResponseDTO;
+import org.acme.dtos.PlanesResponseDTO;
+
 
 import jakarta.enterprise.context.ApplicationScoped;
 

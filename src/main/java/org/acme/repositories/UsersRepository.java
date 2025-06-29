@@ -1,6 +1,8 @@
-package org.acme.model.Users;
+package org.acme.repositories;
 
 import java.util.UUID;
+
+import org.acme.model.Users;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;

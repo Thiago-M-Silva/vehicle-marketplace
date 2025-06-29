@@ -3,10 +3,10 @@ package org.acme.services;
 import java.util.List;
 import java.util.UUID;
 
-import org.acme.model.Users.Users;
-import org.acme.model.Users.UsersRepository;
-import org.acme.model.Users.UsersRequestDTO;
-import org.acme.model.Users.UsersResponseDTO;
+import org.acme.model.Users;
+import org.acme.repositories.UsersRepository;
+import org.acme.dtos.UsersRequestDTO;
+import org.acme.dtos.UsersResponseDTO;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
