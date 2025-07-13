@@ -1,5 +1,6 @@
 package org.acme.dtos;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public record UsersRequestDTO(
@@ -13,8 +14,8 @@ public record UsersRequestDTO(
     String country,
     String cpf,
     String rg,
+    LocalDate birthDate,
     Date createDate,
-    Date birthDate,
     Date updateDate,
     String userType
 ) {

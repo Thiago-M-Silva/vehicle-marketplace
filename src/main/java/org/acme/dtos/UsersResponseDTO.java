@@ -1,5 +1,6 @@
 package org.acme.dtos;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,29 +18,29 @@ public record UsersResponseDTO(
         String country,
         String cpf,
         String rg,
+        LocalDate birthDate,
         Date createDate,
-        Date birthDate,
         Date updateDate,
         String userType
 ) {
 
-    public UsersResponseDTO(Users user){
-        this(
-            user.getId(),
-            user.getName(),
-            user.getEmail(),
-            user.getPassword(),
-            user.getPhoneNumber(),
-            user.getAddress(),
-            user.getCity(),
-            user.getState(),
-            user.getCountry(),
-            user.getCpf(),
-            user.getRg(),
-            user.getCreateDate(),
-            user.getBirthDate(),
-            user.getUpdateDate(),
-            user.getUserType().toString()
-        );
-    }
+    // public UsersResponseDTO(Users user){
+    //     this(
+    //         user.getId(),
+    //         user.getName(),
+    //         user.getEmail(),
+    //         user.getPassword(),
+    //         user.getPhoneNumber(),
+    //         user.getAddress(),
+    //         user.getCity(),
+    //         user.getState(),
+    //         user.getCountry(),
+    //         user.getCpf(),
+    //         user.getRg(),
+    //         user.getCreateDate(),
+    //         user.getBirthDate(),
+    //         user.getUpdateDate(),
+    //         user.getUserType().toString()
+    //     );
+    // }
 }

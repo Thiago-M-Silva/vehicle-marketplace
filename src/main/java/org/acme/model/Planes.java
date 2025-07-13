@@ -1,6 +1,7 @@
 package org.acme.model;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.enums.EStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -17,7 +18,6 @@ import lombok.Setter;
 @Table(name = "planes")
 public class Planes extends Vehicles {
 
+    private EStatus planeStatus;
     private String planeType;
-    private int horsepower;
-
 }

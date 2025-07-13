@@ -1,5 +1,6 @@
 package org.acme.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -38,12 +40,13 @@ public class Users {
     private String country;
     private String cpf;
     private String rg;
-    private Date birthDate;
+    private LocalDate birthDate;
     private Date createDate;
     private Date updateDate;
     private EUserType userType;
     @ManyToOne
-    private Payment[] payment;
+    @JoinColumn(name = "transactionId")
+    private Payment transaction;
 
     public Users(UsersRequestDTO data) {
         this.name = data.name();

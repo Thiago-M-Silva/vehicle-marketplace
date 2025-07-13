@@ -1,6 +1,7 @@
 package org.acme.model;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.acme.enums.EPaymentMethods;
 import org.acme.enums.EPaymentStatus;
@@ -8,6 +9,7 @@ import org.acme.enums.EPaymentStatus;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -21,28 +23,35 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "payments")
+@Table(name = "payment")
 public class Payment extends PanacheEntityBase {
 
     @Id
-    private int id;
-    private String paymentId;
+    private UUID id;
     private EPaymentMethods paymentMethod;
     private EPaymentStatus paymentStatus;
-    private String paymentDate;
     private double amount;
 
-    @OneToMany
-    private Users[] user;
+    private int transactionId;
 
     @ManyToOne
-    private Bikes[] bike;
+    @JoinColumn(name = "client")
+    private Users user;
     @ManyToOne
-    private Cars[] car;
+    @JoinColumn(name = "seller")
+    private Users seller;
     @ManyToOne
-    private Boats[] boat;
+    @JoinColumn(name = "bike")
+    private Bikes bike;
     @ManyToOne
-    private Planes[] plane;
+    @JoinColumn(name = "cars")
+    private Cars car;
+    @ManyToOne
+    @JoinColumn(name = "boats")
+    private Boats boat;
+    @ManyToOne
+    @JoinColumn(name = "planes")
+    private Planes plane;
     private Date createDate;
     private Date updateDate;
 

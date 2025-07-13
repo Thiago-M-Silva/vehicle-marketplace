@@ -1,6 +1,7 @@
 package org.acme.model;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.enums.EStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -17,8 +18,6 @@ import lombok.Setter;
 @Table(name = "cars")
 public class Cars extends Vehicles {
 
+    private EStatus carStatus;
     private String carType;
-    private int horsepower;
-    private String transmissionType;
-    private int numberOfTires;
 }

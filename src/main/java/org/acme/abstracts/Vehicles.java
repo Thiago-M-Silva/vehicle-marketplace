@@ -47,7 +47,9 @@ public abstract class Vehicles extends PanacheEntityBase {
     private String brand;
     private int year;
     private float price;
-    private EStatus status;
+    private String model;
+    private int horsepower;
+    private String transmissionType;
     private ECategory category;
     private EColors color;
     private EFuelType fuelType;

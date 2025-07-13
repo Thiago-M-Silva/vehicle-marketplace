@@ -44,7 +44,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("BrandA", resultBike.getBrand());
         Assertions.assertEquals(2020, resultBike.getYear());
         Assertions.assertEquals(1000.0, resultBike.getPrice());
-        Assertions.assertEquals("available", resultBike.getStatus());
+        Assertions.assertEquals("available", resultBike.getCarStatus());
         Assertions.assertEquals("mountain", resultBike.getCategory());
         Assertions.assertEquals("red", resultBike.getColor());
         Assertions.assertEquals("none", resultBike.getFuelType());
@@ -70,7 +70,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("BrandB", resultCar.getBrand());
         Assertions.assertEquals(2019, resultCar.getYear());
         Assertions.assertEquals(20000.0, resultCar.getPrice());
-        Assertions.assertEquals("sold", resultCar.getStatus());
+        Assertions.assertEquals("sold", resultCar.getCarStatus());
         Assertions.assertEquals("sedan", resultCar.getCategory());
         Assertions.assertEquals("blue", resultCar.getColor());
         Assertions.assertEquals("gasoline", resultCar.getFuelType());
@@ -96,7 +96,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("BrandC", resultBoat.getBrand());
         Assertions.assertEquals(2018, resultBoat.getYear());
         Assertions.assertEquals(50000.0, resultBoat.getPrice());
-        Assertions.assertEquals("available", resultBoat.getStatus());
+        Assertions.assertEquals("available", resultBoat.getCarStatus());
         Assertions.assertEquals("yacht", resultBoat.getCategory());
         Assertions.assertEquals("white", resultBoat.getColor());
         Assertions.assertEquals("diesel", resultBoat.getFuelType());
@@ -122,7 +122,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("BrandD", resultPlane.getBrand());
         Assertions.assertEquals(2015, resultPlane.getYear());
         Assertions.assertEquals(1000000.0, resultPlane.getPrice());
-        Assertions.assertEquals("maintenance", resultPlane.getStatus());
+        Assertions.assertEquals("maintenance", resultPlane.getCarStatus());
         Assertions.assertEquals("private", resultPlane.getCategory());
         Assertions.assertEquals("silver", resultPlane.getColor());
         Assertions.assertEquals("jet fuel", resultPlane.getFuelType());

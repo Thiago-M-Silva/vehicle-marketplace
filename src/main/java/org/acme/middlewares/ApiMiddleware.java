@@ -71,7 +71,7 @@ public class ApiMiddleware {
         entity.setBrand(bike.getBrand());
         entity.setYear(bike.getYear());
         entity.setPrice(bike.getPrice());
-        entity.setStatus(bike.getStatus());
+        entity.setBikeStatus(bike.getBikeStatus());
         entity.setCategory(bike.getCategory());
         entity.setColor(bike.getColor());
         entity.setFuelType(bike.getFuelType());
@@ -95,7 +95,7 @@ public class ApiMiddleware {
         entity.setBrand(car.getBrand());
         entity.setYear(car.getYear());
         entity.setPrice(car.getPrice());
-        entity.setStatus(car.getStatus());
+        entity.setCarStatus(car.getCarStatus());
         entity.setCategory(car.getCategory());
         entity.setColor(car.getColor());
         entity.setFuelType(car.getFuelType());
@@ -119,7 +119,7 @@ public class ApiMiddleware {
         entity.setBrand(boat.getBrand());
         entity.setYear(boat.getYear());
         entity.setPrice(boat.getPrice());
-        entity.setStatus(boat.getStatus());
+        entity.setBoatStatus(boat.getBoatStatus());
         entity.setCategory(boat.getCategory());
         entity.setColor(boat.getColor());
         entity.setFuelType(boat.getFuelType());
@@ -143,7 +143,7 @@ public class ApiMiddleware {
         entity.setBrand(plane.getBrand());
         entity.setYear(plane.getYear());
         entity.setPrice(plane.getPrice());
-        entity.setStatus(plane.getStatus());
+        entity.setPlaneStatus(plane.getPlaneStatus());
         entity.setCategory(plane.getCategory());
         entity.setColor(plane.getColor());
         entity.setFuelType(plane.getFuelType());
