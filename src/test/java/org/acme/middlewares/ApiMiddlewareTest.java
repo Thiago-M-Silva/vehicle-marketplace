@@ -31,7 +31,7 @@ public class ApiMiddlewareTest {
         bike.setBrand("BrandA");
         bike.setYear(2020);
         bike.setPrice(1000.0f);
-        bike.setStatus(EStatus.NEW);
+        bike.setBikeStatus(EStatus.NEW);
         bike.setCategory(ECategory.COMPACT_CAR);
         bike.setColor(EColors.RED);
         bike.setFuelType(EFuelType.ALCOHOL);
@@ -44,7 +44,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("BrandA", resultBike.getBrand());
         Assertions.assertEquals(2020, resultBike.getYear());
         Assertions.assertEquals(1000.0, resultBike.getPrice());
-        Assertions.assertEquals("available", resultBike.getCarStatus());
+        Assertions.assertEquals("available", resultBike.getBikeStatus());
         Assertions.assertEquals("mountain", resultBike.getCategory());
         Assertions.assertEquals("red", resultBike.getColor());
         Assertions.assertEquals("none", resultBike.getFuelType());
@@ -57,7 +57,7 @@ public class ApiMiddlewareTest {
         car.setBrand("BrandB");
         car.setYear(2019);
         car.setPrice(20000.0f);
-        car.setStatus(EStatus.NEW);
+        car.setCarStatus(EStatus.NEW);
         car.setCategory(ECategory.COMPACT_CAR);
         car.setColor(EColors.RED);
         car.setFuelType(EFuelType.ALCOHOL);
@@ -83,7 +83,7 @@ public class ApiMiddlewareTest {
         boat.setBrand("BrandC");
         boat.setYear(2018);
         boat.setPrice(50000.0f);
-        boat.setStatus(EStatus.NEW);
+        boat.setBoatStatus(EStatus.NEW);
         boat.setCategory(ECategory.COMPACT_CAR);
         boat.setColor(EColors.RED);
         boat.setFuelType(EFuelType.ALCOHOL);
@@ -96,7 +96,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("BrandC", resultBoat.getBrand());
         Assertions.assertEquals(2018, resultBoat.getYear());
         Assertions.assertEquals(50000.0, resultBoat.getPrice());
-        Assertions.assertEquals("available", resultBoat.getCarStatus());
+        Assertions.assertEquals("available", resultBoat.getBoatStatus());
         Assertions.assertEquals("yacht", resultBoat.getCategory());
         Assertions.assertEquals("white", resultBoat.getColor());
         Assertions.assertEquals("diesel", resultBoat.getFuelType());
@@ -109,7 +109,7 @@ public class ApiMiddlewareTest {
         plane.setBrand("BrandD");
         plane.setYear(2015);
         plane.setPrice(1000000.0f);
-        plane.setStatus(EStatus.NEW);
+        plane.setPlaneStatus(EStatus.NEW);
         plane.setCategory(ECategory.COMPACT_CAR);
         plane.setColor(EColors.RED);
         plane.setFuelType(EFuelType.ALCOHOL);
@@ -122,7 +122,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("BrandD", resultPlane.getBrand());
         Assertions.assertEquals(2015, resultPlane.getYear());
         Assertions.assertEquals(1000000.0, resultPlane.getPrice());
-        Assertions.assertEquals("maintenance", resultPlane.getCarStatus());
+        Assertions.assertEquals("maintenance", resultPlane.getPlaneStatus());
         Assertions.assertEquals("private", resultPlane.getCategory());
         Assertions.assertEquals("silver", resultPlane.getColor());
         Assertions.assertEquals("jet fuel", resultPlane.getFuelType());

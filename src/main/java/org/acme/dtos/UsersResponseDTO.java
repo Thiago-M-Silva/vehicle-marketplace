@@ -24,23 +24,23 @@ public record UsersResponseDTO(
         String userType
 ) {
 
-    // public UsersResponseDTO(Users user){
-    //     this(
-    //         user.getId(),
-    //         user.getName(),
-    //         user.getEmail(),
-    //         user.getPassword(),
-    //         user.getPhoneNumber(),
-    //         user.getAddress(),
-    //         user.getCity(),
-    //         user.getState(),
-    //         user.getCountry(),
-    //         user.getCpf(),
-    //         user.getRg(),
-    //         user.getCreateDate(),
-    //         user.getBirthDate(),
-    //         user.getUpdateDate(),
-    //         user.getUserType().toString()
-    //     );
-    // }
+    public UsersResponseDTO(Users user){
+        this(
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getPassword(),
+            user.getPhoneNumber(),
+            user.getAddress(),
+            user.getCity(),
+            user.getState(),
+            user.getCountry(),
+            user.getCpf(),
+            user.getRg(),
+            user.getBirthDate(),
+            user.getCreateDate(),
+            user.getUpdateDate(),
+            user.getUserType().toString()
+        );
+    }
 }

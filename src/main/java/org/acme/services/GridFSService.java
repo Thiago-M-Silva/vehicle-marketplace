@@ -18,7 +18,6 @@ public class GridFSService {
     @Inject
     MongoClient mongoClient;
 
-    //TODO: ver a adaptabilidade dessa função para outros documentos
     private GridFSBucket getBucket() {
         MongoDatabase database = mongoClient.getDatabase("vehicle-marketplace");
         return GridFSBuckets.create(database, "vehicleDocuments");
@@ -30,11 +29,6 @@ public class GridFSService {
             .metadata(new org.bson.Document("contentType", contentType));
         getBucket().uploadFromStream(filename, inputStream, options);        
     }
-
-    //TODO: ver qual é a melhor forma de fazer o download de arquivos
-    // public InputStream downloadFile(String fileId) {
-    //     return getBucket().openDownloadStream(new org.bson.types.ObjectId(fileId));
-    // }
     public void downloadFile(String filename, OutputStream outputStream){
         getBucket().downloadToStream(filename, outputStream);
     }
