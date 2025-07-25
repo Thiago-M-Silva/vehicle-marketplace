@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "boats")
+@Table(name = "boats", schema = "mktplace")
 public class Boats extends Vehicles {
     
     private EStatus boatStatus;

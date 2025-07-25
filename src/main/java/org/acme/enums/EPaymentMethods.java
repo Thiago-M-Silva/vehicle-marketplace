@@ -13,6 +13,5 @@ public enum EPaymentMethods {
     APPLE_PAY,
     GOOGLE_PAY,
     AMAZON_PAY,
-    SAMSUNG_PAY
-    // Add more colors as needed
+    SAMSUNG_PAY;
 }

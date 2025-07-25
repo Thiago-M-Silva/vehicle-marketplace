@@ -1,5 +1,7 @@
 package org.acme.abstracts;
 
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -8,11 +10,14 @@ import org.acme.model.Bikes;
 import org.acme.model.Boats;
 import org.acme.model.Cars;
 import org.acme.model.Planes;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
@@ -46,14 +51,25 @@ public abstract class Vehicles extends PanacheEntityBase {
     private String name;
     private String brand;
     private int year;
-    private float price;
+
+    @Column(columnDefinition = "money")
+    private BigDecimal price;
+    private int storage;
+
     private String model;
     private int horsepower;
+
     private String transmissionType;
     private ECategory category;
     private EColors color;
     private EFuelType fuelType;
-    private LocalDateTime createDate = LocalDateTime.now();;
-    private LocalDateTime updateDate = LocalDateTime.now();;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Instant createDate;
+
+    @UpdateTimestamp
+    private Instant updateDate;
+
     private String description;
 }
