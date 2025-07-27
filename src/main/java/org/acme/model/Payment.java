@@ -22,7 +22,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "payment")
+@Table(name = "payment", schema = "mktplace")
 public class Payment extends PanacheEntityBase {
 
     @Id

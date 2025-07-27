@@ -1,12 +1,15 @@
 package org.acme.model;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
 import org.acme.dtos.UsersRequestDTO;
-import org.acme.enums.EUserType;
+import org.acme.enums.EUserRole;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +27,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
+@Table(name = "users", schema = "mktplace")
 public class Users {
 
     @Id
@@ -41,9 +44,15 @@ public class Users {
     private String cpf;
     private String rg;
     private LocalDate birthDate;
-    private Date createDate;
-    private Date updateDate;
-    private EUserType userType;
+    private EUserRole userType;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Instant createDate;
+
+    @UpdateTimestamp
+    private Instant updateDate;
+
     @ManyToOne
     @JoinColumn(name = "transactionId")
     private Payment transaction;
@@ -60,8 +69,6 @@ public class Users {
         this.cpf = data.cpf();
         this.rg = data.rg();
         this.birthDate = data.birthDate();
-        this.createDate = new Date(); // Set to current date
-        this.updateDate = new Date(); // Set to current date
-        this.userType = EUserType.valueOf(data.userType());
+        this.userType = data.userType();
     }
 }

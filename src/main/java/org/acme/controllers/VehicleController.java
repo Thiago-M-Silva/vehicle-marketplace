@@ -32,13 +32,13 @@ public class VehicleController {
 
     @GET
     @Path("/{vehicleType}")
-    public List<?> getAllVehicles(@PathParam("vehicleType") String vehicleType) {
+    public Response getAllVehicles(@PathParam("vehicleType") String vehicleType) {
        try {
             List<Vehicles> vehicles = vehicleService.listAll(vehicleType);
             List<?> responseDTOs = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
-            return (List<?>) Response.ok(responseDTOs).build();
+            return Response.ok(responseDTOs).build();
        } catch (Exception e) {
-            return (List<?>) Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                            .entity("Error retrieving vehicles: " + e.getMessage())
                            .build();
        }

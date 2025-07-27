@@ -1,9 +1,9 @@
 package org.acme.dtos;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.UUID;
 
+import org.acme.enums.EUserRole;
 import org.acme.model.Users;
 
 public record UsersResponseDTO(
@@ -19,9 +19,7 @@ public record UsersResponseDTO(
         String cpf,
         String rg,
         LocalDate birthDate,
-        Date createDate,
-        Date updateDate,
-        String userType
+        EUserRole userType
 ) {
 
     public UsersResponseDTO(Users user){
@@ -38,9 +36,7 @@ public record UsersResponseDTO(
             user.getCpf(),
             user.getRg(),
             user.getBirthDate(),
-            user.getCreateDate(),
-            user.getUpdateDate(),
-            user.getUserType().toString()
+            user.getUserType()
         );
     }
 }

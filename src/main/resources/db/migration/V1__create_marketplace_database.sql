@@ -36,7 +36,6 @@ CREATE TABLE IF NOT EXISTS mktPlace.eUserRole (
     role VARCHAR(10)
 );
 
--- Tabela users (antes de payment!)
 CREATE TABLE IF NOT EXISTS mktPlace.users (
     id UUID PRIMARY KEY,
     address VARCHAR(500),

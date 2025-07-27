@@ -3,6 +3,8 @@ package org.acme.dtos;
 import java.time.LocalDate;
 import java.util.Date;
 
+import org.acme.enums.EUserRole;
+
 public record UsersRequestDTO(
     String name,
     String email,
@@ -17,7 +19,7 @@ public record UsersRequestDTO(
     LocalDate birthDate,
     Date createDate,
     Date updateDate,
-    String userType
+    EUserRole userType
 ) {
 
 }
