@@ -2,6 +2,7 @@ package org.acme.middlewares;
 
 import io.quarkus.test.junit.QuarkusTest;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.acme.abstracts.Vehicles;
@@ -30,7 +31,7 @@ public class ApiMiddlewareTest {
         bike.setName("Bike1");
         bike.setBrand("BrandA");
         bike.setYear(2020);
-        bike.setPrice(1000.0f);
+        bike.setPrice(new BigDecimal("1000.0"));
         bike.setBikeStatus(EStatus.NEW);
         bike.setCategory(ECategory.COMPACT_CAR);
         bike.setColor(EColors.RED);
@@ -43,7 +44,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("Bike1", resultBike.getName());
         Assertions.assertEquals("BrandA", resultBike.getBrand());
         Assertions.assertEquals(2020, resultBike.getYear());
-        Assertions.assertEquals(1000.0, resultBike.getPrice());
+        Assertions.assertEquals(new BigDecimal("1000.0"), resultBike.getPrice());
         Assertions.assertEquals("available", resultBike.getBikeStatus());
         Assertions.assertEquals("mountain", resultBike.getCategory());
         Assertions.assertEquals("red", resultBike.getColor());
@@ -56,7 +57,7 @@ public class ApiMiddlewareTest {
         car.setName("Car1");
         car.setBrand("BrandB");
         car.setYear(2019);
-        car.setPrice(20000.0f);
+        car.setPrice(new BigDecimal("20000.0"));
         car.setCarStatus(EStatus.NEW);
         car.setCategory(ECategory.COMPACT_CAR);
         car.setColor(EColors.RED);
@@ -69,7 +70,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("Car1", resultCar.getName());
         Assertions.assertEquals("BrandB", resultCar.getBrand());
         Assertions.assertEquals(2019, resultCar.getYear());
-        Assertions.assertEquals(20000.0, resultCar.getPrice());
+        Assertions.assertEquals(new BigDecimal("20000.0"), resultCar.getPrice());
         Assertions.assertEquals("sold", resultCar.getCarStatus());
         Assertions.assertEquals("sedan", resultCar.getCategory());
         Assertions.assertEquals("blue", resultCar.getColor());
@@ -82,7 +83,7 @@ public class ApiMiddlewareTest {
         boat.setName("Boat1");
         boat.setBrand("BrandC");
         boat.setYear(2018);
-        boat.setPrice(50000.0f);
+        boat.setPrice(new BigDecimal("50000.0"));
         boat.setBoatStatus(EStatus.NEW);
         boat.setCategory(ECategory.COMPACT_CAR);
         boat.setColor(EColors.RED);
@@ -95,7 +96,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("Boat1", resultBoat.getName());
         Assertions.assertEquals("BrandC", resultBoat.getBrand());
         Assertions.assertEquals(2018, resultBoat.getYear());
-        Assertions.assertEquals(50000.0, resultBoat.getPrice());
+        Assertions.assertEquals(new BigDecimal("50000.0"), resultBoat.getPrice());
         Assertions.assertEquals("available", resultBoat.getBoatStatus());
         Assertions.assertEquals("yacht", resultBoat.getCategory());
         Assertions.assertEquals("white", resultBoat.getColor());
@@ -108,7 +109,7 @@ public class ApiMiddlewareTest {
         plane.setName("Plane1");
         plane.setBrand("BrandD");
         plane.setYear(2015);
-        plane.setPrice(1000000.0f);
+        plane.setPrice(new BigDecimal("1000000.0"));
         plane.setPlaneStatus(EStatus.NEW);
         plane.setCategory(ECategory.COMPACT_CAR);
         plane.setColor(EColors.RED);
@@ -121,7 +122,7 @@ public class ApiMiddlewareTest {
         Assertions.assertEquals("Plane1", resultPlane.getName());
         Assertions.assertEquals("BrandD", resultPlane.getBrand());
         Assertions.assertEquals(2015, resultPlane.getYear());
-        Assertions.assertEquals(1000000.0, resultPlane.getPrice());
+        Assertions.assertEquals(new BigDecimal("1000000.0"), resultPlane.getPrice());
         Assertions.assertEquals("maintenance", resultPlane.getPlaneStatus());
         Assertions.assertEquals("private", resultPlane.getCategory());
         Assertions.assertEquals("silver", resultPlane.getColor());

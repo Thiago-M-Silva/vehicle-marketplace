@@ -1,14 +1,17 @@
 package org.acme.services;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
 import org.acme.middlewares.ApiMiddleware;
+import org.acme.model.VehicleDocuments;
 import org.acme.repositories.BikesRepository;
 import org.acme.repositories.BoatsRepository;
 import org.acme.repositories.CarsRepository;
 import org.acme.repositories.PlanesRepository;
+import org.acme.repositories.VehicleDocumentsRepository;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,6 +33,12 @@ public class VehicleService {
     
     @Inject 
     PlanesRepository planesRepository;
+
+    @Inject
+    GridFSService gridFSService;
+
+    @Inject
+    VehicleDocumentsRepository repository;
 
     @SuppressWarnings("unchecked")
     private <T extends Vehicles> PanacheRepositoryBase<T, UUID> getRepository(String vehicleType) {
@@ -75,5 +84,17 @@ public class VehicleService {
         }
         var repository = getRepository(type);
         return repository.deleteById(id);
+    }
+
+    public VehicleDocuments saveDocument(UUID vehicleId, String filename, String contentType, InputStream fileStream){
+        gridFSService.uploadFile(filename, contentType, fileStream);
+        
+        VehicleDocuments doc = new VehicleDocuments();
+        doc.vehicleId = vehicleId;
+        doc.fileName = filename;
+        doc.contentType = contentType;
+
+        repository.persist(doc);
+        return doc;
     }
 }
