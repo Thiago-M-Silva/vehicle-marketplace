@@ -86,6 +86,16 @@ public class VehicleService {
         return repository.deleteById(id);
     }
 
+    public <T extends Vehicles> T saveVehicleWithDocuments(String type, T vehicle, InputStream fileStream, String filename, String contentType){
+        T savedVehicle = save(type, vehicle);
+
+        if(fileStream != null && filename != null) {
+            saveDocument(savedVehicle.getId(), filename, contentType, fileStream);
+        }
+
+        return savedVehicle;
+    }
+
     public VehicleDocuments saveDocument(UUID vehicleId, String filename, String contentType, InputStream fileStream){
         gridFSService.uploadFile(filename, contentType, fileStream);
         

@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.dtos.VehicleDocumentRequestDTO;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.VehicleService;
+import org.jboss.resteasy.reactive.MultipartForm;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -69,6 +71,28 @@ public class VehicleController {
             return Response.status(Response.Status.BAD_REQUEST)
                            .entity("Error saving vehicle: " + e.getMessage())
                            .build();
+        }
+    }
+
+
+    //TODO: Test this
+    @POST
+    @Path("/{vehicleType}/docs")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Transactional
+    public Response addVehicleWithDocs(
+        @PathParam("vehicleType") String vehicleType,
+        @MultipartForm VehicleDocumentRequestDTO data
+    ){
+        try {
+            var vehicleRequestDTO = apiMiddleware.manageVehicleTypeRequestDTO(vehicleType, data.vehicles);
+            Vehicles savedVehicles = vehicleService.saveVehicleWithDocuments(vehicleType,(Vehicles) vehicleRequestDTO, data.file, data.filename, data.contentType);
+
+            return Response.status(Response.Status.CREATED).entity(savedVehicles).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity("Erro ao salvar veículo e documentos: " + e.getMessage())
+                .build();
         }
     }
 

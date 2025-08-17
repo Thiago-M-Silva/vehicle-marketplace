@@ -8,6 +8,8 @@ import org.acme.dtos.UsersResponseDTO;
 import org.acme.model.Users;
 import org.acme.services.UserService;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -28,24 +30,28 @@ public class UsersController {
     UserService userService;
 
     @GET
+    @RolesAllowed("admin")
     public List<UsersResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GET
     @Path("/{id}")
+    @RolesAllowed("admin")
     public UsersResponseDTO getUserById(@PathParam("id") UUID id) {
         return userService.getUserById(id);
     }
 
     @POST
     @Transactional
+    @PermitAll
     public Users addUser(UsersRequestDTO data) {
         return userService.createUser(data);
     }
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed("admin")
     @Transactional
     public void deleteUser(@PathParam("id") UUID id) {
         userService.deleteUser(id);
