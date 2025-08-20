@@ -64,7 +64,7 @@ public class VehicleController {
     @Transactional
     public Response addVehicle(@PathParam("vehicleType") String vehicleType, Vehicles vehicles) {
         try {
-            var vehicleRequestDTO = apiMiddleware.manageVehicleTypeRequestDTO(vehicleType, vehicles);
+            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicles);
             Vehicles savedVehicle = vehicleService.save(vehicleType, (Vehicles) vehicleRequestDTO);
             return Response.status(Response.Status.CREATED).entity(savedVehicle).build();
         } catch (Exception e) {
@@ -74,8 +74,24 @@ public class VehicleController {
         }
     }
 
+    //TODO: Not Finished
+    @POST
+    @Path("/saveAllVehicles/{vehicleType}")
+    @Transactional
+    public Response saveAllVehicles(@PathParam("vehicleType") String vehicleType, List<Vehicles> vehicles) {
+        try {
+            var vehiclesRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, (Vehicles) vehicles);
+            int savedVehicles = vehicleService.saveMultipleVehicles(vehicleType, (List<Vehicles>) vehiclesRequestDTO);
+            return Response.status(Response.Status.CREATED).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("Error saving vehicle: " + e.getMessage())
+                           .build();
+        }
+    }
 
-    //TODO: Test this
+
+    //TODO: Error 400
     @POST
     @Path("/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -85,7 +101,7 @@ public class VehicleController {
         @MultipartForm VehicleDocumentRequestDTO data
     ){
         try {
-            var vehicleRequestDTO = apiMiddleware.manageVehicleTypeRequestDTO(vehicleType, data.vehicles);
+            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, data.vehicles);
             Vehicles savedVehicles = vehicleService.saveVehicleWithDocuments(vehicleType,(Vehicles) vehicleRequestDTO, data.file, data.filename, data.contentType);
 
             return Response.status(Response.Status.CREATED).entity(savedVehicles).build();

@@ -60,6 +60,15 @@ public class VehicleService {
         return vehicle;
     }
 
+    public int saveMultipleVehicles(String type, List<Vehicles> vehicles){
+        if (type == null || vehicles.isEmpty()) {
+            throw new IllegalArgumentException("Type or vehicles cannot be null");
+        }
+        var repository = getRepository(type);
+        repository.persist(vehicles);
+        return vehicles.size();
+    }
+
     public List<Vehicles> listAll(String type) {
         try {
             List<Vehicles> vehicles = getRepository(type).listAll();
