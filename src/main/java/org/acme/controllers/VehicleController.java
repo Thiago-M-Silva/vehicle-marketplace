@@ -14,7 +14,9 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -33,8 +35,10 @@ public class VehicleController {
     ApiMiddleware apiMiddleware;
 
     @GET
-    @Path("/{vehicleType}")
-    public Response getAllVehicles(@PathParam("vehicleType") String vehicleType) {
+    @Path("/get/{vehicleType}")
+    public Response getAllVehicles(
+        @PathParam("vehicleType") String vehicleType
+    ) {
        try {
             List<Vehicles> vehicles = vehicleService.listAll(vehicleType);
             List<?> responseDTOs = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
@@ -47,8 +51,11 @@ public class VehicleController {
     }
 
     @GET
-    @Path("/{vehicleType}/{id}")
-    public Response getVehiclesById(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
+    @Path("/get/{vehicleType}/{id}")
+    public Response getVehiclesById(
+        @PathParam("vehicleType") String vehicleType, 
+        @PathParam("id") UUID id
+    ) {
         try {
             Vehicles vehicle = vehicleService.findById(vehicleType, id);
             return Response.ok(vehicle).build();
@@ -59,10 +66,14 @@ public class VehicleController {
         }
     }
 
+    //TODO: maybe delete this one
     @POST
     @Path("/{vehicleType}")
     @Transactional
-    public Response addVehicle(@PathParam("vehicleType") String vehicleType, Vehicles vehicles) {
+    public Response addVehicle(
+        @PathParam("vehicleType") String vehicleType, 
+        Vehicles vehicles
+    ) {
         try {
             var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicles);
             Vehicles savedVehicle = vehicleService.save(vehicleType, (Vehicles) vehicleRequestDTO);
@@ -74,15 +85,18 @@ public class VehicleController {
         }
     }
 
-    //TODO: Not Finished
+    //TODO: Test
     @POST
-    @Path("/saveAllVehicles/{vehicleType}")
+    @Path("/save/saveAllVehicles/{vehicleType}")
     @Transactional
-    public Response saveAllVehicles(@PathParam("vehicleType") String vehicleType, List<Vehicles> vehicles) {
+    public Response saveAllVehicles(
+        @PathParam("vehicleType") String vehicleType, 
+        List<Vehicles> vehicles
+    ) {
         try {
             var vehiclesRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, (Vehicles) vehicles);
             int savedVehicles = vehicleService.saveMultipleVehicles(vehicleType, (List<Vehicles>) vehiclesRequestDTO);
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED).entity(savedVehicles).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                            .entity("Error saving vehicle: " + e.getMessage())
@@ -90,13 +104,12 @@ public class VehicleController {
         }
     }
 
-
     //TODO: Error 400
     @POST
-    @Path("/{vehicleType}/docs")
+    @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Transactional
-    public Response addVehicleWithDocs(
+    public Response saveVehicleWithDocs(
         @PathParam("vehicleType") String vehicleType,
         @MultipartForm VehicleDocumentRequestDTO data
     ){
@@ -113,13 +126,57 @@ public class VehicleController {
     }
 
     @DELETE
-    @Path("/{vehicleType}/{id}")
+    @Path("/delete/{vehicleType}/{id}")
     @Transactional
-    public void deleteVehicle(@PathParam("vehicleType") String vehicleType, @PathParam("id") UUID id) {
+    public Response deleteVehicle(
+        @PathParam("vehicleType") String vehicleType, 
+        @PathParam("id") UUID id
+    ) {
         try {
             vehicleService.deleteById(vehicleType, id);
+            return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {
-            throw new RuntimeException("Error deleting vehicle: " + e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
+
+    //TODO: TEST
+    @DELETE
+    @Path("/delete/{vehicleType}/{idList}")
+    @Transactional
+    public Response deleteManyVehicles(
+        @PathParam("vehicleType") String vehicleType, 
+        @PathParam("id") List<UUID> id
+    ) {
+        try {
+            vehicleService.deleteManyVehicles(vehicleType, id);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @PUT
+    @Path("/edit/{vehicleType}/{id}")
+    @Transactional
+    public Response editVehicle(
+        @PathParam("vehicleType") String vehicleType,
+        @PathParam("id") UUID id,
+        Vehicles vehicle
+    ){
+        try {
+            vehicleService.editVehicleInfo(vehicleType, id, vehicle);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @PATCH
+    @Path("/patch/{vehicleType}/{id}")
+    @Transactional
+    public void setDetails(){
+
+    }
+
 }

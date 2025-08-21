@@ -87,14 +87,6 @@ public class VehicleService {
         return (T) repository.findById(id);
     }
 
-    public boolean deleteById(String type, UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
-        var repository = getRepository(type);
-        return repository.deleteById(id);
-    }
-
     public <T extends Vehicles> T saveVehicleWithDocuments(String type, T vehicle, InputStream fileStream, String filename, String contentType){
         T savedVehicle = save(type, vehicle);
 
@@ -115,5 +107,30 @@ public class VehicleService {
 
         repository.persist(doc);
         return doc;
+    }
+
+    public boolean deleteById(String type, UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        var repository = getRepository(type);
+        return repository.deleteById(id);
+    }
+
+    public Long deleteManyVehicles(String type, List<UUID> idList){
+        if(idList.isEmpty()){
+            throw new IllegalArgumentException("IdList cannot be empty");
+        }
+        var repository = getRepository(type);
+        return repository.delete("id in ?1", idList);
+    }
+
+    public <T extends Vehicles> T editVehicleInfo(String type, UUID id, T vehicle) {
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Vehicle cannot be null");
+        }
+        var repository = getRepository(type);
+        repository.update("id like ?1", id, vehicle);
+        return vehicle;
     }
 }
