@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.acme.abstracts.Vehicles;
-import org.acme.model.Bikes;
-import org.acme.model.Cars;
-import org.acme.model.Boats;
-import org.acme.model.Planes;
+import org.acme.dtos.*;
+import org.acme.model.*;
 import org.acme.interfaces.VehicleMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,21 +17,44 @@ public class ApiMiddleware {
     @Inject
     VehicleMapper mapper;
 
-    public Vehicles manageVehiclesTypeRequestDTO(String vehicleType, Vehicles vehicle){
-        if (vehicle == null) {
-            throw new IllegalArgumentException("Veículo não pode ser nulo");
+    /**
+     * Converte um DTO para a entidade correspondente
+     */
+    public Vehicles manageVehiclesTypeRequestDTO(String vehicleType, Object dto){
+        if (dto == null) {
+            throw new IllegalArgumentException("DTO não pode ser nulo");
         }
 
         return switch (vehicleType.toLowerCase()) {
-            case "bikes" -> mapper.toBikes((Bikes) vehicle);
-            case "cars" -> mapper.toCars((Cars) vehicle);
-            case "boats" -> mapper.toBoats((Boats) vehicle);
-            case "planes" -> mapper.toPlanes((Planes) vehicle);
+            case "bikes" -> mapper.toBikes((BikesRequestDTO) dto);
+            case "cars"  -> mapper.toCars((CarsRequestDTO) dto);
+            case "boats" -> mapper.toBoats((BoatsRequestDTO) dto);
+            case "planes"-> mapper.toPlanes((PlanesRequestDTO) dto);
             default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
     }
 
-    public List<?> manageVehicleTypeResponseDTO(String vehicleType, List<Vehicles> vehicles){
+    /**
+     * Converte uma entidade única para o DTO de resposta correspondente
+     */
+    public Object manageVehicleTypeResponseDTO(String vehicleType, List<Vehicles> vehicles){
+        if (vehicles == null) {
+            throw new IllegalArgumentException("Veículo não pode ser nulo");
+        }
+
+        return switch (vehicleType.toLowerCase()) {
+            case "bikes" -> mapper.toBikesDTO((Bikes) vehicles);
+            case "cars"  -> mapper.toCarsDTO((Cars) vehicles);
+            case "boats" -> mapper.toBoatsDTO((Boats) vehicles);
+            case "planes"-> mapper.toPlanesDTO((Planes) vehicles);
+            default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
+        };
+    }
+
+    /**
+     * Converte uma lista de entidades para a lista de DTOs correspondente
+     */
+    public List<?> manageVehicleTypeResponseDTOList(String vehicleType, List<Vehicles> vehicles){
         if (vehicles == null || vehicles.isEmpty()){
             return List.of();
         }
@@ -63,7 +84,7 @@ public class ApiMiddleware {
                     .map(Planes.class::cast)
                     .collect(Collectors.toList())
             );
-            default -> throw new IllegalArgumentException();
+            default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
     }
 }

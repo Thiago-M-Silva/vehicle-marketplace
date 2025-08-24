@@ -15,27 +15,45 @@ import org.acme.model.Boats;
 import org.acme.model.Cars;
 import org.acme.model.Planes;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "cdi")
 public interface VehicleMapper {
-
-    Bikes toBikes(Bikes vehicle);
+    // Bikes
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
     Bikes toBikes(BikesRequestDTO dto);
     BikesResponseDTO toBikesDTO(Bikes bike);
     List<BikesResponseDTO> toBikesDTOList(List<Bikes> bikes);
-    
-    Cars toCars(Cars vehicle);
+
+    // Cars
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
     Cars toCars(CarsRequestDTO dto);
-    CarsResponseDTO toCarsDTO(Cars cars);
+    CarsResponseDTO toCarsDTO(Cars car);
     List<CarsResponseDTO> toCarsDTOList(List<Cars> cars);
-    
-    Boats toBoats(Boats vehicle);
+
+    // Boats
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
     Boats toBoats(BoatsRequestDTO dto);
-    BoatsResponseDTO toBoatsDTO(Boats boats);
+    BoatsResponseDTO toBoatsDTO(Boats boat);
     List<BoatsResponseDTO> toBoatsDTOList(List<Boats> boats);
-    
-    Planes toPlanes(Planes vehicle);
+
+    // Planes
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
     Planes toPlanes(PlanesRequestDTO dto);
-    PlanesResponseDTO toPlanesDTO(Planes bike);
-    List<PlanesResponseDTO> toPlanesDTOList(List<Planes> bikes);
+    
+    PlanesResponseDTO toPlanesDTO(Planes plane);
+    List<PlanesResponseDTO> toPlanesDTOList(List<Planes> planes);
 }

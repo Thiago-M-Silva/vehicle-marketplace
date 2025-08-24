@@ -1,16 +1,22 @@
 package org.acme.controllers;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
 import org.acme.dtos.VehicleDocumentRequestDTO;
+import org.acme.dtos.VehicleSearchDTO;
+import org.acme.enums.ECategory;
+import org.acme.enums.EColors;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.VehicleService;
 import org.jboss.resteasy.reactive.MultipartForm;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -41,7 +47,7 @@ public class VehicleController {
     ) {
        try {
             List<Vehicles> vehicles = vehicleService.listAll(vehicleType);
-            List<?> responseDTOs = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
+            List<?> responseDTOs = (List<?>) apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
             return Response.ok(responseDTOs).build();
        } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -63,6 +69,22 @@ public class VehicleController {
             return Response.status(Response.Status.NOT_FOUND)
                            .entity("Vehicle not found: " + e.getMessage())
                            .build();
+        }
+    }
+
+
+    @GET
+    @Path("/search")
+    public Response search(
+        @BeanParam VehicleSearchDTO searchParams
+    ) {
+        try {
+            var vehicles = vehicleService.searchVehicle(searchParams);
+            return Response.ok(vehicles).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Searching error: " + e.getMessage())
+                        .build();
         }
     }
 
@@ -170,13 +192,6 @@ public class VehicleController {
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-    }
-
-    @PATCH
-    @Path("/patch/{vehicleType}/{id}")
-    @Transactional
-    public void setDetails(){
-
     }
 
 }
