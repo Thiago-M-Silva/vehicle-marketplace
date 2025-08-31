@@ -23,6 +23,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class VehicleService {
@@ -67,12 +68,14 @@ public class VehicleService {
         return vehicle;
     }
 
-    public int saveMultipleVehicles(String type, List<Vehicles> vehicles){
-        if (type == null || vehicles.isEmpty()) {
-            throw new IllegalArgumentException("Type or vehicles cannot be null");
+    @Transactional
+    public int saveMultipleVehicles(String type, List<Vehicles> vehicles) {
+        if (vehicles == null || vehicles.isEmpty()) {
+            throw new IllegalArgumentException("Lista de veículos não pode ser nula ou vazia");
         }
+
         var repository = getRepository(type);
-        repository.persist(vehicles);
+        vehicles.forEach(repository::persist);
         return vehicles.size();
     }
 

@@ -1,15 +1,11 @@
 package org.acme.controllers;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
 import org.acme.dtos.VehicleDocumentRequestDTO;
 import org.acme.dtos.VehicleSearchDTO;
-import org.acme.enums.ECategory;
-import org.acme.enums.EColors;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.VehicleService;
 import org.jboss.resteasy.reactive.MultipartForm;
@@ -20,7 +16,6 @@ import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -74,7 +69,7 @@ public class VehicleController {
 
 
     @GET
-    @Path("/search")
+    @Path("/get/search")
     public Response search(
         @BeanParam VehicleSearchDTO searchParams
     ) {
@@ -90,24 +85,24 @@ public class VehicleController {
 
     //TODO: maybe delete this one
     @POST
-    @Path("/{vehicleType}")
+    @Path("/save/{vehicleType}")
     @Transactional
     public Response addVehicle(
         @PathParam("vehicleType") String vehicleType, 
-        Vehicles vehicles
+        Vehicles vehicle
     ) {
         try {
-            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicles);
-            Vehicles savedVehicle = vehicleService.save(vehicleType, (Vehicles) vehicleRequestDTO);
+            var processedVehicle = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicle);
+            Vehicles savedVehicle = vehicleService.save(vehicleType, processedVehicle);
             return Response.status(Response.Status.CREATED).entity(savedVehicle).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                           .entity("Error saving vehicle: " + e.getMessage())
-                           .build();
+                      .entity("Erro ao salvar veículo: " + e.getMessage())
+                      .build();
         }
     }
 
-    //TODO: Test
+    //TODO: Test - 400 bad request
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
     @Transactional
@@ -126,7 +121,7 @@ public class VehicleController {
         }
     }
 
-    //TODO: Error 400
+    //TODO: Error 400 - Erro ao salvar veículo e documentos: Veículo não pode ser nulo
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -164,11 +159,11 @@ public class VehicleController {
 
     //TODO: TEST
     @DELETE
-    @Path("/delete/{vehicleType}/{idList}")
+    @Path("/delete/{vehicleType}")
     @Transactional
     public Response deleteManyVehicles(
         @PathParam("vehicleType") String vehicleType, 
-        @PathParam("id") List<UUID> id
+        List<UUID> id
     ) {
         try {
             vehicleService.deleteManyVehicles(vehicleType, id);

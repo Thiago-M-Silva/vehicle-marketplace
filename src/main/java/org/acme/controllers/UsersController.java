@@ -16,10 +16,12 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,14 +32,14 @@ public class UsersController {
     UserService userService;
 
     @GET
-    @RolesAllowed("admin")
+    // @RolesAllowed("admin")
     public List<UsersResponseDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GET
     @Path("/{id}")
-    @RolesAllowed("admin")
+    // @RolesAllowed("admin")
     public UsersResponseDTO getUserById(@PathParam("id") UUID id) {
         return userService.getUserById(id);
     }
@@ -51,9 +53,21 @@ public class UsersController {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed("admin")
+    // @RolesAllowed("admin")
     @Transactional
     public void deleteUser(@PathParam("id") UUID id) {
         userService.deleteUser(id);
+    }
+
+    @PUT
+    @Path("/{id}")
+    @PermitAll
+    public Response editUser(UsersRequestDTO user){
+        try {
+            userService.editUser(user);
+            return Response.ok().build();
+        } catch (Exception e) {
+           return Response.serverError().build();
+        }
     }
 }

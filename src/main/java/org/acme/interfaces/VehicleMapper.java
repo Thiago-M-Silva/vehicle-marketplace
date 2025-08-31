@@ -56,4 +56,26 @@ public interface VehicleMapper {
     
     PlanesResponseDTO toPlanesDTO(Planes plane);
     List<PlanesResponseDTO> toPlanesDTOList(List<Planes> planes);
+
+    // Adicione estes métodos para conversão reversa
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
+    BikesRequestDTO toBikesRequestDTO(Bikes bike);
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
+    CarsRequestDTO toCarsRequestDTO(Cars car);
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
+    BoatsRequestDTO toBoatsRequestDTO(Boats boat);
+    @Mappings({
+        @Mapping(target = "createDate", ignore = true),
+        @Mapping(target = "updateDate", ignore = true)
+    })
+    PlanesRequestDTO toPlanesRequestDTO(Planes plane);
 }

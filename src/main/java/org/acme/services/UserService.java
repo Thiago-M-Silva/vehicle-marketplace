@@ -5,6 +5,9 @@ import java.util.UUID;
 
 import org.acme.model.Users;
 import org.acme.repositories.UsersRepository;
+
+import io.vertx.mutiny.ext.auth.User;
+
 import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
 
@@ -40,4 +43,14 @@ public class UserService {
             usersRepository.delete(user);
         }
     }
+
+    public UsersRequestDTO editUser(UsersRequestDTO data) {
+        if (data.cpf() == null || data.cpf().isEmpty()) {
+            throw new IllegalArgumentException("User CPF cannot be null or empty");
+        }
+
+        usersRepository.update("cpf like ?1", data.cpf(), data);
+        return data;
+    }
 }
+    

@@ -20,16 +20,28 @@ public class ApiMiddleware {
     /**
      * Converte um DTO para a entidade correspondente
      */
-    public Vehicles manageVehiclesTypeRequestDTO(String vehicleType, Object dto){
-        if (dto == null) {
-            throw new IllegalArgumentException("DTO não pode ser nulo");
+    public Vehicles manageVehiclesTypeRequestDTO(String vehicleType, Object vehicle) {
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Veículo não pode ser nulo");
         }
 
         return switch (vehicleType.toLowerCase()) {
-            case "bikes" -> mapper.toBikes((BikesRequestDTO) dto);
-            case "cars"  -> mapper.toCars((CarsRequestDTO) dto);
-            case "boats" -> mapper.toBoats((BoatsRequestDTO) dto);
-            case "planes"-> mapper.toPlanes((PlanesRequestDTO) dto);
+            case "bikes" -> {
+                var dto = mapper.toBikesRequestDTO((Bikes) vehicle);
+                yield mapper.toBikes(dto);
+            }
+            case "cars" -> {
+                var dto = mapper.toCarsRequestDTO((Cars) vehicle);
+                yield mapper.toCars(dto);
+            }
+            case "boats" -> {
+                var dto = mapper.toBoatsRequestDTO((Boats) vehicle);
+                yield mapper.toBoats(dto);
+            }
+            case "planes" -> {
+                var dto = mapper.toPlanesRequestDTO((Planes) vehicle);
+                yield mapper.toPlanes(dto);
+            }
             default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
     }
@@ -86,5 +98,11 @@ public class ApiMiddleware {
             );
             default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
+    }
+
+    public List<Vehicles> manageMultipleVehiclesRequestDTO(String vehicleType, List<Vehicles> vehicles) {
+        return vehicles.stream()
+            .map(vehicle -> manageVehiclesTypeRequestDTO(vehicleType, vehicle))
+            .collect(Collectors.toList());
     }
 }
