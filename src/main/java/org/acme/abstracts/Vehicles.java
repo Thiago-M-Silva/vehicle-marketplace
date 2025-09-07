@@ -9,6 +9,7 @@ import org.acme.model.Bikes;
 import org.acme.model.Boats;
 import org.acme.model.Cars;
 import org.acme.model.Planes;
+import org.acme.model.Users;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,17 +18,22 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Abstract class representing a vehicle. This class serves as a base for all
  * vehicle types.
  */
-@MappedSuperclass
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
   include = JsonTypeInfo.As.PROPERTY,
@@ -42,6 +48,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@MappedSuperclass
 public abstract class Vehicles extends PanacheEntityBase {
 
     @Id
@@ -50,18 +59,35 @@ public abstract class Vehicles extends PanacheEntityBase {
     private String name;
     private String brand;
     private int year;
+    private String model;
+    private int horsepower;
+    private String transmissionType;
+    private String description;
+
+    private int storage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", length = 50)
+    public ECategory category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicleStatus", length = 50)
+    public EStatus vehicleStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "color", length = 50)
+    public EColors color;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fuelType", length = 50)
+    public EFuelType fuelType;
+
+    @ManyToOne
+    @JoinColumn(name = "owner", referencedColumnName = "id")
+    private Users owner;
 
     @Column(columnDefinition = "money")
     private BigDecimal price;
-    private int storage;
-
-    private String model;
-    private int horsepower;
-
-    private String transmissionType;
-    private ECategory category;
-    private EColors color;
-    private EFuelType fuelType;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -70,5 +96,4 @@ public abstract class Vehicles extends PanacheEntityBase {
     @UpdateTimestamp
     private Instant updateDate;
 
-    private String description;
 }

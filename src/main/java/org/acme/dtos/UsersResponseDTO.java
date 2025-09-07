@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.acme.enums.EUserRole;
 import org.acme.model.Users;
 
+//TODO: use mapstruct here
 public record UsersResponseDTO(
         UUID id,
         String name,
@@ -19,7 +20,7 @@ public record UsersResponseDTO(
         String cpf,
         String rg,
         LocalDate birthDate,
-        EUserRole userType
+        EUserRole userRole
 ) {
 
     public UsersResponseDTO(Users user){
@@ -36,7 +37,7 @@ public record UsersResponseDTO(
             user.getCpf(),
             user.getRg(),
             user.getBirthDate(),
-            user.getUserType()
+            user.getUserRole()
         );
     }
 }

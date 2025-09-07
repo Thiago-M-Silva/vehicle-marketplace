@@ -5,7 +5,7 @@ services:
     image: postgres:latest
     container_name: postgres-db
     environment:
-      PORTGRES_USER: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
@@ -14,18 +14,20 @@ services:
     networks:
       - database_network
 
-  mongodb:
-    image: mongo:latest
-    container_name: mongo-db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - database_network
+  # mongodb:
+  #   image: mongo:latest
+  #   container_name: mongo-db
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: mongo
+  #     MONGO_INITDB_ROOT_PASSWORD: mongo
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo_data:/data/db
+  #     - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+  #   networks:
+  #     - database_network
+  #   command: ["mongod", "rs0", "--bind_ip_all"]
 
 networks:
   database_network:
@@ -34,5 +36,5 @@ networks:
 volumes:
   postgres_data:
     driver: local
-  mongo_data:
-    driver: local
+  # mongo_data:
+  #   driver: local

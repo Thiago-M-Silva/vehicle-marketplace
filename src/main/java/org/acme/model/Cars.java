@@ -1,23 +1,25 @@
 package org.acme.model;
 
 import org.acme.abstracts.Vehicles;
-import org.acme.enums.EStatus;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "cars", schema = "mktplace")
 public class Cars extends Vehicles {
 
-    private EStatus carStatus;
-    private String carType;
+    @ManyToOne
+    @JoinColumn(name = "owner", referencedColumnName = "id")
+    private Users owner;
 }

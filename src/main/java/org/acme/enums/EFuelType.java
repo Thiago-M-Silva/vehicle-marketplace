@@ -18,5 +18,4 @@ public enum EFuelType {
     KEROSENE,
     ALCOHOL,
     GASOLINE;
-    // Add more fuel types as needed
 }

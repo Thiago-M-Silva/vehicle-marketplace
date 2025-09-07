@@ -17,6 +17,7 @@ import org.acme.repositories.BoatsRepository;
 import org.acme.repositories.CarsRepository;
 import org.acme.repositories.PlanesRepository;
 import org.acme.repositories.VehicleDocumentsRepository;
+import org.bson.types.ObjectId;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
@@ -108,12 +109,21 @@ public class VehicleService {
     }
 
     public VehicleDocuments saveDocument(UUID vehicleId, String filename, String contentType, InputStream fileStream){
-        gridFSService.uploadFile(filename, contentType, fileStream);
+        ObjectId fileObjectId = null;
+        try (InputStream is = fileStream){
+            fileObjectId = gridFSService.uploadFile(filename, contentType, is);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload document for vehicle ID: " + vehicleId, e);
+        }
         
         VehicleDocuments doc = new VehicleDocuments();
+
         doc.vehicleId = vehicleId;
         doc.fileName = filename;
         doc.contentType = contentType;
+
+        doc.id = fileObjectId.toHexString();
+        doc.uploadDate = java.time.Instant.now();
 
         repository.persist(doc);
         return doc;

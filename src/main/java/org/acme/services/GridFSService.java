@@ -3,6 +3,9 @@ package org.acme.services;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.bson.Document;
+import org.bson.types.ObjectId;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.gridfs.GridFSBucket;
@@ -23,12 +26,14 @@ public class GridFSService {
         return GridFSBuckets.create(database, "vehicleDocuments");
     }
 
-    public void uploadFile(String filename, String contentType, InputStream inputStream) {
+    public ObjectId uploadFile(String filename, String contentType, InputStream inputStream) {
         GridFSUploadOptions options = new GridFSUploadOptions()
             .chunkSizeBytes(1024 * 255) // 255 KB
-            .metadata(new org.bson.Document("contentType", contentType));
-        getBucket().uploadFromStream(filename, inputStream, options);        
+            .metadata(new Document("contentType", contentType)
+                            .append("uploadedAt", System.currentTimeMillis()));
+        return getBucket().uploadFromStream(filename, inputStream, options);        
     }
+
     public void downloadFile(String filename, OutputStream outputStream){
         getBucket().downloadToStream(filename, outputStream);
     }

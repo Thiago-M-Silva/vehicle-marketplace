@@ -7,7 +7,10 @@ import org.acme.enums.EPaymentMethods;
 import org.acme.enums.EPaymentStatus;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -24,10 +27,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "payment", schema = "mktplace")
 public class Payment extends PanacheEntityBase {
-
     @Id
     private UUID id;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "paymentMethod", length = 50)
     private EPaymentMethods paymentMethod;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "paymentStatus", length = 50)
     private EPaymentStatus paymentStatus;
     private double amount;
 

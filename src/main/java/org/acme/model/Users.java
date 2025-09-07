@@ -11,6 +11,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,11 +24,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "users", schema = "mktplace")
 public class Users {
 
@@ -44,7 +46,9 @@ public class Users {
     private String cpf;
     private String rg;
     private LocalDate birthDate;
-    private EUserRole userType;
+
+    @Enumerated(EnumType.STRING)
+    private EUserRole userRole;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -56,6 +60,22 @@ public class Users {
     @ManyToOne
     @JoinColumn(name = "transactionId")
     private Payment transaction;
+
+    @ManyToOne
+    @JoinColumn(name = "bikeId")
+    private Bikes bikes;
+
+    @ManyToOne
+    @JoinColumn(name = "boatId")
+    private Boats boats;
+
+    @ManyToOne
+    @JoinColumn(name = "carId")
+    private Cars cars;
+
+    @ManyToOne
+    @JoinColumn(name = "planeId")
+    private Planes planes;
 
     public Users(UsersRequestDTO data) {
         this.name = data.name();
@@ -69,6 +89,6 @@ public class Users {
         this.cpf = data.cpf();
         this.rg = data.rg();
         this.birthDate = data.birthDate();
-        this.userType = data.userType();
+        this.userRole = data.userRole();
     }
 }

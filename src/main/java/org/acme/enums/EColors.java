@@ -13,15 +13,7 @@ public enum EColors {
     ORANGE,
     PURPLE,
     PINK,
-    BROWN,
     GRAY,
-    CYAN,
-    MAGENTA,
-    TEAL,
-    MAROON,
-    NAVY,
-    OLIVE,
     SILVER,
     GOLD;
-    // Add more colors as needed
 }

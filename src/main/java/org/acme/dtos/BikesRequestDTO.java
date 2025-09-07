@@ -19,8 +19,7 @@ public record BikesRequestDTO(
     LocalDateTime createDate,
     LocalDateTime updateDate,
     String description,
-    int horsepower,
-    String bikeType
+    int horsepower
 ) {
 
 }

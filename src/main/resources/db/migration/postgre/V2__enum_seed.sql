@@ -1,70 +1,96 @@
-INSERT INTO mktplace.ecolors (id, color) VALUES 
-(1, 'RED'),
-(2, 'BLUE'),
-(3, 'GREEN'),
-(4, 'BLACK'),
-(5, 'WHITE'),
-(6, 'SILVER'),
-(7, 'YELLOW');
+INSERT INTO mktplace.ecolors (color) VALUES
+('RED'),
+('GREEN'),
+('BLUE'),
+('YELLOW'),
+('BLACK'),
+('WHITE'),
+('ORANGE'),
+('PURPLE'),
+('PINK'),
+('GRAY'),
+('SILVER'),
+('GOLD');
 
-INSERT INTO mktplace.evehiclecategory (id, category) VALUES 
-(1, 'SEDAN'),
-(2, 'SUV'),
-(3, 'TRUCK'),
-(4, 'MOTORCROSS'),
-(5, 'VAN'),
-(6, 'COUPE'),
-(7, 'SPORTS_BIKE'),
-(8, 'CONVERTIBLE'),
-(9, 'YATCH'),
-(10, 'SPORTS_CAR'),
-(11, 'ELECTRIC_CAR'),
-(12, 'SPEEDBOAT'),
-(13, 'LUXURY_CAR'),
-(14, 'PICKUP_TRUCK'),
-(15, 'QUAD_BIKE'),
-(16, 'MINIVAN');
+INSERT INTO  mktplace.evehiclecategory (category) values
+('HATCH'),
+('SEDAN'),
+('SUV'),
+('CROSSOVER'),
+('MINIVAN'),
+('STATION_WAGON'),
+('CUPÊ'),
+('SPORTIVE'),
+('PICKUP'),
+('VAN'),
+('TRUCK'),
+('CRUISERS'),
+('SPORTBIKES'),
+('STANDARD'),
+('ADVENTURE'),
+('DIRTBIKES'),
+('ELETRIC'),
+('CHOPPERS'),
+('TOURING'),
+('VINTAGE'),
+('SCOOTER'),
+('ELETRIC_BIKE'),
+('QUADRICYCLE'),
+('MONOCYCLE'),
+('ALUMINIUM'),
+('BOW_RIDER'),
+('CONSOLE'),
+('DAYCRUISER'),
+('PILOTHOUSE'),
+('SPEEDBOAT'),
+('JET_SKY'),
+('JET'),
+('AMPHIBIOUS'),
+('TURBOPROP'),
+('SINGLE_ENGINE'),
+('TWIN_ENGINE'),
+('HELICOPTER');
 
-INSERT INTO mktplace.efueltype (id, fuel) VALUES
-(1, 'DIESEL'),
-(2, 'ELECTRIC'),
-(3, 'HYBRID'),
-(4, 'LPG'),
-(5, 'CNG'),
-(6, 'ETHANOL'),
-(7, 'BIODIESEL'),
-(8, 'PROPANE'),
-(9, 'BUTANE'),
-(10, 'FUEL_OIL'),
-(11, 'JET_FUEL'),
-(12, 'KEROSENE'),
-(13, 'ALCOHOL'),
-(14, 'GASOLINE');
+INSERT INTO mktplace.efueltype (fuel) VALUES
+('DIESEL'),
+('ELECTRIC'),
+('HYBRID'),
+('LPG'),
+('CNG'),
+('ETHANOL'),
+('BIODIESEL'),
+('PROPANE'),
+('BUTANE'),
+('FUEL_OIL'),
+('JET_FUEL'),
+('KEROSENE'),
+('ALCOHOL'),
+('GASOLINE');
 
-INSERT INTO mktplace.epaymentmethods (id, paymentmethods) VALUES
-(1, 'CASH'),
-(2, 'CREDIT_CARD'),
-(3, 'DEBIT_CARD'),
-(4, 'PAYPAL'),
-(5, 'BANK_TRANSFER'),
-(6, 'CRYPTOCURRENCY'),
-(7, 'APPLE_PAY'),
-(8, 'GOOGLE_PAY'),
-(9, 'AMAZON_PAY'),
-(10, 'SAMSUNG_PAY');
+INSERT INTO mktplace.epaymentmethods (paymentmethods) VALUES
+('CASH'),
+('CREDIT_CARD'),
+('DEBIT_CARD'),
+('PAYPAL'),
+('BANK_TRANSFER'),
+('CRYPTOCURRENCY'),
+('APPLE_PAY'),
+('GOOGLE_PAY'),
+('AMAZON_PAY'),
+('SAMSUNG_PAY');
 
-INSERT INTO mktplace.epaymentstatus (id, paymentstatus) VALUES
-(1, 'PENDING'),
-(2, 'COMPLETED'),
-(3, 'FAILED');
+INSERT INTO mktplace.epaymentstatus (paymentstatus) VALUES
+('PENDING'),
+('COMPLETED'),
+('FAILED');
 
-INSERT INTO mktplace.evehiclestatus (id, vehiclestatus) VALUES
-(1, 'NEW'),
-(2, 'USED'),
-(3, 'REFORMED'),
-(4, 'DAMAGED');
+INSERT INTO mktplace.evehiclestatus (vehiclestatus) VALUES
+('NEW'),
+('USED'),
+('REFORMED'),
+('DAMAGED');
 
-INSERT INTO mktplace.euserrole (id, role) VALUES
-(1, 'ADMIN'),
-(2, 'CLIENT'),
-(3, 'TECHNICIAN');
+INSERT INTO mktplace.euserrole (userRole) VALUES
+('ADMIN'),
+('CLIENT'),
+('TECHNICIAN');

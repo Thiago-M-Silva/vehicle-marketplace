@@ -19,7 +19,7 @@ public record UsersRequestDTO(
     LocalDate birthDate,
     Date createDate,
     Date updateDate,
-    EUserRole userType
+    EUserRole userRole
 ) {
 
 }
