@@ -27,6 +27,10 @@ public class GridFSService {
     }
 
     public ObjectId uploadFile(String filename, String contentType, InputStream inputStream) {
+        if (inputStream == null) {
+            throw new IllegalArgumentException("uploadFile - InputStream não pode ser nulo");            
+        }
+        
         GridFSUploadOptions options = new GridFSUploadOptions()
             .chunkSizeBytes(1024 * 255) // 255 KB
             .metadata(new Document("contentType", contentType)

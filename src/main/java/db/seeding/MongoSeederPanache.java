@@ -53,36 +53,52 @@ public class MongoSeederPanache {
                 Planes planes = planesRepository.find("name", "Boeing 747").firstResult();
                 
                 if (bikes != null) {
-                    try (InputStream is = getClass().getResourceAsStream("db/seeding/files/motobike.jpg")) {
-                        VehicleDocuments bikeFileId = vehicleService.saveDocument(bikes.getId(), "motobike.jpg", "image/jpeg", is);
-                        System.out.println("Uploaded bike image with ID: " + bikeFileId);
+                    try (InputStream is = getClass().getResourceAsStream("/files/bike.jpg")) {
+                        if (is != null) {
+                            VehicleDocuments bikeFileId = vehicleService.saveDocument(bikes.getId(), "bike.jpg", "image/jpg", is);
+                            System.out.println("Uploaded bike image with ID: " + bikeFileId);
+                        } else {
+                            System.err.println("Resource not found: /files/bike.jpg");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 if (boats != null) {
-                    try (InputStream is = getClass().getResourceAsStream("db/seeding/files/boat.jpg")) {
-                        VehicleDocuments boatFileId = vehicleService.saveDocument(boats.getId(), "boat.jpg", "image/jpeg", is);
-                        System.out.println("Uploaded boat image with ID: " + boatFileId);
+                    try (InputStream is = getClass().getResourceAsStream("/files/boat.jpg")) {
+                        if (is != null) {
+                            VehicleDocuments boatFileId = vehicleService.saveDocument(boats.getId(), "boat.jpg", "image/jpg", is);
+                            System.out.println("Uploaded boat image with ID: " + boatFileId);
+                        } else {
+                            System.err.println("Resource not found: /files/boat.jpg");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 if (cars != null) {
-                    try (InputStream is = getClass().getResourceAsStream("db/seeding/files/car.jpg")) {
-                        VehicleDocuments carFileId = vehicleService.saveDocument(cars.getId(), "car.jpg", "image/jpeg", is);
-                        System.out.println("Uploaded car image with ID: " + carFileId);
+                    try (InputStream is = getClass().getResourceAsStream("/files/car.jpg")) {
+                        if (is != null) {
+                            VehicleDocuments carFileId = vehicleService.saveDocument(cars.getId(), "car.jpg", "image/jpg", is);
+                            System.out.println("Uploaded car image with ID: " + carFileId);
+                        } else {
+                            System.err.println("Resource not found: /files/car.jpg");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
 
                 if (planes != null) {
-                    try (InputStream is = getClass().getResourceAsStream("db/seeding/files/plane.jpg")) {
-                        VehicleDocuments planeFileId = vehicleService.saveDocument(planes.getId(), "plane.jpg", "image/jpeg", is);
-                        System.out.println("Uploaded plane image with ID: " + planeFileId);
+                    try (InputStream is = getClass().getResourceAsStream("/files/plane.jpeg")) { 
+                        if (is != null) {
+                            VehicleDocuments planeFileId = vehicleService.saveDocument(planes.getId(), "plane.jpg", "image/jpeg", is);
+                            System.out.println("Uploaded plane image with ID: " + planeFileId);
+                        } else {
+                            System.err.println("Resource not found: /files/plane.jpg");
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
