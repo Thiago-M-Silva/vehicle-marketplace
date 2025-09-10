@@ -10,7 +10,10 @@ import org.acme.abstracts.Vehicles;
 import org.acme.dtos.VehicleSearchDTO;
 import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
+import org.acme.enums.EFuelType;
+import org.acme.enums.EStatus;
 import org.acme.middlewares.ApiMiddleware;
+import org.acme.model.Users;
 import org.acme.model.VehicleDocuments;
 import org.acme.repositories.BikesRepository;
 import org.acme.repositories.BoatsRepository;
@@ -154,7 +157,6 @@ public class VehicleService {
         return vehicle;
     }
 
-    //TODO: Adaptar para todos os parametros do banco de dados
     public <T extends Vehicles> T searchVehicle(
         VehicleSearchDTO searchParams
     ){
@@ -193,13 +195,19 @@ public class VehicleService {
             query.append(" AND color = :color");
             params.put("color", EColors.valueOf(searchParams.getColor().toUpperCase()));
         }
+        if (searchParams.getFuelType() != null && !searchParams.getFuelType().isBlank()) {
+            query.append(" AND fuelType = :fuelType");
+            params.put("fuelType", EFuelType.valueOf(searchParams.getFuelType().toUpperCase()));
+        }
+        if (searchParams.getVehicleStatus() != null && !searchParams.getVehicleStatus().isBlank()) {
+            query.append(" AND vehicleStatus = :vehicleStatus");
+            params.put("vehicleStatus", EStatus.valueOf(searchParams.getVehicleStatus().toUpperCase()));
+        }
 
-        // Sorting
         Sort sort = searchParams.getDirection().equalsIgnoreCase("DESC")
                 ? Sort.descending(searchParams.getSortBy())
                 : Sort.ascending(searchParams.getSortBy());
 
-        // Execute query with pagination
         var vehicles = Vehicles.find(query.toString(), sort, params)
                                .page(Page.of(searchParams.getPage(), searchParams.getSize()))
                                .list();

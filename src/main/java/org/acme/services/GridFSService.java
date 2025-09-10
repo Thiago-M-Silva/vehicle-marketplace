@@ -38,8 +38,8 @@ public class GridFSService {
         return getBucket().uploadFromStream(filename, inputStream, options);        
     }
 
-    public void downloadFile(String filename, OutputStream outputStream){
-        getBucket().downloadToStream(filename, outputStream);
+    public void downloadFile(String vehicleId, OutputStream outputStream){
+        getBucket().downloadToStream(vehicleId, outputStream);
     }
     
     public void deleteFile(String fileId) {

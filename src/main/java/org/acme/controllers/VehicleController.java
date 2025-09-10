@@ -1,5 +1,6 @@
 package org.acme.controllers;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -7,6 +8,7 @@ import org.acme.abstracts.Vehicles;
 import org.acme.dtos.VehicleDocumentRequestDTO;
 import org.acme.dtos.VehicleSearchDTO;
 import org.acme.middlewares.ApiMiddleware;
+import org.acme.services.GridFSService;
 import org.acme.services.VehicleService;
 import org.jboss.resteasy.reactive.MultipartForm;
 
@@ -28,12 +30,9 @@ import jakarta.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class VehicleController {
-
-    @Inject
-    VehicleService vehicleService;
-
-    @Inject
-    ApiMiddleware apiMiddleware;
+    @Inject VehicleService vehicleService;
+    @Inject ApiMiddleware apiMiddleware;
+    @Inject GridFSService gridFSService;
 
     @GET
     @Path("/get/{vehicleType}")
@@ -52,6 +51,18 @@ public class VehicleController {
     }
 
     @GET
+    @Path("/download/{vehicleId}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response download(@PathParam("vehicleId") String vehicleId){
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        gridFSService.downloadFile(vehicleId, outputStream);
+        
+        return Response.ok(outputStream.toByteArray())
+            .header("Content-Disposition", "attachment; filename=\"" + vehicleId + "\"")
+            .build();
+    }
+
+    @GET
     @Path("/get/{vehicleType}/{id}")
     public Response getVehiclesById(
         @PathParam("vehicleType") String vehicleType, 
@@ -66,7 +77,6 @@ public class VehicleController {
                            .build();
         }
     }
-
 
     @GET
     @Path("/get/search")
@@ -83,26 +93,6 @@ public class VehicleController {
         }
     }
 
-    //TODO: maybe delete this one
-    @POST
-    @Path("/save/{vehicleType}")
-    @Transactional
-    public Response addVehicle(
-        @PathParam("vehicleType") String vehicleType, 
-        Vehicles vehicle
-    ) {
-        try {
-            var processedVehicle = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicle);
-            Vehicles savedVehicle = vehicleService.save(vehicleType, processedVehicle);
-            return Response.status(Response.Status.CREATED).entity(savedVehicle).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                      .entity("Erro ao salvar veículo: " + e.getMessage())
-                      .build();
-        }
-    }
-
-    //TODO: Test - 400 bad request
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
     @Transactional
@@ -121,7 +111,6 @@ public class VehicleController {
         }
     }
 
-    //TODO: Error 400 - Erro ao salvar veículo e documentos: Veículo não pode ser nulo
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -157,7 +146,6 @@ public class VehicleController {
         }
     }
 
-    //TODO: TEST
     @DELETE
     @Path("/delete/{vehicleType}")
     @Transactional

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.acme.abstracts.Vehicles;
-import org.acme.dtos.*;
 import org.acme.model.*;
 import org.acme.interfaces.VehicleMapper;
 
@@ -105,4 +104,6 @@ public class ApiMiddleware {
             .map(vehicle -> manageVehiclesTypeRequestDTO(vehicleType, vehicle))
             .collect(Collectors.toList());
     }
+
+    public void convertUsers(){}
 }
