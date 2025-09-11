@@ -13,7 +13,6 @@ import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
 import org.acme.middlewares.ApiMiddleware;
-import org.acme.model.Users;
 import org.acme.model.VehicleDocuments;
 import org.acme.repositories.BikesRepository;
 import org.acme.repositories.BoatsRepository;

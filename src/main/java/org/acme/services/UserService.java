@@ -6,10 +6,9 @@ import java.util.UUID;
 import org.acme.model.Users;
 import org.acme.repositories.UsersRepository;
 
-import io.vertx.mutiny.ext.auth.User;
-
 import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
+import org.acme.interfaces.UserMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,23 +17,22 @@ import jakarta.inject.Inject;
 public class UserService {
 
     @Inject UsersRepository usersRepository;
+    @Inject UserMapper userMapper;
 
     public Users createUser(UsersRequestDTO data) {
-        Users user = new Users(data);
+        Users user = userMapper.toUser(data);
         usersRepository.persist(user);
         return user;
     }
 
     public List<UsersResponseDTO> getAllUsers() {
         List<Users> users = usersRepository.listAll();
-        return users.stream()
-                .map(UsersResponseDTO::new)
-                .toList();
+        return userMapper.toUserDTOList(users);
     }
 
     public UsersResponseDTO getUserById(UUID id) {
-        Users user =  usersRepository.findById(id);
-        return user != null ? new UsersResponseDTO(user) : null;
+        Users user = usersRepository.findById(id);
+        return user != null ? userMapper.toUserDTO(user) : null;
     }
 
     public void deleteUser(UUID id) {
@@ -49,8 +47,17 @@ public class UserService {
             throw new IllegalArgumentException("User CPF cannot be null or empty");
         }
 
-        usersRepository.update("cpf like ?1", data.cpf(), data);
+        // careful here: Panache update doesn’t auto-map DTOs!
+        // Safer pattern: find entity, update fields via mapper, then persist
+        Users user = usersRepository.find("cpf", data.cpf()).firstResult();
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with CPF: " + data.cpf());
+        }
+
+        // update existing entity with mapper
+        userMapper.updateUserFromDTO(data, user); // <-- needs @MappingTarget method
+        usersRepository.persist(user);
+
         return data;
     }
 }
-    
