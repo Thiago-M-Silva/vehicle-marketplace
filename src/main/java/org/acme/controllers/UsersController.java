@@ -99,7 +99,7 @@ public class UsersController {
     @PermitAll
     public Response editUser(@PathParam("id") UUID id, UsersRequestDTO user){
         try {
-            userService.editUser(user);
+            userService.editUser(id, user);
             return Response.ok().build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)

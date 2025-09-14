@@ -2,9 +2,10 @@ package org.acme.model;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
-import org.acme.dtos.UsersRequestDTO;
+// import org.acme.dtos.UsersRequestDTO;
 import org.acme.enums.EUserRole;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,6 +19,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,34 +63,30 @@ public class Users {
     @JoinColumn(name = "transactionId")
     private Payment transaction;
 
-    @ManyToOne
-    @JoinColumn(name = "bikeId")
-    private Bikes bikes;
+    @OneToMany(mappedBy = "owner")
+    private List<Bikes> bikes;
 
-    @ManyToOne
-    @JoinColumn(name = "boatId")
-    private Boats boats;
+    @OneToMany(mappedBy = "owner")
+    private List<Boats> boats;
 
-    @ManyToOne
-    @JoinColumn(name = "carId")
-    private Cars cars;
+    @OneToMany(mappedBy = "owner")
+    private List<Cars> cars;
 
-    @ManyToOne
-    @JoinColumn(name = "planeId")
-    private Planes planes;
+    @OneToMany(mappedBy = "owner")
+    private List<Planes> planes;
 
-    public Users(UsersRequestDTO data) {
-        this.name = data.name();
-        this.email = data.email();
-        this.password = data.password();
-        this.phoneNumber = data.phoneNumber();
-        this.address = data.address();
-        this.city = data.city();
-        this.state = data.state();
-        this.country = data.country();
-        this.cpf = data.cpf();
-        this.rg = data.rg();
-        this.birthDate = data.birthDate();
-        this.userRole = data.userRole();
-    }
+    // public Users(UsersRequestDTO data) {
+    //     this.name = data.name();
+    //     this.email = data.email();
+    //     this.password = data.password();
+    //     this.phoneNumber = data.phoneNumber();
+    //     this.address = data.address();
+    //     this.city = data.city();
+    //     this.state = data.state();
+    //     this.country = data.country();
+    //     this.cpf = data.cpf();
+    //     this.rg = data.rg();
+    //     this.birthDate = data.birthDate();
+    //     this.userRole = data.userRole();
+    // }
 }

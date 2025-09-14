@@ -12,6 +12,7 @@ import org.acme.interfaces.UserMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class UserService {
@@ -42,19 +43,22 @@ public class UserService {
         }
     }
 
-    public UsersRequestDTO editUser(UsersRequestDTO data) {
+    @Transactional
+    public UsersResponseDTO editUser(UUID id, UsersRequestDTO data) {
         if (data.cpf() == null || data.cpf().isEmpty()) {
             throw new IllegalArgumentException("User CPF cannot be null or empty");
         }
 
-        Users user = usersRepository.find("cpf", data.cpf()).firstResult();
+        Users user = usersRepository.findById(id);
         if (user == null) {
-            throw new IllegalArgumentException("User not found with CPF: " + data.cpf());
+            throw new IllegalArgumentException("User not found with id: " + id);
         }
 
+        // update fields using MapStruct
         userMapper.updateUserFromDTO(data, user);
-        usersRepository.persist(user);
 
-        return data;
+        // Panache automatically tracks changes, no need to persist()
+        return userMapper.toUserDTO(user);
     }
+
 }

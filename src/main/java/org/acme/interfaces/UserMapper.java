@@ -11,28 +11,41 @@ import org.acme.model.Users;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "cdi")
 public interface UserMapper {
-   @Mappings({
-        @Mapping(target = "bikes", ignore = true),
-        @Mapping(target = "boats", ignore = true),
-        @Mapping(target = "planes", ignore = true)
-    })
-    Users toUser(UsersRequestDTO dto);
 
-    @Mappings({
-        @Mapping(target = "bike", ignore = true),
-        @Mapping(target = "boat", ignore = true),
-        @Mapping(target = "plane", ignore = true)
-    })
+    // DTO → Entity
+    @Mapping(target = "bikes", ignore = true)
+    @Mapping(target = "boats", ignore = true)
+    @Mapping(target = "planes", ignore = true)
+    @Mapping(target = "cars", ignore = true)
+    @Mapping(target = "transaction", ignore = true)
+    @Mapping(target = "createDate", ignore = true)
+    @Mapping(target = "updateDate", ignore = true)
+    Users toUser(UsersRequestDTO dto);
+    
+    // Entity → DTO
+    @Mapping(target = "bike", ignore = true)
+    @Mapping(target = "boat", ignore = true)
+    @Mapping(target = "plane", ignore = true)
+    @Mapping(target = "cars", ignore = true)
     UsersResponseDTO toUserDTO(Users user);
+
+    // List<Entity> → List<DTO>
     List<UsersResponseDTO> toUserDTOList(List<Users> users);
 
-    // for partial updates
+    // Partial update (keeps entity fields not present in DTO)
+    @Mapping(target = "bikes", ignore = true)
+    @Mapping(target = "boats", ignore = true)
+    @Mapping(target = "planes", ignore = true)
+    @Mapping(target = "cars", ignore = true)
+    @Mapping(target = "transaction", ignore = true)
+    @Mapping(target = "createDate", ignore = true)
+    @Mapping(target = "updateDate", ignore = true)
     void updateUserFromDTO(UsersRequestDTO dto, @MappingTarget Users entity);
 
+    // Type conversions
     default LocalDateTime map(Instant instant) {
         return instant == null ? null : LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
@@ -41,3 +54,4 @@ public interface UserMapper {
         return localDateTime == null ? null : localDateTime.atZone(ZoneId.systemDefault()).toInstant();
     }
 }
+
