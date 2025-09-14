@@ -51,7 +51,7 @@ public class VehicleController {
     }
 
     @GET
-    @Path("/download/{vehicleId}")
+    @Path("/get/download/{vehicleId}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response download(@PathParam("vehicleId") String vehicleId){
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -142,7 +142,9 @@ public class VehicleController {
             vehicleService.deleteById(vehicleType, id);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Error deleting vehicle: " + e.getMessage())
+                           .build();
         }
     }
 
@@ -157,7 +159,9 @@ public class VehicleController {
             vehicleService.deleteManyVehicles(vehicleType, id);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Error deleting vehicle: " + e.getMessage())
+                           .build();
         }
     }
 
@@ -173,7 +177,9 @@ public class VehicleController {
             vehicleService.editVehicleInfo(vehicleType, id, vehicle);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Error editing vehicle: " + e.getMessage())
+                           .build();
         }
     }
 

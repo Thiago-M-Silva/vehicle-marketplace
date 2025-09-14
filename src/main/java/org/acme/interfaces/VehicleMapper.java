@@ -73,6 +73,7 @@ public interface VehicleMapper {
         @Mapping(target = "updateDate", ignore = true)
     })
     BoatsRequestDTO toBoatsRequestDTO(Boats boat);
+    
     @Mappings({
         @Mapping(target = "createDate", ignore = true),
         @Mapping(target = "updateDate", ignore = true)

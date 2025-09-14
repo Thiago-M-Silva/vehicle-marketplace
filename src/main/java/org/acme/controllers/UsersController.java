@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
-import org.acme.model.Users;
 import org.acme.services.UserService;
 
 import jakarta.annotation.security.PermitAll;
@@ -28,46 +27,84 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UsersController {
 
-    @Inject
-    UserService userService;
+    @Inject UserService userService;
 
     @GET
+    @Path("/get")
     // @RolesAllowed("admin")
-    public List<UsersResponseDTO> getAllUsers() {
-        return userService.getAllUsers();
+    public Response getAllUsers() {
+        try {
+            List<UsersResponseDTO> users = userService.getAllUsers();
+            return Response.ok(users).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                           .entity("Error retrieving users: " + e.getMessage())
+                           .build();
+        }
     }
 
+    //TOFIX: 
     @GET
-    @Path("/{id}")
+    @Path("/get/{id}")
     // @RolesAllowed("admin")
-    public UsersResponseDTO getUserById(@PathParam("id") UUID id) {
-        return userService.getUserById(id);
+    public Response getUserById(@PathParam("id") UUID id) {
+        try {
+            UsersResponseDTO user = userService.getUserById(id);
+            if (user != null) {
+                return Response.ok(user).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                               .entity("User not found with ID: " + id)
+                               .build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                           .entity("Error retrieving user: " + e.getMessage())
+                           .build();
+        }
     }
 
     @POST
     @Transactional
+    @Path("/save")
     @PermitAll
-    public Users addUser(UsersRequestDTO data) {
-        return userService.createUser(data);
+    public Response addUser(UsersRequestDTO data) {
+        try {
+            UsersResponseDTO createdUser = userService.createUser(data);
+            return Response.status(Response.Status.CREATED).entity(createdUser).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                           .entity("Error creating user: " + e.getMessage())
+                           .build();
+        }
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/delete/{id}")
     // @RolesAllowed("admin")
     @Transactional
-    public void deleteUser(@PathParam("id") UUID id) {
-        userService.deleteUser(id);
+    public Response deleteUser(@PathParam("id") UUID id) {
+        try {
+            userService.deleteUser(id);
+            return Response.noContent().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Error deleting user: " + e.getMessage())
+                           .build();
+        }
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/put/{id}")
     @PermitAll
-    public Response editUser(UsersRequestDTO user){
+    public Response editUser(@PathParam("id") UUID id, UsersRequestDTO user){
         try {
             userService.editUser(user);
             return Response.ok().build();
         } catch (Exception e) {
-           return Response.serverError().build();
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Error editing user: " + e.getMessage())
+                           .build();
         }
     }
 }

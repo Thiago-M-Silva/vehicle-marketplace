@@ -19,10 +19,10 @@ public class UserService {
     @Inject UsersRepository usersRepository;
     @Inject UserMapper userMapper;
 
-    public Users createUser(UsersRequestDTO data) {
+    public UsersResponseDTO createUser(UsersRequestDTO data) {
         Users user = userMapper.toUser(data);
         usersRepository.persist(user);
-        return user;
+        return userMapper.toUserDTO(user);
     }
 
     public List<UsersResponseDTO> getAllUsers() {
@@ -47,15 +47,12 @@ public class UserService {
             throw new IllegalArgumentException("User CPF cannot be null or empty");
         }
 
-        // careful here: Panache update doesn’t auto-map DTOs!
-        // Safer pattern: find entity, update fields via mapper, then persist
         Users user = usersRepository.find("cpf", data.cpf()).firstResult();
         if (user == null) {
             throw new IllegalArgumentException("User not found with CPF: " + data.cpf());
         }
 
-        // update existing entity with mapper
-        userMapper.updateUserFromDTO(data, user); // <-- needs @MappingTarget method
+        userMapper.updateUserFromDTO(data, user);
         usersRepository.persist(user);
 
         return data;
