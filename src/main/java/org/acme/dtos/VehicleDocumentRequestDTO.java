@@ -7,6 +7,8 @@ import org.acme.abstracts.Vehicles;
 import jakarta.ws.rs.FormParam;
 
 public class VehicleDocumentRequestDTO {
+    //FIXME here is the problem with multipart
+    // @FormParam("vehicle")
     public Vehicles vehicles;
     
     @FormParam("file")

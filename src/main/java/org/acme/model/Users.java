@@ -59,6 +59,10 @@ public class Users {
     @UpdateTimestamp
     private Instant updateDate;
 
+    // 🔹 Stripe field
+    @Column(name = "stripe_account_id")
+    private String stripeAccountId;
+
     @ManyToOne
     @JoinColumn(name = "transactionId")
     private Payment transaction;
@@ -75,18 +79,4 @@ public class Users {
     @OneToMany(mappedBy = "owner")
     private List<Planes> planes;
 
-    // public Users(UsersRequestDTO data) {
-    //     this.name = data.name();
-    //     this.email = data.email();
-    //     this.password = data.password();
-    //     this.phoneNumber = data.phoneNumber();
-    //     this.address = data.address();
-    //     this.city = data.city();
-    //     this.state = data.state();
-    //     this.country = data.country();
-    //     this.cpf = data.cpf();
-    //     this.rg = data.rg();
-    //     this.birthDate = data.birthDate();
-    //     this.userRole = data.userRole();
-    // }
 }

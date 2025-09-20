@@ -17,8 +17,9 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class UserService {
 
-    @Inject UsersRepository usersRepository;
     @Inject UserMapper userMapper;
+    @Inject StripeService stripeService;
+    @Inject UsersRepository usersRepository;
 
     public UsersResponseDTO createUser(UsersRequestDTO data) {
         Users user = userMapper.toUser(data);
@@ -61,4 +62,34 @@ public class UserService {
         return userMapper.toUserDTO(user);
     }
 
+    public UsersResponseDTO onboardSeller(UUID userId) throws Exception {
+        Users user = usersRepository.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with id: " + userId);
+        }
+
+        if(user.getStripeAccountId() != null) {
+            return userMapper.toUserDTO(user); 
+        }
+
+        String accountId = stripeService.createConnectedAccount(user.getEmail());
+
+        user.setStripeAccountId(accountId);
+        usersRepository.persist(user);
+
+        return userMapper.toUserDTO(user);
+    }
+
+    public String generateOnboardingLink(UUID userId) throws Exception {
+        Users user = usersRepository.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with id: " + userId);
+        }
+
+        if (user.getStripeAccountId() == null) {
+            throw new IllegalStateException("User does not have a Stripe account. Please onboard first.");
+        }
+
+        return stripeService.generateOnboardingLink(user.getStripeAccountId());
+    }
 }

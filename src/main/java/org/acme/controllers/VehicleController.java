@@ -112,6 +112,25 @@ public class VehicleController {
     }
 
     @POST
+    @Path("/save/{vehicleType}")
+    @Transactional
+    public Response addVehicle(
+        @PathParam("vehicleType") String vehicleType, 
+        Vehicles vehicles
+    ) {
+        try {
+            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicles);
+            Vehicles savedVehicle = vehicleService.save(vehicleType, (Vehicles) vehicleRequestDTO);
+            return Response.status(Response.Status.CREATED).entity(savedVehicle).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("Error saving vehicle: " + e.getMessage())
+                           .build();
+        }
+    }
+
+    //FIXME: Find a way to send a multipart form data with a json object inside
+    @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Transactional
