@@ -2,7 +2,6 @@ package org.acme.services;
 
 import java.util.UUID;
 
-import org.acme.abstracts.Vehicles;
 import org.acme.model.Users;
 import org.acme.repositories.UsersRepository;
 

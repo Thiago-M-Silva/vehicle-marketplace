@@ -2,11 +2,6 @@ package org.acme.dtos;
 
 import java.math.BigDecimal;
 
-import org.acme.enums.ECategory;
-import org.acme.enums.EFuelType;
-import org.acme.enums.EStatus;
-import org.acme.model.Users;
-
 import jakarta.ws.rs.QueryParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;

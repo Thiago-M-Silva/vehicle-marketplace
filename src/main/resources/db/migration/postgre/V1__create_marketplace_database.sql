@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS mktPlace.users (
     rg VARCHAR(15),
     state VARCHAR(50),
     userRole VARCHAR(60),
+    stripe_account_id VARCHAR(60),
     transactionId UUID,
     createdate TIMESTAMPTZ,
     updatedate TIMESTAMPTZ,

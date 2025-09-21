@@ -1,6 +1,7 @@
 package org.acme.dtos;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.acme.enums.EUserRole;
@@ -17,10 +18,11 @@ public record UsersResponseDTO(
     String country,
     String cpf,
     String rg,
-    BikesResponseDTO bike,
-    BoatsResponseDTO boat,
-    CarsRequestDTO cars,
-    PlanesResponseDTO plane,
+    String stripeAccountId,
+    List<BikesResponseDTO> bikes,
+    List<BoatsResponseDTO> boats,
+    List<CarsResponseDTO> cars,
+    List<PlanesResponseDTO> planes,
     LocalDate birthDate,
     EUserRole userRole
 ) {

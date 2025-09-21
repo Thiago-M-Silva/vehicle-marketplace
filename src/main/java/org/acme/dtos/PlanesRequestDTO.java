@@ -1,7 +1,5 @@
 package org.acme.dtos;
 
-import java.time.LocalDateTime;
-
 import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
@@ -12,15 +10,16 @@ public record PlanesRequestDTO(
     String brand, 
     int year,
     float price,
-    EStatus status,
+    String model,
+    int horsepower,
+    String transmissionType,
+    String description,
+    int storage,
+    EStatus vehicleStatus,
     ECategory category,
     EColors color,
     EFuelType fuelType,
-    LocalDateTime createDate,
-    LocalDateTime updateDate,
-    String description,
-    int horsepower,
-    String planeType
+    UsersResponseDTO owner
 ) {
 
 }

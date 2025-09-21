@@ -13,6 +13,7 @@ import org.acme.model.Users;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -87,6 +88,7 @@ public abstract class Vehicles extends PanacheEntityBase {
     private Users owner;
 
     @Column(columnDefinition = "money")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal price;
 
     @CreationTimestamp

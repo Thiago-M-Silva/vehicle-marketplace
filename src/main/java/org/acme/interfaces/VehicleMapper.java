@@ -18,65 +18,77 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "cdi")
+import java.math.BigDecimal;
+@Mapper(
+    componentModel = "jakarta",
+    uses = { UserMapper.class } 
+)
 public interface VehicleMapper {
-    // Bikes
-    @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
-    })
-    Bikes toBikes(BikesRequestDTO dto);
-    BikesResponseDTO toBikesDTO(Bikes bike);
-    List<BikesResponseDTO> toBikesDTOList(List<Bikes> bikes);
 
-    // Cars
+    // ====== Cars ======
     @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
+        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
     })
     Cars toCars(CarsRequestDTO dto);
+
     CarsResponseDTO toCarsDTO(Cars car);
+
     List<CarsResponseDTO> toCarsDTOList(List<Cars> cars);
 
-    // Boats
+    CarsRequestDTO toCarsRequestDTO(Cars car);
+
+    List<CarsRequestDTO> toCarsRequestDTO(List<Cars> cars);
+
+    // ====== Bikes ======
     @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
+        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
+    })
+    Bikes toBikes(BikesRequestDTO dto);
+
+    BikesResponseDTO toBikesDTO(Bikes bike);
+
+    List<BikesResponseDTO> toBikesDTOList(List<Bikes> bikes);
+
+    BikesRequestDTO toBikesRequestDTO(Bikes bike);
+
+    List<BikesRequestDTO> toBikesRequestDTO(List<Bikes> bikes);
+
+    // ====== Boats ======
+    @Mappings({
+        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
     })
     Boats toBoats(BoatsRequestDTO dto);
-    BoatsResponseDTO toBoatsDTO(Boats boat);
-    List<BoatsResponseDTO> toBoatsDTOList(List<Boats> boats);
 
-    // Planes
+    BoatsResponseDTO toBoatsDTO(Boats boat);
+
+    List<BoatsResponseDTO> toBoatsDTOList(List<Boats> boats);
+    
+    BoatsRequestDTO toBoatsRequestDTO(Boats boat);
+
+    List<BoatsRequestDTO> toBoatsRequestDTO(List<Boats> boats);
+
+    // ====== Planes ======
     @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
+        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
     })
     Planes toPlanes(PlanesRequestDTO dto);
-    
+
     PlanesResponseDTO toPlanesDTO(Planes plane);
+
     List<PlanesResponseDTO> toPlanesDTOList(List<Planes> planes);
 
-    // Adicione estes métodos para conversão reversa
-    @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
-    })
-    BikesRequestDTO toBikesRequestDTO(Bikes bike);
-    @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
-    })
-    CarsRequestDTO toCarsRequestDTO(Cars car);
-    @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
-    })
-    BoatsRequestDTO toBoatsRequestDTO(Boats boat);
-    
-    @Mappings({
-        @Mapping(target = "createDate", ignore = true),
-        @Mapping(target = "updateDate", ignore = true)
-    })
     PlanesRequestDTO toPlanesRequestDTO(Planes plane);
+
+    List<PlanesRequestDTO> toPlanesRequestDTO(List<Planes> planes);
+
+    // ====== Converters ======
+    // Fix BigDecimal <-> float mismatch
+    default float map(BigDecimal value) {
+        return value == null ? 0f : value.floatValue();
+    }
+
+    default BigDecimal map(float value) {
+        return BigDecimal.valueOf(value);
+    }
 }
+

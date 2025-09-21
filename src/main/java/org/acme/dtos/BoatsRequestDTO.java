@@ -1,6 +1,6 @@
 package org.acme.dtos;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
@@ -11,18 +11,17 @@ public record BoatsRequestDTO(
     String name, 
     String brand, 
     int year,
-    float price,
-    EStatus status,
+    BigDecimal price,
+    String model,
+    int horsepower,
+    String transmissionType,
+    String description,
+    int storage,
+    EStatus vehicleStatus,
     ECategory category,
     EColors color,
     EFuelType fuelType,
-    LocalDateTime createDate,
-    LocalDateTime updateDate,
-    String description,
-    int horsepower,
-    String model,
-    String engineType,
-    String transmissionType,
+    UsersResponseDTO owner,
     int numberOfCabins
 ) {
 

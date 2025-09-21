@@ -13,6 +13,7 @@ import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
+//TODO: handle the webhook events properly
 @Path("/webhook")
 public class StripeWebhookResource {
     private static final String ENDPOINT_SECRET = "";

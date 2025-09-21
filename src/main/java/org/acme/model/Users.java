@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-// import org.acme.dtos.UsersRequestDTO;
 import org.acme.enums.EUserRole;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

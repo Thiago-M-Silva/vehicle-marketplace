@@ -13,7 +13,6 @@ import org.acme.services.VehicleService;
 import org.jboss.resteasy.reactive.MultipartForm;
 
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -95,7 +94,6 @@ public class VehicleController {
 
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
-    @Transactional
     public Response saveAllVehicles(
         @PathParam("vehicleType") String vehicleType, 
         List<Vehicles> vehicles
@@ -113,7 +111,6 @@ public class VehicleController {
 
     @POST
     @Path("/save/{vehicleType}")
-    @Transactional
     public Response addVehicle(
         @PathParam("vehicleType") String vehicleType, 
         Vehicles vehicles
@@ -133,7 +130,6 @@ public class VehicleController {
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Transactional
     public Response saveVehicleWithDocs(
         @PathParam("vehicleType") String vehicleType,
         @MultipartForm VehicleDocumentRequestDTO data
@@ -152,7 +148,6 @@ public class VehicleController {
 
     @DELETE
     @Path("/delete/{vehicleType}/{id}")
-    @Transactional
     public Response deleteVehicle(
         @PathParam("vehicleType") String vehicleType, 
         @PathParam("id") UUID id
@@ -169,7 +164,6 @@ public class VehicleController {
 
     @DELETE
     @Path("/delete/{vehicleType}")
-    @Transactional
     public Response deleteManyVehicles(
         @PathParam("vehicleType") String vehicleType, 
         List<UUID> id
@@ -186,7 +180,6 @@ public class VehicleController {
 
     @PUT
     @Path("/edit/{vehicleType}/{id}")
-    @Transactional
     public Response editVehicle(
         @PathParam("vehicleType") String vehicleType,
         @PathParam("id") UUID id,

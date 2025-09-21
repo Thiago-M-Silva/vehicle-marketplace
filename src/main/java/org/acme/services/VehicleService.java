@@ -62,6 +62,25 @@ public class VehicleService {
         };
     }
 
+    public List<Vehicles> listAll(String type) {
+        try {
+            List<Vehicles> vehicles = getRepository(type).listAll();
+            return vehicles;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to list vehicles for type: " + type, e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Vehicles> T findById(String type, UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+        var repository = getRepository(type);
+        return (T) repository.findById(id);
+    }
+
+    @Transactional
     public <T extends Vehicles> T save(String type, T vehicle) {
         if (vehicle == null) {
             throw new IllegalArgumentException("Vehicle cannot be null");
@@ -82,24 +101,7 @@ public class VehicleService {
         return vehicles.size();
     }
 
-    public List<Vehicles> listAll(String type) {
-        try {
-            List<Vehicles> vehicles = getRepository(type).listAll();
-            return vehicles;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to list vehicles for type: " + type, e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Vehicles> T findById(String type, UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
-        var repository = getRepository(type);
-        return (T) repository.findById(id);
-    }
-
+    @Transactional
     public <T extends Vehicles> T saveVehicleWithDocuments(String type, T vehicle, InputStream fileStream, String filename, String contentType){
         T savedVehicle = save(type, vehicle);
 
@@ -110,6 +112,7 @@ public class VehicleService {
         return savedVehicle;
     }
 
+    @Transactional
     public VehicleDocuments saveDocument(UUID vehicleId, String filename, String contentType, InputStream fileStream){
         ObjectId fileObjectId = null;
         try (InputStream is = fileStream){
@@ -131,6 +134,7 @@ public class VehicleService {
         return doc;
     }
 
+    @Transactional
     public boolean deleteById(String type, UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
@@ -139,6 +143,7 @@ public class VehicleService {
         return repository.deleteById(id);
     }
 
+    @Transactional
     public Long deleteManyVehicles(String type, List<UUID> idList){
         if(idList.isEmpty()){
             throw new IllegalArgumentException("IdList cannot be empty");
@@ -147,6 +152,7 @@ public class VehicleService {
         return repository.delete("id in ?1", idList);
     }
 
+    @Transactional
     public <T extends Vehicles> T editVehicleInfo(String type, UUID id, T vehicle) {
         if (vehicle == null) {
             throw new IllegalArgumentException("Vehicle cannot be null");
