@@ -71,30 +71,32 @@ public class ApiMiddleware {
     /**
      * Converte uma entidade única para o DTO de resposta correspondente
      */
-    public Object manageVehicleTypeResponseDTO(String vehicleType, List<Vehicles> vehicles){
+    // Para lista de veículos
+    public Object manageVehicleTypeResponseDTO(String vehicleType, List<? extends Vehicles> vehicles) {
         if (vehicles == null) {
-            throw new IllegalArgumentException("Veículo não pode ser nulo");
+            throw new IllegalArgumentException("A lista de veículos não pode ser nula");
         }
 
         return switch (vehicleType.toLowerCase()) {
-            case "bikes" -> mapper.toBikesDTO((Bikes) vehicles);
-            case "cars"  -> mapper.toCarsDTO((Cars) vehicles);
-            case "boats" -> mapper.toBoatsDTO((Boats) vehicles);
-            case "planes"-> mapper.toPlanesDTO((Planes) vehicles);
+            case "bikes"  -> mapper.toBikesDTOList((List<Bikes>) vehicles);
+            case "cars"   -> mapper.toCarsDTOList((List<Cars>) vehicles);
+            case "boats"  -> mapper.toBoatsDTOList((List<Boats>) vehicles);
+            case "planes" -> mapper.toPlanesDTOList((List<Planes>) vehicles);
             default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
     }
 
-    public Object manageVehicleTypeResponseDTO(String vehicleType, Vehicles vehicles){
-        if (vehicles == null) {
-            throw new IllegalArgumentException("Veículo não pode ser nulo");
+    // Para veículo único
+    public Object manageVehicleTypeResponseDTO(String vehicleType, Vehicles vehicle) {
+        if (vehicle == null) {
+            throw new IllegalArgumentException("O veículo não pode ser nulo");
         }
 
         return switch (vehicleType.toLowerCase()) {
-            case "bikes" -> mapper.toBikesDTO((Bikes) vehicles);
-            case "cars"  -> mapper.toCarsDTO((Cars) vehicles);
-            case "boats" -> mapper.toBoatsDTO((Boats) vehicles);
-            case "planes"-> mapper.toPlanesDTO((Planes) vehicles);
+            case "bikes"  -> mapper.toBikesDTO((Bikes) vehicle);
+            case "cars"   -> mapper.toCarsDTO((Cars) vehicle);
+            case "boats"  -> mapper.toBoatsDTO((Boats) vehicle);
+            case "planes" -> mapper.toPlanesDTO((Planes) vehicle);
             default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
     }

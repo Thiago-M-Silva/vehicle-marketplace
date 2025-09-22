@@ -11,6 +11,7 @@ import org.acme.dtos.VehicleSearchDTO;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.GridFSService;
 import org.acme.services.VehicleService;
+import org.flywaydb.core.internal.resolver.java.FixedJavaMigrationResolver;
 import org.jboss.resteasy.reactive.MultipartForm;
 
 import jakarta.inject.Inject;
@@ -36,6 +37,7 @@ public class VehicleController {
     @Inject ApiMiddleware apiMiddleware;
     @Inject GridFSService gridFSService;
 
+    //OK
     @GET
     @Path("/get/{vehicleType}")
     public Response getAllVehicles(
@@ -43,7 +45,7 @@ public class VehicleController {
     ) {
        try {
             List<Vehicles> vehicles = vehicleService.listAll(vehicleType);
-            List<?> responseDTOs = (List<?>) apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
+            var responseDTOs = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
             return Response.ok(responseDTOs).build();
        } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -64,6 +66,7 @@ public class VehicleController {
             .build();
     }
 
+    //OK
     @GET
     @Path("/get/{vehicleType}/{id}")
     public Response getVehiclesById(
@@ -80,6 +83,7 @@ public class VehicleController {
         }
     }
 
+    //FIXME: Searching error: Cannot invoke "String.equalsIgnoreCase(String)" because the return value of "org.acme.dtos.VehicleSearchDTO.getDirection()" is null
     @GET
     @Path("/get/search")
     public Response search(
@@ -95,6 +99,7 @@ public class VehicleController {
         }
     }
 
+    //FIXME
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
     public Response saveAllVehicles(
@@ -112,6 +117,7 @@ public class VehicleController {
         }
     }
 
+    //OK
     @POST
     @Path("/save/{vehicleType}")
     public Response addVehicle(
@@ -131,6 +137,7 @@ public class VehicleController {
         }
     }
 
+    //FIXME: Erro ao salvar veículo e documentos: Unexpected char 99 at (line no=1, column no=1, offset=0)
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
