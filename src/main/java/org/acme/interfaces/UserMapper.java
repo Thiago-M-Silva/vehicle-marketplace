@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "jakarta", uses = { VehicleMapper.class })
+@Mapper(componentModel = "jakarta-cdi")
 public interface UserMapper {
 
     // DTO → Entity
@@ -33,7 +33,7 @@ public interface UserMapper {
     @Mapping(target = "updateDate", ignore = true)
     void updateUserFromDTO(UsersRequestDTO dto, @MappingTarget Users entity);
 
-    // ===== Type conversions for Instant ↔ LocalDate =====
+    // Type conversions for Instant ↔ LocalDate
     default LocalDate map(Instant instant) {
         return instant == null ? null : instant.atZone(ZoneId.systemDefault()).toLocalDate();
     }

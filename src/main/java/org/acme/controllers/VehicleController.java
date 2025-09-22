@@ -1,6 +1,7 @@
 package org.acme.controllers;
 
 import java.io.ByteArrayOutputStream;
+import java.io.StringReader;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +14,8 @@ import org.acme.services.VehicleService;
 import org.jboss.resteasy.reactive.MultipartForm;
 
 import jakarta.inject.Inject;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -96,11 +99,11 @@ public class VehicleController {
     @Path("/save/saveAllVehicles/{vehicleType}")
     public Response saveAllVehicles(
         @PathParam("vehicleType") String vehicleType, 
-        List<Vehicles> vehicles
+        List<JsonObject> vehicles
     ) {
         try {
-            var vehiclesRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, (Vehicles) vehicles);
-            int savedVehicles = vehicleService.saveMultipleVehicles(vehicleType, (List<Vehicles>) vehiclesRequestDTO);
+            var vehiclesRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicles);
+            int savedVehicles = vehicleService.saveMultipleVehicles(vehicleType, vehiclesRequestDTO);
             return Response.status(Response.Status.CREATED).entity(savedVehicles).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -112,21 +115,22 @@ public class VehicleController {
     @POST
     @Path("/save/{vehicleType}")
     public Response addVehicle(
-        @PathParam("vehicleType") String vehicleType, 
-        Vehicles vehicles
+        @PathParam("vehicleType") String vehicleType,
+        JsonObject body 
     ) {
         try {
-            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicles);
-            Vehicles savedVehicle = vehicleService.save(vehicleType, (Vehicles) vehicleRequestDTO);
+            Vehicles vehicle = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, body);
+
+            Vehicles savedVehicle = vehicleService.save(vehicleType, vehicle);
             return Response.status(Response.Status.CREATED).entity(savedVehicle).build();
         } catch (Exception e) {
+            e.printStackTrace(); 
             return Response.status(Response.Status.BAD_REQUEST)
                            .entity("Error saving vehicle: " + e.getMessage())
                            .build();
         }
     }
 
-    //FIXME: Find a way to send a multipart form data with a json object inside
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -135,7 +139,9 @@ public class VehicleController {
         @MultipartForm VehicleDocumentRequestDTO data
     ){
         try {
-            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, data.vehicles);
+            JsonObject json = Json.createReader(new StringReader(vehicleType)).readObject();
+
+            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, json);
             Vehicles savedVehicles = vehicleService.saveVehicleWithDocuments(vehicleType,(Vehicles) vehicleRequestDTO, data.file, data.filename, data.contentType);
 
             return Response.status(Response.Status.CREATED).entity(savedVehicles).build();

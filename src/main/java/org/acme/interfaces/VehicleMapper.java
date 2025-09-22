@@ -19,16 +19,12 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 import java.math.BigDecimal;
-@Mapper(
-    componentModel = "jakarta",
-    uses = { UserMapper.class } 
-)
+
+@Mapper(componentModel = "jakarta-cdi", uses = {UserMapper.class})
 public interface VehicleMapper {
 
-    // ====== Cars ======
-    @Mappings({
-        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
-    })
+    // Cars
+    @Mapping(target = "owner", ignore = true)
     Cars toCars(CarsRequestDTO dto);
 
     CarsResponseDTO toCarsDTO(Cars car);
@@ -39,10 +35,8 @@ public interface VehicleMapper {
 
     List<CarsRequestDTO> toCarsRequestDTO(List<Cars> cars);
 
-    // ====== Bikes ======
-    @Mappings({
-        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
-    })
+    // Bikes
+    @Mapping(target = "owner", ignore = true)
     Bikes toBikes(BikesRequestDTO dto);
 
     BikesResponseDTO toBikesDTO(Bikes bike);
@@ -53,24 +47,20 @@ public interface VehicleMapper {
 
     List<BikesRequestDTO> toBikesRequestDTO(List<Bikes> bikes);
 
-    // ====== Boats ======
-    @Mappings({
-        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
-    })
+    // Boats
+    @Mapping(target = "owner", ignore = true)
     Boats toBoats(BoatsRequestDTO dto);
 
     BoatsResponseDTO toBoatsDTO(Boats boat);
 
     List<BoatsResponseDTO> toBoatsDTOList(List<Boats> boats);
-    
+
     BoatsRequestDTO toBoatsRequestDTO(Boats boat);
 
     List<BoatsRequestDTO> toBoatsRequestDTO(List<Boats> boats);
 
-    // ====== Planes ======
-    @Mappings({
-        @Mapping(target = "owner", ignore = true) // to avoid cyclic mapping
-    })
+    // Planes
+    @Mapping(target = "owner", ignore = true)
     Planes toPlanes(PlanesRequestDTO dto);
 
     PlanesResponseDTO toPlanesDTO(Planes plane);
@@ -81,8 +71,7 @@ public interface VehicleMapper {
 
     List<PlanesRequestDTO> toPlanesRequestDTO(List<Planes> planes);
 
-    // ====== Converters ======
-    // Fix BigDecimal <-> float mismatch
+    // BigDecimal ↔ float conversions
     default float map(BigDecimal value) {
         return value == null ? 0f : value.floatValue();
     }
@@ -91,4 +80,3 @@ public interface VehicleMapper {
         return BigDecimal.valueOf(value);
     }
 }
-
