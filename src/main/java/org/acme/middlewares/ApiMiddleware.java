@@ -1,6 +1,7 @@
 package org.acme.middlewares;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.acme.abstracts.Vehicles;
@@ -65,6 +66,25 @@ public class ApiMiddleware {
 
         return vehicles.stream()
             .map(vehicle -> manageVehiclesTypeRequestDTO(vehicleType, vehicle))
+            .collect(Collectors.toList());
+    }
+
+    public List<Vehicles> manageListVehiclesTypeRequestDTO(String vehicleType, List<Map<String, Object>> vehicles) {
+        if (vehicles == null) {
+            throw new IllegalArgumentException("Veículo não pode ser nulo");
+        }
+
+        return vehicles.stream()
+            .map(map -> {
+                try {
+                    // converte Map -> JSON string -> jakarta.json.JsonObject e reaproveita o método existente
+                    String json = objectMapper.writeValueAsString(map);
+                    jakarta.json.JsonObject jsonObject = jakarta.json.Json.createReader(new java.io.StringReader(json)).readObject();
+                    return manageVehiclesTypeRequestDTO(vehicleType, jsonObject);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error parsing vehicle item: " + e.getMessage(), e);
+                }
+            })
             .collect(Collectors.toList());
     }
 

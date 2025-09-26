@@ -3,6 +3,7 @@ package org.acme.controllers;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
@@ -83,7 +84,7 @@ public class VehicleController {
         }
     }
 
-    //FIXME: Searching error: Cannot invoke "String.equalsIgnoreCase(String)" because the return value of "org.acme.dtos.VehicleSearchDTO.getDirection()" is null
+    //FIXME: Searching error: Cannot invoke "String.split(String)" because "columnName" is null
     @GET
     @Path("/get/search")
     public Response search(
@@ -99,15 +100,15 @@ public class VehicleController {
         }
     }
 
-    //FIXME
+    //OK
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
     public Response saveAllVehicles(
         @PathParam("vehicleType") String vehicleType, 
-        List<JsonObject> vehicles
+        List<Map<String, Object>> vehicles
     ) {
         try {
-            var vehiclesRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, vehicles);
+            var vehiclesRequestDTO = apiMiddleware.manageListVehiclesTypeRequestDTO(vehicleType, vehicles);
             int savedVehicles = vehicleService.saveMultipleVehicles(vehicleType, vehiclesRequestDTO);
             return Response.status(Response.Status.CREATED).entity(savedVehicles).build();
         } catch (Exception e) {
@@ -159,6 +160,7 @@ public class VehicleController {
         }
     }
 
+    //OK
     @DELETE
     @Path("/delete/{vehicleType}/{id}")
     public Response deleteVehicle(
@@ -174,7 +176,7 @@ public class VehicleController {
                            .build();
         }
     }
-
+    
     @DELETE
     @Path("/delete/{vehicleType}")
     public Response deleteManyVehicles(

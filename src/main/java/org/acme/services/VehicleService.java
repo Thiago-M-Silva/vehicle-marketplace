@@ -209,7 +209,10 @@ public class VehicleService {
             params.put("vehicleStatus", EStatus.valueOf(searchParams.getVehicleStatus().toUpperCase()));
         }
 
-        Sort sort = searchParams.getDirection().equalsIgnoreCase("DESC")
+        String direction = (searchParams.getDirection() == null || searchParams.getDirection().isBlank())
+                ? "ASC" : searchParams.getDirection().toUpperCase();
+                
+        Sort sort = direction.equals("DESC")
                 ? Sort.descending(searchParams.getSortBy())
                 : Sort.ascending(searchParams.getSortBy());
 
