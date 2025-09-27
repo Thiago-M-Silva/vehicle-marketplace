@@ -2,6 +2,7 @@ package org.acme.interfaces;
 
 import java.util.List;
 
+import org.acme.abstracts.Vehicles;
 import org.acme.dtos.BikesRequestDTO;
 import org.acme.dtos.BikesResponseDTO;
 import org.acme.dtos.BoatsRequestDTO;
@@ -16,7 +17,7 @@ import org.acme.model.Cars;
 import org.acme.model.Planes;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Mappings;
+import org.mapstruct.MappingTarget;
 
 import java.math.BigDecimal;
 
@@ -26,50 +27,38 @@ public interface VehicleMapper {
     // Cars
     @Mapping(target = "owner", ignore = true)
     Cars toCars(CarsRequestDTO dto);
-
     CarsResponseDTO toCarsDTO(Cars car);
-
     List<CarsResponseDTO> toCarsDTOList(List<Cars> cars);
-
     CarsRequestDTO toCarsRequestDTO(Cars car);
-
     List<CarsRequestDTO> toCarsRequestDTO(List<Cars> cars);
+    void updateCarsFromDTO(CarsRequestDTO dto, @MappingTarget Vehicles entity);
 
     // Bikes
     @Mapping(target = "owner", ignore = true)
     Bikes toBikes(BikesRequestDTO dto);
-
     BikesResponseDTO toBikesDTO(Bikes bike);
-
     List<BikesResponseDTO> toBikesDTOList(List<Bikes> bikes);
-
-    BikesRequestDTO toBikesRequestDTO(Bikes bike);
-
+    BikesRequestDTO toBikesRequestDTO(Bikes vehicle);
     List<BikesRequestDTO> toBikesRequestDTO(List<Bikes> bikes);
+    void updateBikesFromDTO(BikesRequestDTO dto, @MappingTarget Vehicles entity);
 
     // Boats
     @Mapping(target = "owner", ignore = true)
     Boats toBoats(BoatsRequestDTO dto);
-
     BoatsResponseDTO toBoatsDTO(Boats boat);
-
     List<BoatsResponseDTO> toBoatsDTOList(List<Boats> boats);
-
     BoatsRequestDTO toBoatsRequestDTO(Boats boat);
-
     List<BoatsRequestDTO> toBoatsRequestDTO(List<Boats> boats);
+    void updateBoatsFromDTO(BoatsRequestDTO dto, @MappingTarget Vehicles entity);
 
     // Planes
     @Mapping(target = "owner", ignore = true)
     Planes toPlanes(PlanesRequestDTO dto);
-
     PlanesResponseDTO toPlanesDTO(Planes plane);
-
     List<PlanesResponseDTO> toPlanesDTOList(List<Planes> planes);
-
     PlanesRequestDTO toPlanesRequestDTO(Planes plane);
-
     List<PlanesRequestDTO> toPlanesRequestDTO(List<Planes> planes);
+    void updatePlanesFromDTO(PlanesRequestDTO dto, @MappingTarget Vehicles entity);
 
     // BigDecimal ↔ float conversions
     default float map(BigDecimal value) {

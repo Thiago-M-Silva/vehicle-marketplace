@@ -7,12 +7,21 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.dtos.BikesRequestDTO;
+import org.acme.dtos.BoatsRequestDTO;
+import org.acme.dtos.CarsRequestDTO;
+import org.acme.dtos.PlanesRequestDTO;
 import org.acme.dtos.VehicleSearchDTO;
 import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
+import org.acme.interfaces.VehicleMapper;
 import org.acme.middlewares.ApiMiddleware;
+import org.acme.model.Bikes;
+import org.acme.model.Boats;
+import org.acme.model.Cars;
+import org.acme.model.Planes;
 import org.acme.model.VehicleDocuments;
 import org.acme.repositories.BikesRepository;
 import org.acme.repositories.BoatsRepository;
@@ -30,26 +39,14 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class VehicleService {
-    @Inject 
-    ApiMiddleware apiMiddleware;
-
-    @Inject 
-    BikesRepository bikesRepository;
-    
-    @Inject 
-    CarsRepository carsRepository;
-    
-    @Inject 
-    BoatsRepository boatsRepository;
-    
-    @Inject 
-    PlanesRepository planesRepository;
-
-    @Inject
-    GridFSService gridFSService;
-
-    @Inject
-    VehicleDocumentsRepository repository;
+    @Inject ApiMiddleware apiMiddleware;
+    @Inject BikesRepository bikesRepository;
+    @Inject CarsRepository carsRepository;
+    @Inject BoatsRepository boatsRepository;
+    @Inject PlanesRepository planesRepository;
+    @Inject GridFSService gridFSService;
+    @Inject VehicleDocumentsRepository repository;
+    @Inject VehicleMapper vehicleMapper;
 
     @SuppressWarnings("unchecked")
     private <T extends Vehicles> PanacheRepositoryBase<T, UUID> getRepository(String vehicleType) {
@@ -123,7 +120,7 @@ public class VehicleService {
         
         VehicleDocuments doc = new VehicleDocuments();
 
-        doc.vehicleId = vehicleId;
+        doc.vehicleId = vehicleId == null ? null : vehicleId.toString();
         doc.fileName = filename;
         doc.contentType = contentType;
 
@@ -153,19 +150,43 @@ public class VehicleService {
     }
 
     @Transactional
-    public <T extends Vehicles> T editVehicleInfo(String type, UUID id, T vehicle) {
+    public void editVehicleInfo(String type, UUID id, Vehicles vehicle) {
         if (vehicle == null) {
             throw new IllegalArgumentException("Vehicle cannot be null");
         }
-        var repository = getRepository(type);
-        repository.update("id like ?1", id, vehicle);
-        return vehicle;
+        
+        var existingVehicle = findById(type, id);
+        if (existingVehicle == null) {
+            throw new IllegalArgumentException("Vehicle not found with ID: " + id);
+        }
+
+        switch (type.toLowerCase()) {
+            case "bikes" -> {
+                BikesRequestDTO dto = vehicleMapper.toBikesRequestDTO((Bikes) vehicle);
+                vehicleMapper.updateBikesFromDTO(dto, existingVehicle);
+            }
+            case "boats" -> {
+                BoatsRequestDTO dto = vehicleMapper.toBoatsRequestDTO((Boats) vehicle);
+                vehicleMapper.updateBoatsFromDTO(dto, existingVehicle);
+            }
+            case "cars"  -> {
+                CarsRequestDTO dto = vehicleMapper.toCarsRequestDTO((Cars) vehicle);
+                vehicleMapper.updateCarsFromDTO(dto, existingVehicle);
+            }
+            case "planes"-> {
+                PlanesRequestDTO dto = vehicleMapper.toPlanesRequestDTO((Planes) vehicle);
+                vehicleMapper.updatePlanesFromDTO(dto, existingVehicle);
+            }
+            default -> throw new IllegalArgumentException("Unknown vehicle type: " + type);
+        }
+        
     }
 
-    public <T extends Vehicles> T searchVehicle(
+    public List<? extends Vehicles> searchVehicle(
+        String vehicleType,
         VehicleSearchDTO searchParams
     ){
-        StringBuilder query = new StringBuilder("1=1");
+        StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
 
         if (searchParams.getBrand() != null && !searchParams.getBrand().isBlank()) {
@@ -209,17 +230,28 @@ public class VehicleService {
             params.put("vehicleStatus", EStatus.valueOf(searchParams.getVehicleStatus().toUpperCase()));
         }
 
+        // defensivo: garantir campo de ordenação
+        String sortBy = (searchParams.getSortBy() == null || searchParams.getSortBy().isBlank())
+                ? "createDate" : searchParams.getSortBy();
+
         String direction = (searchParams.getDirection() == null || searchParams.getDirection().isBlank())
                 ? "ASC" : searchParams.getDirection().toUpperCase();
-                
+
         Sort sort = direction.equals("DESC")
-                ? Sort.descending(searchParams.getSortBy())
-                : Sort.ascending(searchParams.getSortBy());
+                ? Sort.descending(sortBy)
+                : Sort.ascending(sortBy);
 
-        var vehicles = Vehicles.find(query.toString(), sort, params)
-                               .page(Page.of(searchParams.getPage(), searchParams.getSize()))
-                               .list();
+        // obtém repositório correto e executa a busca
+        var repository = getRepository(vehicleType);
 
-        return (T) vehicles;
+        // usa o overload que aceita Sort quando disponível
+        var panacheQuery = repository.find(query.toString(), sort, params);
+
+        var page = Page.of(Math.max(0, searchParams.getPage()), Math.max(1, searchParams.getSize()));
+        List<? extends Vehicles> result = panacheQuery
+                .page(page)
+                .list();
+
+        return result;
     }
 }

@@ -1,10 +1,6 @@
 package org.acme.model;
 
 import java.time.Instant;
-import java.util.UUID;
-
-import org.bson.BsonType;
-import org.bson.codecs.pojo.annotations.BsonRepresentation;
 
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.smallrye.common.constraint.NotNull;
@@ -28,8 +24,7 @@ public class VehicleDocuments {
     public String id;
 
     @NotNull
-    @BsonRepresentation(BsonType.STRING)
-    public UUID vehicleId;
+    public String vehicleId;
 
     @NotNull
     public String fileName;

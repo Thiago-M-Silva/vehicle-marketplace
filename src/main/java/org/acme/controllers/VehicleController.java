@@ -12,7 +12,6 @@ import org.acme.dtos.VehicleSearchDTO;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.GridFSService;
 import org.acme.services.VehicleService;
-import org.flywaydb.core.internal.resolver.java.FixedJavaMigrationResolver;
 import org.jboss.resteasy.reactive.MultipartForm;
 
 import jakarta.inject.Inject;
@@ -84,14 +83,15 @@ public class VehicleController {
         }
     }
 
-    //FIXME: Searching error: Cannot invoke "String.split(String)" because "columnName" is null
+    //OK
     @GET
-    @Path("/get/search")
+    @Path("/get/search/{vehicleType}")
     public Response search(
+        @PathParam("vehicleType") String vehicleType,
         @BeanParam VehicleSearchDTO searchParams
     ) {
         try {
-            var vehicles = vehicleService.searchVehicle(searchParams);
+            var vehicles = vehicleService.searchVehicle(vehicleType, searchParams);
             return Response.ok(vehicles).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -138,7 +138,7 @@ public class VehicleController {
         }
     }
 
-    //FIXME: Erro ao salvar veículo e documentos: Unexpected char 99 at (line no=1, column no=1, offset=0)
+    //OK
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -147,10 +147,38 @@ public class VehicleController {
         @MultipartForm VehicleDocumentRequestDTO data
     ){
         try {
-            JsonObject json = Json.createReader(new StringReader(vehicleType)).readObject();
+            if (data == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Form data is required")
+                    .build();
+            }
+
+            if (data.vehicles == null || data.vehicles.isBlank()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Field 'vehicles' (JSON) is required in the multipart form")
+                    .build();
+            }
+
+            // Parse the JSON sent in the 'vehicles' form part (not the vehicleType path param)
+            JsonObject json = Json.createReader(new StringReader(data.vehicles)).readObject();
 
             var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, json);
-            Vehicles savedVehicles = vehicleService.saveVehicleWithDocuments(vehicleType,(Vehicles) vehicleRequestDTO, data.file, data.filename, data.contentType);
+
+            // validate file info
+            if (data.file == null || data.filename == null || data.filename.isBlank()) {
+                // allow saving vehicle without file, or require file — choose behaviour
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("File and filename are required")
+                    .build();
+            }
+
+            Vehicles savedVehicles = vehicleService.saveVehicleWithDocuments(
+                vehicleType,
+                (Vehicles) vehicleRequestDTO,
+                data.file,
+                data.filename,
+                data.contentType
+            );
 
             return Response.status(Response.Status.CREATED).entity(savedVehicles).build();
         } catch (Exception e) {
@@ -177,6 +205,7 @@ public class VehicleController {
         }
     }
     
+    //OK
     @DELETE
     @Path("/delete/{vehicleType}")
     public Response deleteManyVehicles(
@@ -193,14 +222,17 @@ public class VehicleController {
         }
     }
 
+    //OK
     @PUT
     @Path("/edit/{vehicleType}/{id}")
     public Response editVehicle(
         @PathParam("vehicleType") String vehicleType,
         @PathParam("id") UUID id,
-        Vehicles vehicle
+        JsonObject body
     ){
         try {
+            Vehicles vehicle = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, body);
+
             vehicleService.editVehicleInfo(vehicleType, id, vehicle);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {

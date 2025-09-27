@@ -158,28 +158,3 @@ public class ApiMiddleware {
         };
     }
 }
-
-/*
- * public List<?> manageVehicleTypeResponseDTOList(String vehicleType, List<? extends Vehicles> vehicles) {
-    if (vehicles == null || vehicles.isEmpty()) {
-        return List.of();
-    }
-
-    return switch (vehicleType.toLowerCase()) {
-        case "bikes"  -> mapper.toBikesDTOList(
-            vehicles.stream().map(Bikes.class::cast).toList()
-        );
-        case "cars"   -> mapper.toCarsDTOList(
-            vehicles.stream().map(Cars.class::cast).toList()
-        );
-        case "boats"  -> mapper.toBoatsDTOList(
-            vehicles.stream().map(Boats.class::cast).toList()
-        );
-        case "planes" -> mapper.toPlanesDTOList(
-            vehicles.stream().map(Planes.class::cast).toList()
-        );
-        default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
-    };
-}
-
- */

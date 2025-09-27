@@ -54,11 +54,7 @@ public class UserService {
         if (user == null) {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
-
-        // update fields using MapStruct
         userMapper.updateUserFromDTO(data, user);
-
-        // Panache automatically tracks changes, no need to persist()
         return userMapper.toUserDTO(user);
     }
 
