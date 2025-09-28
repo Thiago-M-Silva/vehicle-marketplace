@@ -1,0 +1,2 @@
+ALTER TABLE mktplace.users
+ADD COLUMN keycloakId VARCHAR(75) UNIQUE NOT NULL;

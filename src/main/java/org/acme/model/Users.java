@@ -78,4 +78,6 @@ public class Users {
     @OneToMany(mappedBy = "owner")
     private List<Planes> planes;
 
+    @Column(nullable = false, unique = true)
+    private String keycloakId;
 }
