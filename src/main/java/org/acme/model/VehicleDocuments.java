@@ -12,7 +12,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+/**
+ * Class representing vehicle documents stored in MongoDB. This class includes
+ * details about the vehicle ID, file name, content type, and timestamps for upload and update.
+ * Used for storing documents such as registration, insurance, etc.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

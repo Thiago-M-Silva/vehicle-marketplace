@@ -37,7 +37,12 @@ public class VehicleController {
     @Inject ApiMiddleware apiMiddleware;
     @Inject GridFSService gridFSService;
 
-    //OK
+    /**
+     * Retrieves a list of all vehicles of a specified type.
+     * @param vehicleType the type of vehicles to retrieve (e.g., "car", "truck")
+     * @return a {@link Response} containing a list of vehicles if successful,
+     *         or an error message with HTTP 500 status if an exception occurs.
+     */
     @GET
     @Path("/get/{vehicleType}")
     public Response getAllVehicles(
@@ -54,6 +59,12 @@ public class VehicleController {
        }
     }
 
+    /**
+     * Downloads a vehicle document by its ID.
+     * @param vehicleId the ID of the vehicle
+     * @return a {@link Response} containing the vehicle document if successful,
+     *         or an error message with HTTP 500 status if an exception occurs.
+     */
     @GET
     @Path("/get/download/{vehicleId}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -66,7 +77,12 @@ public class VehicleController {
             .build();
     }
 
-    //OK
+    /**
+     * Retrieves a vehicle by its unique identifier and type.
+     * @param vehicleType
+     * @param id
+     * @return a {@link Response} containing the vehicle data if found, or an appropriate error message if not found or if an error occurs
+     */
     @GET
     @Path("/get/{vehicleType}/{id}")
     public Response getVehiclesById(
@@ -83,7 +99,13 @@ public class VehicleController {
         }
     }
 
-    //OK
+    /**
+     * Search vehicles by type and various parameters.
+     * @param vehicleType
+     * @param searchParams
+     * @return a {@link Response} containing a list of vehicles matching the search criteria if successful,
+     *         or an error message with HTTP 400 status if an exception occurs.
+     */
     @GET
     @Path("/get/search/{vehicleType}")
     public Response search(
@@ -100,7 +122,13 @@ public class VehicleController {
         }
     }
 
-    //OK
+    /**
+     * Save multiple vehicles of a specified type.
+     * @param vehicleType
+     * @param vehicles
+     * @return a {@link Response} with the number of vehicles saved if successful,
+     *         or an error message with HTTP 400 status if an exception occurs.
+     */
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
     public Response saveAllVehicles(
@@ -118,7 +146,13 @@ public class VehicleController {
         }
     }
 
-    //OK
+    /**
+     * Handles HTTP POST requests to create a new vehicle of a specified type.
+     * @param vehicleType the type of vehicle to create (e.g., "car", "truck")
+     * @param body a {@link JsonObject} containing the vehicle data
+     * @return a {@link Response} with the created vehicle if successful,
+     *         or an error message with HTTP 400 status if an exception occurs.
+     */
     @POST
     @Path("/save/{vehicleType}")
     public Response addVehicle(
@@ -138,7 +172,13 @@ public class VehicleController {
         }
     }
 
-    //OK
+    /**
+     * Handles HTTP POST requests to create a new vehicle of a specified type with associated documents.
+     * @param vehicleType the type of vehicle to create (e.g., "car", "truck")
+     * @param data a {@link VehicleDocumentRequestDTO} containing the vehicle data and document file
+     * @return a {@link Response} with the created vehicle if successful,
+     *         or an error message with HTTP 400 status if an exception occurs.
+     */
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -159,14 +199,11 @@ public class VehicleController {
                     .build();
             }
 
-            // Parse the JSON sent in the 'vehicles' form part (not the vehicleType path param)
             JsonObject json = Json.createReader(new StringReader(data.vehicles)).readObject();
 
             var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, json);
 
-            // validate file info
             if (data.file == null || data.filename == null || data.filename.isBlank()) {
-                // allow saving vehicle without file, or require file — choose behaviour
                 return Response.status(Response.Status.BAD_REQUEST)
                     .entity("File and filename are required")
                     .build();
@@ -188,7 +225,12 @@ public class VehicleController {
         }
     }
 
-    //OK
+    /**
+     * Handles HTTP DELETE requests to delete a vehicle by its unique identifier and type.
+     * @param vehicleType
+     * @param id
+     * @return Response with HTTP 204 status if successful, or an error message with HTTP 404 status if an exception occurs.
+     */
     @DELETE
     @Path("/delete/{vehicleType}/{id}")
     public Response deleteVehicle(
@@ -205,7 +247,12 @@ public class VehicleController {
         }
     }
     
-    //OK
+    /**
+     * Handles HTTP DELETE requests to delete multiple vehicles by their unique identifiers and type.
+     * @param vehicleType
+     * @param id
+     * @return Response with HTTP 204 status if successful, or an error message with HTTP 404 status if an exception occurs.
+     */
     @DELETE
     @Path("/delete/{vehicleType}")
     public Response deleteManyVehicles(
@@ -222,7 +269,13 @@ public class VehicleController {
         }
     }
 
-    //OK
+    /**
+     * Handles HTTP PUT requests to edit a vehicle by its unique identifier and type.
+     * @param vehicleType
+     * @param id
+     * @param body a {@link JsonObject} containing the updated vehicle data
+     * @return Response with HTTP 204 status if successful, or an error message with HTTP 404 status if an exception occurs.
+     */
     @PUT
     @Path("/edit/{vehicleType}/{id}")
     public Response editVehicle(

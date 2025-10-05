@@ -11,6 +11,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Class representing a plane. This class extends the Vehicles class and adds
+ * specific attributes for planes.
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor

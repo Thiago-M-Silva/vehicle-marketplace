@@ -1,276 +1,196 @@
-// package org.acme.middlewares;
+package org.acme.middlewares;
 
-// import io.quarkus.test.junit.QuarkusTest;
+import org.acme.abstracts.Vehicles;
+import org.acme.dtos.*;
+import org.acme.interfaces.VehicleMapper;
+import org.acme.model.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.*;
 
-// import java.math.BigDecimal;
-// import java.util.List;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
-// import org.acme.abstracts.Vehicles;
-// import org.acme.model.Bikes;
-// import org.acme.model.Cars;
-// import org.acme.model.Boats;
-// import org.acme.model.Planes;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
-// import org.acme.dtos.BikesResponseDTO;
-// import org.acme.dtos.CarsResponseDTO;
-// import org.acme.dtos.BoatsResponseDTO;
-// import org.acme.dtos.PlanesResponseDTO;
+class ApiMiddlewareTest {
 
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.Assertions;
-// import org.acme.enums.*;
+    @Mock
+    VehicleMapper mapper;
 
-// @QuarkusTest
-// public class ApiMiddlewareTest {
+    @InjectMocks
+    ApiMiddleware apiMiddleware;
 
-//     private final ApiMiddleware apiMiddleware = new ApiMiddleware();
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        apiMiddleware = new ApiMiddleware();
+        apiMiddleware.mapper = mapper;
+    }
 
-//     @Test
-//     void testManageVehicleTypeRequestDTO_Bikes() {
-//         Bikes bike = new Bikes();
-//         bike.setName("Bike1");
-//         bike.setBrand("BrandA");
-//         bike.setYear(2020);
-//         bike.setPrice(new BigDecimal("1000.0"));
-//         bike.setBikeStatus(EStatus.NEW);
-//         bike.setCategory(ECategory.COMPACT_CAR);
-//         bike.setColor(EColors.RED);
-//         bike.setFuelType(EFuelType.ALCOHOL);
+    private JsonObject createCarJson() {
+        return Json.createObjectBuilder()
+                .add("brand", "Toyota")
+                .add("model", "Corolla")
+                .add("year", 2020)
+                .build();
+    }
 
-//         Vehicles result = apiMiddleware.manageVehicleTypeRequestDTO("bikes", bike);
+    @Test
+    void manageVehiclesTypeRequestDTO_shouldMapCar() throws Exception {
+        JsonObject carJson = createCarJson();
+        CarsRequestDTO dto = new CarsRequestDTO();
+        Cars car = new Cars();
 
-//         Assertions.assertTrue(result instanceof Bikes);
-//         Bikes resultBike = (Bikes) result;
-//         Assertions.assertEquals("Bike1", resultBike.getName());
-//         Assertions.assertEquals("BrandA", resultBike.getBrand());
-//         Assertions.assertEquals(2020, resultBike.getYear());
-//         Assertions.assertEquals(new BigDecimal("1000.0"), resultBike.getPrice());
-//         Assertions.assertEquals("available", resultBike.getBikeStatus());
-//         Assertions.assertEquals("mountain", resultBike.getCategory());
-//         Assertions.assertEquals("red", resultBike.getColor());
-//         Assertions.assertEquals("none", resultBike.getFuelType());
-//     }
+        ApiMiddleware spy = Mockito.spy(apiMiddleware);
+        doReturn(dto).when(spy).objectMapper.readValue(carJson.toString(), CarsRequestDTO.class);
+        when(mapper.toCars(dto)).thenReturn(car);
 
-//     @Test
-//     void testManageVehicleTypeRequestDTO_Cars() {
-//         Cars car = new Cars();
-//         car.setName("Car1");
-//         car.setBrand("BrandB");
-//         car.setYear(2019);
-//         car.setPrice(new BigDecimal("20000.0"));
-//         car.setCarStatus(EStatus.NEW);
-//         car.setCategory(ECategory.COMPACT_CAR);
-//         car.setColor(EColors.RED);
-//         car.setFuelType(EFuelType.ALCOHOL);
+        Vehicles result = spy.manageVehiclesTypeRequestDTO("cars", carJson);
+        assertEquals(car, result);
+        verify(mapper).toCars(dto);
+    }
 
-//         Vehicles result = apiMiddleware.manageVehicleTypeRequestDTO("cars", car);
+    @Test
+    void manageVehiclesTypeRequestDTO_shouldThrowOnNullBody() {
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehiclesTypeRequestDTO("cars", (jakarta.json.JsonObject) null));
+    }
 
-//         Assertions.assertTrue(result instanceof Cars);
-//         Cars resultCar = (Cars) result;
-//         Assertions.assertEquals("Car1", resultCar.getName());
-//         Assertions.assertEquals("BrandB", resultCar.getBrand());
-//         Assertions.assertEquals(2019, resultCar.getYear());
-//         Assertions.assertEquals(new BigDecimal("20000.0"), resultCar.getPrice());
-//         Assertions.assertEquals("sold", resultCar.getCarStatus());
-//         Assertions.assertEquals("sedan", resultCar.getCategory());
-//         Assertions.assertEquals("blue", resultCar.getColor());
-//         Assertions.assertEquals("gasoline", resultCar.getFuelType());
-//     }
+    @Test
+    void manageVehiclesTypeRequestDTO_shouldThrowOnInvalidType() {
+        JsonObject carJson = createCarJson();
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehiclesTypeRequestDTO("invalid", carJson));
+    }
 
-//     @Test
-//     void testManageVehicleTypeRequestDTO_Boats() {
-//         Boats boat = new Boats();
-//         boat.setName("Boat1");
-//         boat.setBrand("BrandC");
-//         boat.setYear(2018);
-//         boat.setPrice(new BigDecimal("50000.0"));
-//         boat.setBoatStatus(EStatus.NEW);
-//         boat.setCategory(ECategory.COMPACT_CAR);
-//         boat.setColor(EColors.RED);
-//         boat.setFuelType(EFuelType.ALCOHOL);
+    @Test
+    void manageVehiclesTypeRequestDTO_List_shouldMapList() throws JsonMappingException, JsonProcessingException {
+        JsonObject carJson = createCarJson();
+        CarsRequestDTO dto = new CarsRequestDTO();
+        Cars car = new Cars();
 
-//         Vehicles result = apiMiddleware.manageVehicleTypeRequestDTO("boats", boat);
+        ApiMiddleware spy = Mockito.spy(apiMiddleware);
+        doReturn(dto).when(spy).objectMapper.readValue(carJson.toString(), CarsRequestDTO.class);
+        when(mapper.toCars(dto)).thenReturn(car);
 
-//         Assertions.assertTrue(result instanceof Boats);
-//         Boats resultBoat = (Boats) result;
-//         Assertions.assertEquals("Boat1", resultBoat.getName());
-//         Assertions.assertEquals("BrandC", resultBoat.getBrand());
-//         Assertions.assertEquals(2018, resultBoat.getYear());
-//         Assertions.assertEquals(new BigDecimal("50000.0"), resultBoat.getPrice());
-//         Assertions.assertEquals("available", resultBoat.getBoatStatus());
-//         Assertions.assertEquals("yacht", resultBoat.getCategory());
-//         Assertions.assertEquals("white", resultBoat.getColor());
-//         Assertions.assertEquals("diesel", resultBoat.getFuelType());
-//     }
+        List<JsonObject> list = List.of(carJson, carJson);
+        List<Vehicles> result = spy.manageVehiclesTypeRequestDTO("cars", list);
 
-//     @Test
-//     void testManageVehicleTypeRequestDTO_Planes() {
-//         Planes plane = new Planes();
-//         plane.setName("Plane1");
-//         plane.setBrand("BrandD");
-//         plane.setYear(2015);
-//         plane.setPrice(new BigDecimal("1000000.0"));
-//         plane.setPlaneStatus(EStatus.NEW);
-//         plane.setCategory(ECategory.COMPACT_CAR);
-//         plane.setColor(EColors.RED);
-//         plane.setFuelType(EFuelType.ALCOHOL);
+        assertEquals(2, result.size());
+        assertEquals(car, result.get(0));
+        verify(mapper, times(2)).toCars(dto);
+    }
 
-//         Vehicles result = apiMiddleware.manageVehicleTypeRequestDTO("planes", plane);
+    @Test
+    void manageVehiclesTypeRequestDTO_List_shouldThrowOnNull() {
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehiclesTypeRequestDTO("cars", (List<JsonObject>) null));
+    }
 
-//         Assertions.assertTrue(result instanceof Planes);
-//         Planes resultPlane = (Planes) result;
-//         Assertions.assertEquals("Plane1", resultPlane.getName());
-//         Assertions.assertEquals("BrandD", resultPlane.getBrand());
-//         Assertions.assertEquals(2015, resultPlane.getYear());
-//         Assertions.assertEquals(new BigDecimal("1000000.0"), resultPlane.getPrice());
-//         Assertions.assertEquals("maintenance", resultPlane.getPlaneStatus());
-//         Assertions.assertEquals("private", resultPlane.getCategory());
-//         Assertions.assertEquals("silver", resultPlane.getColor());
-//         Assertions.assertEquals("jet fuel", resultPlane.getFuelType());
-//     }
+    @Test
+    void manageListVehiclesTypeRequestDTO_shouldMapList() throws JsonMappingException, JsonProcessingException {
+        Map<String, Object> carMap = new HashMap<>();
+        carMap.put("brand", "Toyota");
+        carMap.put("model", "Corolla");
+        carMap.put("year", 2020);
 
-//     @Test
-//     void testManageVehicleTypeRequestDTO_NullVehicle_ThrowsException() {
-//         IllegalArgumentException ex = Assertions.assertThrows(
-//             IllegalArgumentException.class,
-//             () -> apiMiddleware.manageVehicleTypeRequestDTO("bikes", null)
-//         );
-//         Assertions.assertEquals("Veículo não pode ser nulo", ex.getMessage());
-//     }
+        CarsRequestDTO dto = new CarsRequestDTO();
+        Cars car = new Cars();
 
-//     @Test
-//     void testManageVehicleTypeRequestDTO_InvalidType_ThrowsException() {
-//         Bikes bike = new Bikes();
-//         IllegalArgumentException ex = Assertions.assertThrows(
-//             IllegalArgumentException.class,
-//             () -> apiMiddleware.manageVehicleTypeRequestDTO("skates", bike)
-//         );
-//         Assertions.assertTrue(ex.getMessage().contains("Tipo de veículo inválido"));
-//     }
+        ApiMiddleware spy = Mockito.spy(apiMiddleware);
+        doReturn(dto).when(spy).objectMapper.readValue(anyString(), eq(CarsRequestDTO.class));
+        when(mapper.toCars(dto)).thenReturn(car);
 
-//     @Test
-//     void testManageVehicleTypeResponseDTO_Bikes() {
-//         Bikes bike1 = new Bikes();
-//         bike1.setName("Bike1");
-//         bike1.setBrand("BrandA");
-//         bike1.setYear(2020);
+        List<Map<String, Object>> list = List.of(carMap, carMap);
+        List<Vehicles> result = spy.manageListVehiclesTypeRequestDTO("cars", list);
 
-//         Bikes bike2 = new Bikes();
-//         bike2.setName("Bike2");
-//         bike2.setBrand("BrandB");
-//         bike2.setYear(2021);
+        assertEquals(2, result.size());
+        verify(mapper, times(2)).toCars(dto);
+    }
 
-//         var list = java.util.List.of(bike1, bike2);
-//         var result = apiMiddleware.manageVehicleTypeResponseDTO("bikes", new java.util.ArrayList<>(list));
+    @Test
+    void manageListVehiclesTypeRequestDTO_shouldThrowOnNull() {
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageListVehiclesTypeRequestDTO("cars", null));
+    }
 
-//         Assertions.assertEquals(2, result.size());
-//         Assertions.assertTrue(result.get(0) instanceof BikesResponseDTO);
-//         BikesResponseDTO dto1 = (BikesResponseDTO) result.get(0);
-//         Assertions.assertEquals("Bike1", dto1.name());
-//         Assertions.assertEquals("BrandA", dto1.brand());
-//         Assertions.assertEquals(2020, dto1.year());
-//     }
+    @Test
+    void manageVehicleTypeResponseDTO_shouldMapListToDTO() {
+        List<Cars> carsList = List.of(new Cars(), new Cars());
+        List<CarsResponseDTO> dtoList = List.of(new CarsResponseDTO(), new CarsResponseDTO());
+        when(mapper.toCarsDTOList(carsList)).thenReturn(dtoList);
 
-//     @Test
-//     void testManageVehicleTypeResponseDTO_Cars() {
-//         Cars car1 = new Cars();
-//         car1.setName("Car1");
-//         car1.setBrand("BrandA");
-//         car1.setYear(2018);
+        Object result = apiMiddleware.manageVehicleTypeResponseDTO("cars", carsList);
+        assertEquals(dtoList, result);
+        verify(mapper).toCarsDTOList(carsList);
+    }
 
-//         Cars car2 = new Cars();
-//         car2.setName("Car2");
-//         car2.setBrand("BrandB");
-//         car2.setYear(2019);
+    @Test
+    void manageVehicleTypeResponseDTO_shouldThrowOnNullList() {
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehicleTypeResponseDTO("cars", (List<? extends Vehicles>) null));
+    }
 
-//         var list = java.util.List.of(car1, car2);
-//         var result = apiMiddleware.manageVehicleTypeResponseDTO("cars", new java.util.ArrayList<>(list));
+    @Test
+    void manageVehicleTypeResponseDTO_shouldThrowOnInvalidType() {
+        List<Cars> carsList = List.of(new Cars());
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehicleTypeResponseDTO("invalid", carsList));
+    }
 
-//         Assertions.assertEquals(2, result.size());
-//         Assertions.assertTrue(result.get(1) instanceof CarsResponseDTO);
-//         CarsResponseDTO dto2 = (CarsResponseDTO) result.get(1);
-//         Assertions.assertEquals("Car2", dto2.name());
-//         Assertions.assertEquals("BrandB", dto2.brand());
-//         Assertions.assertEquals(2019, dto2.year());
-//     }
+    @Test
+    void manageVehicleTypeResponseDTO_single_shouldMapToDTO() {
+        Cars car = new Cars();
+        Object dto = new Object();
+        when(mapper.toCarsDTO(car)).thenReturn((CarsResponseDTO) dto);
 
-//     @Test
-//     void testManageVehicleTypeResponseDTO_Boats() {
-//         Boats boat = new Boats();
-//         boat.setName("Boat1");
-//         boat.setBrand("BrandC");
-//         boat.setYear(2015);
+        Object result = apiMiddleware.manageVehicleTypeResponseDTO("cars", car);
+        assertEquals(dto, result);
+        verify(mapper).toCarsDTO(car);
+    }
 
-//         var list = java.util.List.of(boat);
-//         var result = apiMiddleware.manageVehicleTypeResponseDTO("boats", new java.util.ArrayList<>(list));
+    @Test
+    void manageVehicleTypeResponseDTO_single_shouldThrowOnNull() {
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehicleTypeResponseDTO("cars", (Vehicles) null));
+    }
 
-//         Assertions.assertEquals(1, result.size());
-//         Assertions.assertTrue(result.get(0) instanceof BoatsResponseDTO);
-//         BoatsResponseDTO dto = (BoatsResponseDTO) result.get(0);
-//         Assertions.assertEquals("Boat1", dto.name());
-//         Assertions.assertEquals("BrandC", dto.brand());
-//         Assertions.assertEquals(2015, dto.year());
-//     }
+    @Test
+    void manageVehicleTypeResponseDTO_single_shouldThrowOnInvalidType() {
+        Cars car = new Cars();
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehicleTypeResponseDTO("invalid", car));
+    }
 
-//     @Test
-//     void testManageVehicleTypeResponseDTO_Planes() {
-//         Planes plane = new Planes();
-//         plane.setName("Plane1");
-//         plane.setBrand("BrandD");
-//         plane.setYear(2010);
+    @Test
+    void manageVehicleTypeResponseDTOList_shouldReturnEmptyOnNullOrEmpty() {
+        assertTrue(apiMiddleware.manageVehicleTypeResponseDTOList("cars", null).isEmpty());
+        assertTrue(apiMiddleware.manageVehicleTypeResponseDTOList("cars", List.of()).isEmpty());
+    }
 
-//         var list = java.util.List.of(plane);
-//         var result = apiMiddleware.manageVehicleTypeResponseDTO("planes", new java.util.ArrayList<>(list));
+    @Test
+    void manageVehicleTypeResponseDTOList_shouldMapFilteredList() {
+        Cars car = new Cars();
+        List<Vehicles> vehicles = List.of(car, new Cars());
+        List<CarsResponseDTO> dtoList = List.of(new CarsResponseDTO());
+        when(mapper.toCarsDTOList(List.of(car))).thenReturn(dtoList);
 
-//         Assertions.assertEquals(1, result.size());
-//         Assertions.assertTrue(result.get(0) instanceof PlanesResponseDTO);
-//         PlanesResponseDTO dto = (PlanesResponseDTO) result.get(0);
-//         Assertions.assertEquals("Plane1", dto.name());
-//         Assertions.assertEquals("BrandD", dto.brand());
-//         Assertions.assertEquals(2010, dto.year());
-//     }
+        List<?> result = apiMiddleware.manageVehicleTypeResponseDTOList("cars", vehicles);
+        assertEquals(dtoList, result);
+        verify(mapper).toCarsDTOList(List.of(car));
+    }
 
-//     @Test
-//     void testManageVehicleTypeResponseDTO_EmptyList() {
-//         var result = apiMiddleware.manageVehicleTypeResponseDTO("bikes", java.util.Collections.emptyList());
-//         Assertions.assertTrue(result.isEmpty());
-//     }
-
-//     @Test
-//     void testManageVehicleTypeResponseDTO_NullList() {
-//         var result = apiMiddleware.manageVehicleTypeResponseDTO("cars", null);
-//         Assertions.assertTrue(result.isEmpty());
-//     }
-
-//     @Test
-//     void testManageVehicleTypeResponseDTO_InvalidType_ThrowsException() {
-//         Bikes bike = new Bikes();
-//         List<Vehicles> list = java.util.List.of(bike);
-//         IllegalArgumentException ex = Assertions.assertThrows(
-//             IllegalArgumentException.class,
-//             () -> apiMiddleware.manageVehicleTypeResponseDTO("skates", list)
-//         );
-//         Assertions.assertTrue(ex.getMessage().contains("Tipo de veículo inválido"));
-//     }
-
-//     @Test
-//     void testManageVehicleTypeResponseDTO_MixedTypes_FilteredCorrectly() {
-//         Bikes bike = new Bikes();
-//         bike.setName("Bike1");
-//         bike.setBrand("BrandA");
-//         bike.setYear(2020);
-
-//         Cars car = new Cars();
-//         car.setName("Car1");
-//         car.setBrand("BrandB");
-//         car.setYear(2019);
-
-//         var list = java.util.List.of(bike, car);
-//         var result = apiMiddleware.manageVehicleTypeResponseDTO("bikes", new java.util.ArrayList<>(list));
-
-//         Assertions.assertEquals(1, result.size());
-//         Assertions.assertTrue(result.get(0) instanceof BikesResponseDTO);
-//         BikesResponseDTO dto = (BikesResponseDTO) result.get(0);
-//         Assertions.assertEquals("Bike1", dto.name());
-//     }
-// }
+    @Test
+    void manageVehicleTypeResponseDTOList_shouldThrowOnInvalidType() {
+        List<Vehicles> vehicles = List.of(new Cars());
+        assertThrows(IllegalArgumentException.class, () ->
+                apiMiddleware.manageVehicleTypeResponseDTOList("invalid", vehicles));
+    }
+}

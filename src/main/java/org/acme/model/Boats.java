@@ -11,6 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Class representing a boat. This class extends the Vehicles class and adds
+ * specific attributes for boats.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

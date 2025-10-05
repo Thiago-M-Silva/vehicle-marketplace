@@ -48,6 +48,20 @@ public class VehicleService {
     @Inject VehicleDocumentsRepository repository;
     @Inject VehicleMapper vehicleMapper;
 
+    /**
+     * Retrieves the appropriate PanacheRepositoryBase instance for the specified vehicle type.
+     * <p>
+     * This method returns a repository corresponding to the given vehicle type string.
+     * Supported types are "bikes", "cars", "boats", and "planes". The returned repository
+     * is cast to the generic type T which must extend Vehicles.
+     * </p>
+     * 
+     * @param vehicleType the type of vehicle (e.g., "bikes", "cars", "boats", "planes")
+     * @param <T> the type of vehicle entity, extending Vehicles
+     * @return the repository for the specified vehicle type
+     * @throws IllegalArgumentException if the vehicle type is unknown
+     * @suppressWarnings("unchecked") because of the generic cast based on runtime type
+     */
     @SuppressWarnings("unchecked")
     private <T extends Vehicles> PanacheRepositoryBase<T, UUID> getRepository(String vehicleType) {
         return (PanacheRepositoryBase<T, UUID>) switch (vehicleType.toLowerCase()) {
@@ -59,6 +73,13 @@ public class VehicleService {
         };
     }
 
+    /**
+     * Retrieves a list of all vehicles of the specified type.
+     *
+     * @param type the type of vehicles to list (e.g., "car", "truck", etc.)
+     * @return a list of {@link Vehicles} matching the specified type
+     * @throws RuntimeException if an error occurs while retrieving the vehicles
+     */
     public List<Vehicles> listAll(String type) {
         try {
             List<Vehicles> vehicles = getRepository(type).listAll();
@@ -68,6 +89,15 @@ public class VehicleService {
         }
     }
 
+    /**
+     * Finds a vehicle entity by its type and unique identifier.
+     *
+     * @param type the type of the vehicle (used to determine the repository)
+     * @param id the unique identifier of the vehicle to find; must not be null
+     * @param <T> the type of the vehicle entity extending {@link Vehicles}
+     * @return the vehicle entity of type {@code T} with the specified ID, or {@code null} if not found
+     * @throws IllegalArgumentException if {@code id} is {@code null}
+     */
     @SuppressWarnings("unchecked")
     public <T extends Vehicles> T findById(String type, UUID id) {
         if (id == null) {
@@ -77,6 +107,15 @@ public class VehicleService {
         return (T) repository.findById(id);
     }
 
+    /**
+     * Saves the given vehicle entity to the appropriate repository based on the specified type.
+     *
+     * @param type the type of the vehicle, used to determine the correct repository
+     * @param vehicle the vehicle entity to be persisted; must not be null
+     * @param <T> the type of the vehicle, extending {@link Vehicles}
+     * @return the persisted vehicle entity
+     * @throws IllegalArgumentException if the vehicle is null
+     */
     @Transactional
     public <T extends Vehicles> T save(String type, T vehicle) {
         if (vehicle == null) {
@@ -87,6 +126,14 @@ public class VehicleService {
         return vehicle;
     }
 
+    /**
+     * Persists a list of vehicles of the specified type into the corresponding repository.
+     *
+     * @param type the type of vehicles to be saved, used to determine the appropriate repository
+     * @param vehicles the list of vehicles to be persisted; must not be null or empty
+     * @return the number of vehicles successfully persisted
+     * @throws IllegalArgumentException if the vehicles list is null or empty
+     */
     @Transactional
     public int saveMultipleVehicles(String type, List<Vehicles> vehicles) {
         if (vehicles == null || vehicles.isEmpty()) {
@@ -98,6 +145,20 @@ public class VehicleService {
         return vehicles.size();
     }
 
+    /**
+     * Saves a vehicle of the specified type along with its associated document, if provided.
+     *
+     * <p>This method first persists the given vehicle entity. If a document InputStream and filename are provided,
+     * it also saves the document associated with the saved vehicle.</p>
+     *
+     * @param <T>         the type of the vehicle, extending {@link Vehicles}
+     * @param type        the type identifier for the vehicle
+     * @param vehicle     the vehicle entity to be saved
+     * @param fileStream  the InputStream of the document to be saved (can be {@code null})
+     * @param filename    the name of the document file (can be {@code null})
+     * @param contentType the MIME type of the document
+     * @return the saved vehicle entity
+     */
     @Transactional
     public <T extends Vehicles> T saveVehicleWithDocuments(String type, T vehicle, InputStream fileStream, String filename, String contentType){
         T savedVehicle = save(type, vehicle);
@@ -109,6 +170,16 @@ public class VehicleService {
         return savedVehicle;
     }
 
+    /**
+     * Saves a document associated with a vehicle by uploading the file to GridFS and persisting its metadata.
+     *
+     * @param vehicleId   the UUID of the vehicle to associate the document with; may be null
+     * @param filename    the name of the file to be saved
+     * @param contentType the MIME type of the file
+     * @param fileStream  the InputStream of the file to be uploaded
+     * @return the persisted {@link VehicleDocuments} entity containing metadata about the uploaded document
+     * @throws RuntimeException if the file upload fails
+     */
     @Transactional
     public VehicleDocuments saveDocument(UUID vehicleId, String filename, String contentType, InputStream fileStream){
         ObjectId fileObjectId = null;
@@ -131,6 +202,14 @@ public class VehicleService {
         return doc;
     }
 
+    /**
+     * Deletes a vehicle entity by its unique identifier and type.
+     *
+     * @param type the type of the vehicle repository to use
+     * @param id the unique identifier of the vehicle to delete; must not be null
+     * @return true if the entity was successfully deleted, false otherwise
+     * @throws IllegalArgumentException if the provided id is null
+     */
     @Transactional
     public boolean deleteById(String type, UUID id) {
         if (id == null) {
@@ -140,6 +219,14 @@ public class VehicleService {
         return repository.deleteById(id);
     }
 
+    /**
+     * Deletes multiple vehicles of the specified type whose IDs are provided in the list.
+     *
+     * @param type   the type of vehicle repository to use for deletion
+     * @param idList the list of UUIDs representing the vehicles to be deleted; must not be empty
+     * @return the number of vehicles deleted
+     * @throws IllegalArgumentException if {@code idList} is empty
+     */
     @Transactional
     public Long deleteManyVehicles(String type, List<UUID> idList){
         if(idList.isEmpty()){
@@ -149,6 +236,19 @@ public class VehicleService {
         return repository.delete("id in ?1", idList);
     }
 
+    /**
+     * Edits the information of an existing vehicle based on its type and ID.
+     * <p>
+     * This method updates the details of a vehicle (bike, boat, car, or plane) by mapping the provided
+     * {@link Vehicles} object to the appropriate request DTO and applying the changes to the existing entity.
+     * </p>
+     *
+     * @param type    the type of the vehicle ("bikes", "boats", "cars", or "planes")
+     * @param id      the unique identifier of the vehicle to be edited
+     * @param vehicle the updated vehicle information; must not be {@code null}
+     * @throws IllegalArgumentException if {@code vehicle} is {@code null}, if the vehicle with the specified
+     *                                  {@code id} does not exist, or if the {@code type} is unknown
+     */
     @Transactional
     public void editVehicleInfo(String type, UUID id, Vehicles vehicle) {
         if (vehicle == null) {
@@ -182,6 +282,16 @@ public class VehicleService {
         
     }
 
+    /**
+     * Searches for vehicles based on the provided vehicle type and search parameters.
+     * Dynamically builds a query using the fields from the {@link VehicleSearchDTO} to filter results.
+     * Supports filtering by brand, model, year range, price range, category, color, fuel type, and vehicle status.
+     * Also supports sorting and pagination.
+     *
+     * @param vehicleType the type of vehicle to search for (e.g., "car", "truck", etc.)
+     * @param searchParams the search parameters containing filter, sort, and pagination options
+     * @return a list of vehicles matching the search criteria
+     */
     public List<? extends Vehicles> searchVehicle(
         String vehicleType,
         VehicleSearchDTO searchParams
@@ -230,7 +340,6 @@ public class VehicleService {
             params.put("vehicleStatus", EStatus.valueOf(searchParams.getVehicleStatus().toUpperCase()));
         }
 
-        // defensivo: garantir campo de ordenação
         String sortBy = (searchParams.getSortBy() == null || searchParams.getSortBy().isBlank())
                 ? "createDate" : searchParams.getSortBy();
 
@@ -241,10 +350,8 @@ public class VehicleService {
                 ? Sort.descending(sortBy)
                 : Sort.ascending(sortBy);
 
-        // obtém repositório correto e executa a busca
         var repository = getRepository(vehicleType);
 
-        // usa o overload que aceita Sort quando disponível
         var panacheQuery = repository.find(query.toString(), sort, params);
 
         var page = Page.of(Math.max(0, searchParams.getPage()), Math.max(1, searchParams.getSize()));

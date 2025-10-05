@@ -21,6 +21,22 @@ import org.mapstruct.MappingTarget;
 
 import java.math.BigDecimal;
 
+/**
+ * VehicleMapper is a MapStruct mapper interface responsible for converting between
+ * vehicle entity classes (Cars, Bikes, Boats, Planes) and their corresponding DTOs.
+ * <p>
+ * This interface defines mapping methods for:
+ * <ul>
+ *   <li>Converting request DTOs to entity objects (ignoring the "owner" field).</li>
+ *   <li>Converting entity objects to response DTOs.</li>
+ *   <li>Converting lists of entities to lists of DTOs and vice versa.</li>
+ *   <li>Updating existing vehicle entities from request DTOs.</li>
+ *   <li>Custom mapping between {@link BigDecimal} and {@code float} types.</li>
+ * </ul>
+ * <p>
+ * The mapper uses the {@code jakarta-cdi} component model for dependency injection
+ * and delegates user-related mappings to {@link UserMapper}.
+ */
 @Mapper(componentModel = "jakarta-cdi", uses = {UserMapper.class})
 public interface VehicleMapper {
 

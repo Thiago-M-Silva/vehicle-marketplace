@@ -25,6 +25,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Class representing a user. This class includes personal details, contact information,
+ * role, timestamps, and relationships to vehicles and transactions. This class is linked to
+ * Keycloak for authentication and authorization.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,7 +37,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "users", schema = "mktplace")
 public class Users {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -58,7 +62,6 @@ public class Users {
     @UpdateTimestamp
     private Instant updateDate;
 
-    // 🔹 Stripe field
     @Column(name = "stripe_account_id")
     private String stripeAccountId;
 

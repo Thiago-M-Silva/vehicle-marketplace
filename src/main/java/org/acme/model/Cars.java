@@ -11,6 +11,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Class representing a car. This class extends the Vehicles class and adds
+ * specific attributes for cars.
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor

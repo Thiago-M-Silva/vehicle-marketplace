@@ -8,9 +8,8 @@ import org.acme.dtos.UsersResponseDTO;
 import org.acme.services.UserService;
 
 import jakarta.annotation.security.PermitAll;
-// import jakarta.annotation.security.RolesAllowed;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -29,9 +28,18 @@ public class UsersController {
 
     @Inject UserService userService;
 
+    /**
+     * Retrieves a list of all users.
+     * <p>
+     * This endpoint is accessible only to users with the "admin" role.
+     * </p>
+     *
+     * @return a {@link Response} containing a list of {@link UsersResponseDTO} objects if successful,
+     *         or an error message with HTTP 500 status if an exception occurs.
+     */
     @GET
     @Path("/get")
-    // @RolesAllowed("admin")
+    @RolesAllowed("admin")
     public Response getAllUsers() {
         try {
             List<UsersResponseDTO> users = userService.getAllUsers();
@@ -43,10 +51,19 @@ public class UsersController {
         }
     }
 
-    //TOFIX: 
+
+    /**
+     * Retrieves a user by their unique identifier.
+     * <p>
+     * This endpoint is accessible only to users with the "admin" role.
+     * </p>
+     *
+     * @param id the UUID of the user to retrieve
+     * @return a {@link Response} containing the user data if found, or an appropriate error message if not found or if an error occurs
+     */
     @GET
     @Path("/get/{id}")
-    // @RolesAllowed("admin")
+    @RolesAllowed("admin")
     public Response getUserById(@PathParam("id") UUID id) {
         try {
             UsersResponseDTO user = userService.getUserById(id);
@@ -64,8 +81,18 @@ public class UsersController {
         }
     }
 
+    /**
+     * Handles HTTP POST requests to create a new user.
+     * <p>
+     * This endpoint is accessible to all users and expects a {@link UsersRequestDTO}
+     * object containing the user details in the request body. If the user is successfully
+     * created, it returns a {@link UsersResponseDTO} with HTTP status 201 (Created).
+     * In case of an error, it returns an error message with HTTP status 500 (Internal Server Error).
+     *
+     * @param data the user details to be created
+     * @return a Response containing the created user or an error message
+     */
     @POST
-    @Transactional
     @Path("/save")
     @PermitAll
     public Response addUser(UsersRequestDTO data) {
@@ -79,10 +106,19 @@ public class UsersController {
         }
     }
 
+    /**
+     * Deletes a user with the specified UUID.
+     * <p>
+     * This endpoint is accessible only to users with the "admin" role.
+     * If the user is successfully deleted, a 204 No Content response is returned.
+     * If the user is not found or an error occurs, a 404 Not Found response is returned with an error message.
+     *
+     * @param id the UUID of the user to delete
+     * @return a Response indicating the outcome of the delete operation
+     */
     @DELETE
     @Path("/delete/{id}")
-    // @RolesAllowed("admin")
-    @Transactional
+    @RolesAllowed("admin")
     public Response deleteUser(@PathParam("id") UUID id) {
         try {
             userService.deleteUser(id);
@@ -94,6 +130,15 @@ public class UsersController {
         }
     }
 
+    /**
+     * Updates the user information for the specified user ID.
+     *
+     * @param id   the UUID of the user to be updated
+     * @param user the user data to update, encapsulated in a {@link UsersRequestDTO}
+     * @return a {@link Response} indicating the outcome of the update operation:
+     *         - 200 OK if the update was successful
+     *         - 404 NOT FOUND with an error message if the user could not be found or updated
+     */
     @PUT
     @Path("/put/{id}")
     @PermitAll

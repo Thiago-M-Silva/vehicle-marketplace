@@ -20,6 +20,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Class representing a Payment. This class includes details about the payment method,
+ * payment status, amount, transaction ID, associated users, vehicles, and timestamps.
+ */
+
 @Entity
 @Getter
 @Setter

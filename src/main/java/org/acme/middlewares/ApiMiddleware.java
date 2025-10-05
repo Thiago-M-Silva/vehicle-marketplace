@@ -24,10 +24,20 @@ public class ApiMiddleware {
 
     @Inject VehicleMapper mapper;
     
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Converte um DTO para a entidade correspondente
+     * Processes a vehicle request based on the specified vehicle type and request body.
+     * 
+     * This method deserializes the provided JSON body into the appropriate request DTO
+     * according to the vehicle type ("cars", "bikes", "boats", or "planes"), then maps
+     * it to a corresponding {@link Vehicles} entity using the mapper.
+     *
+     * @param vehicleType the type of vehicle ("cars", "bikes", "boats", or "planes")
+     * @param body the JSON request body containing vehicle data
+     * @return a {@link Vehicles} entity mapped from the request DTO
+     * @throws IllegalArgumentException if the request body is null or the vehicle type is invalid
+     * @throws RuntimeException if an error occurs during JSON parsing or mapping
      */
     public Vehicles manageVehiclesTypeRequestDTO(String vehicleType, JsonObject body) {
         if (body == null) {
@@ -59,6 +69,15 @@ public class ApiMiddleware {
         }
     }
 
+    /**
+     * Processes a list of vehicle data represented as {@link JsonObject} and converts each entry
+     * to a {@link Vehicles} object based on the specified vehicle type.
+     *
+     * @param vehicleType the type of vehicles to be managed (e.g., "car", "truck", etc.)
+     * @param vehicles a list of {@link JsonObject} representing vehicle data; must not be {@code null}
+     * @return a list of {@link Vehicles} objects corresponding to the input data and vehicle type
+     * @throws IllegalArgumentException if the {@code vehicles} list is {@code null}
+     */
     public List<Vehicles> manageVehiclesTypeRequestDTO(String vehicleType, List<JsonObject> vehicles) {
         if (vehicles == null) {
             throw new IllegalArgumentException("Veículo não pode ser nulo");
@@ -69,6 +88,16 @@ public class ApiMiddleware {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Processes a list of vehicle data represented as maps, converting each map to a JSON object
+     * and delegating to {@code manageVehiclesTypeRequestDTO} for further handling based on the vehicle type.
+     *
+     * @param vehicleType the type of vehicle to be processed
+     * @param vehicles a list of maps, each representing a vehicle's data
+     * @return a list of {@code Vehicles} objects resulting from processing each input map
+     * @throws IllegalArgumentException if the {@code vehicles} list is {@code null}
+     * @throws RuntimeException if an error occurs during JSON serialization or processing of a vehicle item
+     */
     public List<Vehicles> manageListVehiclesTypeRequestDTO(String vehicleType, List<Map<String, Object>> vehicles) {
         if (vehicles == null) {
             throw new IllegalArgumentException("Veículo não pode ser nulo");
@@ -77,7 +106,6 @@ public class ApiMiddleware {
         return vehicles.stream()
             .map(map -> {
                 try {
-                    // converte Map -> JSON string -> jakarta.json.JsonObject e reaproveita o método existente
                     String json = objectMapper.writeValueAsString(map);
                     jakarta.json.JsonObject jsonObject = jakarta.json.Json.createReader(new java.io.StringReader(json)).readObject();
                     return manageVehiclesTypeRequestDTO(vehicleType, jsonObject);
@@ -89,9 +117,13 @@ public class ApiMiddleware {
     }
 
     /**
-     * Converte uma entidade única para o DTO de resposta correspondente
+     * Converts a list of vehicle entities to their corresponding DTO list based on the specified vehicle type.
+     *
+     * @param vehicleType the type of vehicle ("bikes", "cars", "boats", or "planes")
+     * @param vehicles the list of vehicle entities to be converted; must not be null
+     * @return a list of DTOs corresponding to the specified vehicle type
+     * @throws IllegalArgumentException if the vehicleType is invalid or if vehicles is null
      */
-    // Para lista de veículos
     public Object manageVehicleTypeResponseDTO(String vehicleType, List<? extends Vehicles> vehicles) {
         if (vehicles == null) {
             throw new IllegalArgumentException("A lista de veículos não pode ser nula");
@@ -106,7 +138,14 @@ public class ApiMiddleware {
         };
     }
 
-    // Para veículo único
+    /**
+     * Converts a {@link Vehicles} object to its corresponding DTO based on the specified vehicle type.
+     *
+     * @param vehicleType the type of the vehicle ("bikes", "cars", "boats", or "planes")
+     * @param vehicle the vehicle entity to be converted; must not be {@code null}
+     * @return the DTO representation of the vehicle, specific to the given type
+     * @throws IllegalArgumentException if the vehicle is {@code null} or if the vehicle type is invalid
+     */
     public Object manageVehicleTypeResponseDTO(String vehicleType, Vehicles vehicle) {
         if (vehicle == null) {
             throw new IllegalArgumentException("O veículo não pode ser nulo");
@@ -121,8 +160,17 @@ public class ApiMiddleware {
         };
     }
 
+
     /**
-     * Converte uma lista de entidades para a lista de DTOs correspondente
+     * Processes a list of {@link Vehicles} and returns a list of corresponding DTOs based on the specified vehicle type.
+     *
+     * This method filters the input list of vehicles by the provided vehicle type ("bikes", "cars", "boats", or "planes"),
+     * casts them to the appropriate subclass, and maps them to their respective DTO representations using the mapper.
+     *
+     * @param vehicleType the type of vehicle to filter and map ("bikes", "cars", "boats", or "planes")
+     * @param vehicles the list of {@link Vehicles} to process
+     * @return a list of DTOs corresponding to the specified vehicle type; returns an empty list if the input is null or empty
+     * @throws IllegalArgumentException if the provided vehicle type is invalid
      */
     public List<?> manageVehicleTypeResponseDTOList(String vehicleType, List<Vehicles> vehicles){
         if (vehicles == null || vehicles.isEmpty()){

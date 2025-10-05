@@ -12,6 +12,23 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+/**
+ * Mapper interface for converting between Users entities and their corresponding DTOs.
+ * Utilizes MapStruct for automatic mapping and Jakarta CDI for dependency injection.
+ *
+ * Mapping rules:
+ * - Ignores the 'transaction', 'createDate', and 'updateDate' fields when mapping from UsersRequestDTO to Users.
+ * - Provides methods for mapping single entities and lists.
+ * - Includes custom mapping methods for converting between {@link Instant} and {@link LocalDate}.
+ *
+ * Methods:
+ * - {@link #toUser(UsersRequestDTO)}: Maps a UsersRequestDTO to a Users entity.
+ * - {@link #toUserDTO(Users)}: Maps a Users entity to a UsersResponseDTO.
+ * - {@link #toUserDTOList(List)}: Maps a list of Users entities to a list of UsersResponseDTOs.
+ * - {@link #updateUserFromDTO(UsersRequestDTO, Users)}: Updates an existing Users entity from a UsersRequestDTO.
+ * - {@link #map(Instant)}: Converts an Instant to a LocalDate.
+ * - {@link #map(LocalDate)}: Converts a LocalDate to an Instant.
+ */
 @Mapper(componentModel = "jakarta-cdi")
 public interface UserMapper {
 
@@ -27,6 +44,7 @@ public interface UserMapper {
     @Mapping(target = "transaction", ignore = true)
     @Mapping(target = "createDate", ignore = true)
     @Mapping(target = "updateDate", ignore = true)
+    @Mapping(target = "keycloakId", ignore = true)
     void updateUserFromDTO(UsersRequestDTO dto, @MappingTarget Users entity);
 
     default LocalDate map(Instant instant) {
