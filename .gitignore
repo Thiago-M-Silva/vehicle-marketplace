@@ -63,3 +63,5 @@ lerna-debug.log*
 
 # Other
 queries
+.dev-data/postgresql
+.dev-data/mongodb
