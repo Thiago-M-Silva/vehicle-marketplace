@@ -1,6 +1,6 @@
 const header = () => {
   return (
-    <div className="flex bg-amber-950 ">
+    <div className="flex border-2 border-amber-700 ">
         <div>
             <div>
                 Image logo
