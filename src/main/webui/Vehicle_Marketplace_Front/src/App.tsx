@@ -1,9 +1,11 @@
 import './App.css'
-import { Home } from './pages/home'
+import { AppRoutes } from './routes/appRoutes'
 
 export const App = () => {
   return (
-      <Home />
+    <div className="w-full h-full">
+      <AppRoutes />
+    </div>
   )
 }
 
