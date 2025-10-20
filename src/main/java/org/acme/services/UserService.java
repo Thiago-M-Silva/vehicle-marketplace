@@ -8,6 +8,7 @@ import org.acme.repositories.UsersRepository;
 
 import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
+import org.acme.infra.KeycloakAdminClient;
 import org.acme.interfaces.UserMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,6 +21,7 @@ public class UserService {
     @Inject UserMapper userMapper;
     @Inject StripeService stripeService;
     @Inject UsersRepository usersRepository;
+    @Inject KeycloakAdminClient keycloakAdminClient;
 
     /**
      * Creates a new user in the system
@@ -35,6 +37,12 @@ public class UserService {
     @Transactional
     public UsersResponseDTO createUser(UsersRequestDTO data) {
         Users user = userMapper.toUser(data);
+        String userKeycloakId = keycloakAdminClient.createUser(
+            data.name(),
+            data.email(),
+            data.password()
+        );
+        user.setKeycloakId(userKeycloakId);
         usersRepository.persist(user);
         return userMapper.toUserDTO(user);
     }
