@@ -27,7 +27,7 @@ public class KeycloakAdminClient {
 
     private Keycloak getInstance() {
         return KeycloakBuilder.builder()
-                .serverUrl(serverUrl) // must NOT include /realms
+                .serverUrl(serverUrl) 
                 .realm("master")
                 .grantType(OAuth2Constants.PASSWORD)
                 .clientId("admin-cli")
@@ -49,6 +49,9 @@ public class KeycloakAdminClient {
 
         if (response.getStatus() != 201) {
             String errorMsg;
+            System.out.println("Keycloak response: " + response.getStatus() + " " + response.getStatusInfo());
+            System.out.println("Error body: " + response.readEntity(String.class));
+
             try {
                 errorMsg = response.readEntity(String.class);
             } catch (Exception e) {

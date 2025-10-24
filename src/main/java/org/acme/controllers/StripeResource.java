@@ -19,8 +19,7 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class StripeResource {
 
-    @Inject
-    StripeService stripeService;
+    @Inject StripeService stripeService;
 
     // 1️⃣ Create connected account
     @POST
