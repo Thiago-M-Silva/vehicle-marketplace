@@ -5,7 +5,10 @@ import java.util.UUID;
 
 import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
+import org.acme.services.StripeService;
 import org.acme.services.UserService;
+
+import com.stripe.Stripe;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,6 +30,7 @@ import jakarta.ws.rs.core.Response;
 public class UsersController {
 
     @Inject UserService userService;
+    @Inject StripeService stripeService;
 
     /**
      * Retrieves a list of all users.
@@ -149,6 +153,20 @@ public class UsersController {
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                            .entity("Error editing user: " + e.getMessage())
+                           .build();
+        }
+    }
+
+    @PUT
+    @Path("/put/setSeller")
+    @RolesAllowed("user")
+    public Response setUserAsSeller(UsersRequestDTO user){
+        try {
+            userService.onboardSeller(user.id());
+            return Response.ok().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity("Error setting user as seller: " + e.getMessage())
                            .build();
         }
     }
