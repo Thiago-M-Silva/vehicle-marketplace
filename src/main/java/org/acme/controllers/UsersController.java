@@ -43,7 +43,8 @@ public class UsersController {
      */
     @GET
     @Path("/get")
-    @RolesAllowed("admin")
+    // @RolesAllowed("admin")
+    @PermitAll
     public Response getAllUsers() {
         try {
             List<UsersResponseDTO> users = userService.getAllUsers();
@@ -158,12 +159,13 @@ public class UsersController {
     }
 
     @PUT
-    @Path("/put/setSeller")
-    @RolesAllowed("user")
-    public Response setUserAsSeller(UsersRequestDTO user){
+    @Path("/put/setSeller/{id}")
+    @PermitAll
+    public Response setUserAsSeller(@PathParam("id") UUID id){
         try {
-            userService.onboardSeller(user.id());
-            return Response.ok().build();
+            userService.onboardSeller(id);
+            var onboardedSeller = userService.generateOnboardingLink(id);
+            return Response.ok(onboardedSeller).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                            .entity("Error setting user as seller: " + e.getMessage())

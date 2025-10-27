@@ -115,6 +115,7 @@ public class UserService {
         if (user == null) {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
+
         userMapper.updateUserFromDTO(data, user);
         return userMapper.toUserDTO(user);
     }
@@ -132,6 +133,7 @@ public class UserService {
      * @throws IllegalArgumentException if the user with the specified ID is not found
      * @throws Exception if an error occurs during the Stripe account creation or persistence process
      */
+    @Transactional
     public UsersResponseDTO onboardSeller(UUID userId) throws Exception {
         Users user = usersRepository.findById(userId);
         if (user == null) {
@@ -145,7 +147,6 @@ public class UserService {
         String accountId = stripeService.createConnectedAccount(user.getEmail());
 
         user.setStripeAccountId(accountId);
-        usersRepository.persist(user);
 
         return userMapper.toUserDTO(user);
     }
