@@ -65,3 +65,4 @@ lerna-debug.log*
 queries
 .dev-data/postgresql
 .dev-data/mongodb
+.stripe

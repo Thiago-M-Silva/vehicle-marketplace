@@ -149,6 +149,10 @@
             <artifactId>keycloak-admin-client</artifactId>
             <version>26.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-mailer</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

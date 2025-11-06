@@ -1,0 +1,60 @@
+package org.acme.services;
+
+import com.stripe.model.Invoice;
+import com.stripe.model.PaymentIntent;
+import io.quarkus.mailer.Mail;
+import io.quarkus.mailer.Mailer;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import java.math.BigDecimal;
+
+@ApplicationScoped
+public class EmailService {
+
+    @Inject
+    Mailer mailer;
+
+    public void sendPaymentSuccessEmail(PaymentIntent paymentIntent) {
+        System.out.println("Preparing to send payment success email for: " + paymentIntent.toJson());
+
+        if (paymentIntent.getCustomer() == null) {
+            // Or get email from your internal user database using paymentIntent metadata
+            return; 
+        }
+        String to = paymentIntent.getCustomer(); // This might be a customer ID, you'd need to fetch the email
+        String subject = "Your Payment was Successful!";
+        BigDecimal amount = BigDecimal.valueOf(paymentIntent.getAmount()).movePointLeft(2);
+        String body = String.format(
+            "<h1>Payment Confirmation</h1>" +
+            "<p>Dear Customer,</p>" +
+            "<p>We are happy to inform you that your payment of <strong>%.2f %s</strong> was successful.</p>" +
+            "<p>Thank you for your business!</p>",
+            amount, paymentIntent.getCurrency().toUpperCase()
+        );
+
+        // In a real app, you would look up the customer's email address from the customer ID
+        // For this example, we'll assume the 'to' variable holds an email.
+        mailer.send(Mail.withHtml("customer@example.com", subject, body));
+    }
+
+    public void sendInvoicePaidEmail(Invoice invoice) {
+        if (invoice.getCustomerEmail() == null) {
+            return;
+        }
+        String to = invoice.getCustomerEmail();
+        String subject = "Your Subscription Invoice has been Paid!";
+        BigDecimal amount = BigDecimal.valueOf(invoice.getAmountPaid()).movePointLeft(2);
+        String body = String.format(
+            "<h1>Subscription Payment Confirmation</h1>" +
+            "<p>Dear Customer,</p>" +
+            "<p>Your invoice for subscription %s has been paid successfully.</p>" +
+            "<p>Amount: <strong>%.2f %s</strong></p>" +
+            "<p>Thank you for your continued business!</p>",
+            invoice.getSubscription(), amount, invoice.getCurrency().toUpperCase()
+        );
+
+        mailer.send(
+            Mail.withHtml(to, subject, body)
+        );
+    }
+}

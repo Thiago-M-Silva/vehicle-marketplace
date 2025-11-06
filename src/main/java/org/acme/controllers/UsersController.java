@@ -8,8 +8,6 @@ import org.acme.dtos.UsersResponseDTO;
 import org.acme.services.StripeService;
 import org.acme.services.UserService;
 
-import com.stripe.Stripe;
-
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
