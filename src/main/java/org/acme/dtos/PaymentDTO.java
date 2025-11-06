@@ -8,6 +8,7 @@ public record PaymentDTO(
     String sellerAccountId,
     Long applicationFee,
     UUID vehicleId,
-    String vehicleType
+    String vehicleType,
+    String receiptEmail
 ) {
 }

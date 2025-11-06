@@ -16,6 +16,7 @@ import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
+import org.acme.interfaces.UserMapper;
 import org.acme.interfaces.VehicleMapper;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.model.Bikes;
@@ -47,6 +48,7 @@ public class VehicleService {
     @Inject GridFSService gridFSService;
     @Inject VehicleDocumentsRepository repository;
     @Inject VehicleMapper vehicleMapper;
+    @Inject UserService userService;
 
     /**
      * Retrieves the appropriate PanacheRepositoryBase instance for the specified vehicle type.
@@ -280,6 +282,27 @@ public class VehicleService {
             default -> throw new IllegalArgumentException("Unknown vehicle type: " + type);
         }
         
+    }
+
+    @Transactional
+    public void updateVehicleSold(String type, UUID id, String customerEmail) {
+        if (customerEmail == null || customerEmail.isBlank()) {
+            throw new IllegalArgumentException("Customer email cannot be null or blank");
+        }
+
+        var vehicle = findById(type, id);
+        
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Vehicle not found with ID: " + id);
+        }
+        
+        var customer = userService.getUserByEmail(customerEmail);
+        if (customer == null) {
+            throw new IllegalArgumentException("Customer not found with email: " + customerEmail);
+        }
+
+        vehicle.setOwner(userService.userMapper.toUser(customer));
+        userService.userMapper.updateUserFromDTO(userService.userMapper.toUserDTO(customer), vehicle.getOwner());
     }
 
     /**

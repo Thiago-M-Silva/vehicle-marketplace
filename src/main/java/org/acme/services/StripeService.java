@@ -24,6 +24,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
+import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -78,7 +80,10 @@ public class StripeService {
                 Long amount,
                 String currency,
                 String sellerAccountId, // acct_xxx from Stripe Connect
-                Long applicationFee // optional, in cents
+                Long applicationFee,
+                UUID vehicleId,
+                String vehicleType,
+                String receiptEmail
         ) throws StripeException {
                 PaymentIntentCreateParams.Builder builder = PaymentIntentCreateParams.builder()
                         .setAmount(amount)
@@ -92,7 +97,12 @@ public class StripeService {
                                 PaymentIntentCreateParams.TransferData.builder()
                                         .setDestination(sellerAccountId)
                                         .build()
-                        );
+                        )
+                        .setReceiptEmail(receiptEmail)
+                        .putAllMetadata(Map.of(
+                                "vehicle_id", vehicleId.toString(),
+                                "vehicle_type", vehicleType
+                        ));
 
                 if (applicationFee != null && applicationFee > 0) {
                         builder.setApplicationFeeAmount(applicationFee);

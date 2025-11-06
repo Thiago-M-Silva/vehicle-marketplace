@@ -14,8 +14,10 @@ import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
+
 import org.acme.services.StripeService;
 import org.acme.services.EmailService;
+import org.acme.services.VehicleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +25,11 @@ import org.slf4j.LoggerFactory;
 public class StripeWebhookResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookResource.class);
 
-    @Inject
-    StripeService stripeService;
+    @Inject StripeService stripeService;
 
-    @Inject
-    EmailService emailService;
+    @Inject EmailService emailService;
+
+    @Inject VehicleService vehicleService;
 
     @POST
     @Consumes("application/json")
@@ -45,31 +47,33 @@ public class StripeWebhookResource {
 
         // Deserialize the nested object inside the event
         StripeObject stripeObject = event.getDataObjectDeserializer().getObject().orElse(null);
+        System.out.println("Received event: " + event.getType());
 
         // Handle the event
         switch (event.getType()) {
             case "payment_intent.succeeded":
                 PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
-                // LOGGER.info("Payment for {} succeeded.", paymentIntent.getAmount());
                 emailService.sendPaymentSuccessEmail(paymentIntent);
-                // System.out.println("Payment succeeded" + paymentIntent.toJson());
+                vehicleService.editVehicleInfo(payload, id, vehicle);
+                LOGGER.info("Payment for {} succeeded.", paymentIntent.getAmount());
+                System.out.println("Payment succeeded" + paymentIntent.toJson());
                 // TODO: Fulfill the single trade purchase (e.g., update vehicle status to 'SOLD')
                 break;
             case "invoice.paid":
                 Invoice invoice = (Invoice) stripeObject;
-                // LOGGER.info("Invoice {} paid for subscription {}.", invoice.getId(), invoice.getSubscription());
+                LOGGER.info("Invoice {} paid for subscription {}.", invoice.getId(), invoice.getSubscription());
                 emailService.sendInvoicePaidEmail(invoice);
-                // System.out.println("Payment invoice succeeded" + invoice.toJson());
+                System.out.println("Payment invoice succeeded" + invoice.toJson());
                 // TODO: Fulfill the rental for the billing period (e.g., mark vehicle as 'RENTED' until next billing date)
                 break;
             case "payment_intent.payment_failed":
                 PaymentIntent paymentIntentFailed = (PaymentIntent) stripeObject;
-                // System.out.println("Payment failed" + paymentIntentFailed.toJson());
-                // LOGGER.warn("Payment for {} failed.", paymentIntentFailed.getAmount());
+                System.out.println("Payment failed" + paymentIntentFailed.toJson());
+                LOGGER.warn("Payment for {} failed.", paymentIntentFailed.getAmount());
                 break;
             // ... handle other event types like payment_intent.payment_failed
             default:
-                // LOGGER.warn("Unhandled event type: {}", event.getType());
+                LOGGER.warn("Unhandled event type: {}", event.getType());
         }
         return Response.ok().build();
     }

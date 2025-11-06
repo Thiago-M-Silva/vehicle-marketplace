@@ -37,6 +37,11 @@ public interface UserMapper {
     @Mapping(target = "updateDate", ignore = true)
     Users toUser(UsersRequestDTO dto);
 
+    @Mapping(target = "transaction", ignore = true)
+    @Mapping(target = "createDate", ignore = true)
+    @Mapping(target = "updateDate", ignore = true)
+    Users toUser(UsersResponseDTO dto);
+
     UsersResponseDTO toUserDTO(Users user);
 
     List<UsersResponseDTO> toUserDTOList(List<Users> users);

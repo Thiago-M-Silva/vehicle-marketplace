@@ -20,12 +20,14 @@ public class PaymentController {
     @POST
     public Response createPayment(PaymentDTO request) {
         try {
-            System.out.println("Creating payment: " + request);
             var intent = stripeService.createMarketplacePayment(
                     request.amount(),
                     request.currency(),
                     request.sellerAccountId(),
-                    request.applicationFee()
+                    request.applicationFee(),
+                    request.vehicleId(),
+                    request.vehicleType(),
+                    request.receiptEmail()
             );
             return Response.ok(intent.toJson()).build(); // includes client_secret
         } catch (Exception e) {

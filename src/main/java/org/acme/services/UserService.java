@@ -76,6 +76,21 @@ public class UserService {
         return user != null ? userMapper.toUserDTO(user) : null;
     }
 
+     /**
+     * Retrieves a user by their unique identifier
+     * <p>
+     * Receive a UUID id containing the user unique identifier.
+     * Find the user in the database and return it as a {@link UsersResponseDTO}.
+     * </p>
+     *
+     * @param UUID id containing the user unique identifier
+     * @return a {@link UsersResponseDTO} representing the found user, or null if not found
+     */
+    public UsersResponseDTO getUserByEmail(String email) {
+        Users user = usersRepository.find("email LIKE ?1", email).firstResult();
+        return user != null ? userMapper.toUserDTO(user) : null;
+    }
+
     /**
      * Deletes a user by their unique identifier
      * <p>
