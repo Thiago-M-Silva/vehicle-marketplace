@@ -16,20 +16,5 @@
 //    @Inject UsersRepository usersRepository;
 //    @Inject StripeService stripeService;
     
-//    public PaymentIntent processPayment(UUID sellerId, Long amount, String currency) throws Exception {
-//         Users seller = usersRepository.findById(sellerId);
-//         if (seller == null || seller.getStripeAccountId() == null) {
-//             throw new IllegalArgumentException("Seller does not have a connected account");
-//         }
-
-//         return stripeService.createMarketplacePayment(
-//                 amount,
-//                 currency,
-//                 seller.getStripeAccountId(),
-//                 500L, // platform fee (optional), in cents
-//                 vehicleId,
-//                 vehicleType,
-//                 customerEmail
-//         );
-//     }
+   
 // }

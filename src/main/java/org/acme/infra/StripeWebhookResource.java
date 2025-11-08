@@ -16,7 +16,12 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
 import org.acme.services.StripeService;
+import org.acme.services.UtilsService;
+
+import java.util.UUID;
+
 import org.acme.services.EmailService;
+// import org.acme.services.UserService;
 import org.acme.services.VehicleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +31,11 @@ public class StripeWebhookResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookResource.class);
 
     @Inject StripeService stripeService;
-
     @Inject EmailService emailService;
+    // @Inject VehicleService vehicleService;
+    @Inject UtilsService utilsService;
 
-    @Inject VehicleService vehicleService;
+    // @Inject UserService userService;
 
     @POST
     @Consumes("application/json")
@@ -53,11 +59,15 @@ public class StripeWebhookResource {
         switch (event.getType()) {
             case "payment_intent.succeeded":
                 PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
+                
                 emailService.sendPaymentSuccessEmail(paymentIntent);
-                vehicleService.editVehicleInfo(payload, id, vehicle);
-                LOGGER.info("Payment for {} succeeded.", paymentIntent.getAmount());
-                System.out.println("Payment succeeded" + paymentIntent.toJson());
-                // TODO: Fulfill the single trade purchase (e.g., update vehicle status to 'SOLD')
+                utilsService.updateOwner(
+                    paymentIntent.getMetadata().get("seller_stripe_id"),
+                    paymentIntent.getReceiptEmail(),
+                    UUID.fromString(paymentIntent.getMetadata().get("vehicle_id")),
+                    paymentIntent.getMetadata().get("vehicle_type")
+                );
+                
                 break;
             case "invoice.paid":
                 Invoice invoice = (Invoice) stripeObject;

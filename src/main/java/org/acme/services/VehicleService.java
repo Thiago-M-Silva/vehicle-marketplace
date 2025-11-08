@@ -16,7 +16,6 @@ import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
-import org.acme.interfaces.UserMapper;
 import org.acme.interfaces.VehicleMapper;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.model.Bikes;
@@ -301,8 +300,9 @@ public class VehicleService {
             throw new IllegalArgumentException("Customer not found with email: " + customerEmail);
         }
 
-        vehicle.setOwner(userService.userMapper.toUser(customer));
-        userService.userMapper.updateUserFromDTO(userService.userMapper.toUserDTO(customer), vehicle.getOwner());
+        var buyer = userService.userMapper.toUser(customer);
+        vehicle.setOwner(buyer);
+        userService.editUser(customer.id(), userService.userMapper.toUserRequestDTO(buyer));
     }
 
     /**

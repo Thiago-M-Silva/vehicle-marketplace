@@ -37,7 +37,7 @@ class UserServiceTest {
         UsersResponseDTO responseDTO = mock(UsersResponseDTO.class);
 
         when(userMapper.toUser(requestDTO)).thenReturn(user);
-        when(userMapper.toUserDTO(user)).thenReturn(responseDTO);
+        when(userMapper.toUserResponseDTO(user)).thenReturn(responseDTO);
 
         UsersResponseDTO result = userService.createUser(requestDTO);
 
@@ -51,7 +51,7 @@ class UserServiceTest {
         List<UsersResponseDTO> dtoList = Arrays.asList(mock(UsersResponseDTO.class), mock(UsersResponseDTO.class));
 
         when(usersRepository.listAll()).thenReturn(usersList);
-        when(userMapper.toUserDTOList(usersList)).thenReturn(dtoList);
+        when(userMapper.toUserResponseDTOList(usersList)).thenReturn(dtoList);
 
         List<UsersResponseDTO> result = userService.getAllUsers();
 
@@ -65,7 +65,7 @@ class UserServiceTest {
         UsersResponseDTO dto = mock(UsersResponseDTO.class);
 
         when(usersRepository.findById(id)).thenReturn(user);
-        when(userMapper.toUserDTO(user)).thenReturn(dto);
+        when(userMapper.toUserResponseDTO(user)).thenReturn(dto);
 
         UsersResponseDTO result = userService.getUserById(id);
 
@@ -113,7 +113,7 @@ class UserServiceTest {
 
         when(requestDTO.cpf()).thenReturn("12345678900");
         when(usersRepository.findById(id)).thenReturn(user);
-        when(userMapper.toUserDTO(user)).thenReturn(responseDTO);
+        when(userMapper.toUserResponseDTO(user)).thenReturn(responseDTO);
 
         UsersResponseDTO result = userService.editUser(id, requestDTO);
 
@@ -152,7 +152,7 @@ class UserServiceTest {
 
         when(usersRepository.findById(id)).thenReturn(user);
         when(user.getStripeAccountId()).thenReturn("acct_123");
-        when(userMapper.toUserDTO(user)).thenReturn(dto);
+        when(userMapper.toUserResponseDTO(user)).thenReturn(dto);
 
         UsersResponseDTO result = userService.onboardSeller(id);
 
@@ -170,7 +170,7 @@ class UserServiceTest {
         when(user.getStripeAccountId()).thenReturn(null);
         when(user.getEmail()).thenReturn("test@example.com");
         when(stripeService.createConnectedAccount("test@example.com")).thenReturn("acct_456");
-        when(userMapper.toUserDTO(user)).thenReturn(dto);
+        when(userMapper.toUserResponseDTO(user)).thenReturn(dto);
 
         UsersResponseDTO result = userService.onboardSeller(id);
 

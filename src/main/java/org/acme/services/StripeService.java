@@ -24,7 +24,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
-import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
