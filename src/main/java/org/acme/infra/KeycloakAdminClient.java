@@ -36,6 +36,29 @@ public class KeycloakAdminClient {
                 .build();
     }
 
+    /**
+     * Creates a new user in Keycloak and sets their initial password.
+     *
+     * <p>Behaviour:
+     * <ul>
+     *   <li>Obtains a Keycloak client instance.</li>
+     *   <li>Builds a UserRepresentation with the provided name and email (email used as username).</li>
+     *   <li>Sends a create request to the configured realm.</li>
+     *   <li>If the response status is not 201 (Created), logs the response and error body and throws a RuntimeException
+     *       containing the status information and error message.</li>
+     *   <li>On success, extracts the created user's ID from the Location header, creates a password credential
+     *       (non-temporary) and resets the user's password.</li>
+     * </ul>
+     *
+     * <p>Security note: the provided password is transmitted to Keycloak to set the user's credentials.
+     * Ensure secure transport (HTTPS) and appropriate handling of sensitive data in callers.
+     *
+     * @param name the first name to assign to the new user (may be null or empty)
+     * @param email the email address to assign and use as the username; must be unique within the realm
+     * @param password the password to assign to the new user; it will be stored according to the realm's credential policies
+     * @return the ID of the newly created user in Keycloak
+     * @throws RuntimeException if the user creation request fails (non-201 response) or the error body cannot be read
+     */
     public String createUser(String name, String email, String password) {
         Keycloak keycloak = getInstance();
 

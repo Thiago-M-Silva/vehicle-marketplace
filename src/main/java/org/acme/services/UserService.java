@@ -209,6 +209,22 @@ public class UserService {
         return stripeService.generateOnboardingLink(user.getStripeAccountId());
     }
 
+    /**
+     * Searches for users based on the provided search parameters.
+     * 
+     * @param searchParams A DTO containing search criteria including:
+     *                    - name: exact match for user name
+     *                    - email: partial match for email (case insensitive)
+     *                    - city: partial match for city (case insensitive)
+     *                    - state: partial match for state (case insensitive)
+     *                    - country: partial match for country (case insensitive)
+     *                    - sortBy: field to sort results by (defaults to "createDate")
+     *                    - direction: sort direction ("ASC" or "DESC", defaults to "ASC")
+     *                    - page: page number (zero-based, minimum 0)
+     *                    - size: page size (minimum 1)
+     * 
+     * @return A List of Users matching the search criteria, paginated according to the specified page and size
+     */
     public List<Users> searchUsers(UserSearchDTO searchParams){
         StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
@@ -253,46 +269,4 @@ public class UserService {
 
         return result;
     }
-
-    // @Transactional
-    // public void changeVehicleOwner(
-    //     String vehicleType, 
-    //     String vehicleId, 
-    //     String buyerEmail, 
-    //     String sellerStripeId
-    // ){
-    //     if (sellerStripeId == null || sellerStripeId.isBlank() || buyerEmail == null || buyerEmail.isBlank()){
-    //         throw new IllegalArgumentException("Seller cannot be null or blank");
-    //     }
-
-    //     if (vehicleId == null || vehicleId.isBlank() || vehicleType == null || vehicleType.isBlank()){
-    //         throw new IllegalArgumentException("Vehicle cannot be null or blank");
-    //     }
-
-    //     Users seller = usersRepository.find("stripeAccountId LIKE ?1", sellerStripeId).firstResult();
-    //     Users buyer = userMapper.toUser(getUserByEmail(buyerEmail));
-
-    //     var soldVehicle = vehicleService.findById(vehicleType, UUID.fromString(vehicleId));
-
-    //     switch (vehicleType.toLowerCase()) {
-    //         case "bikes":
-    //          buyer.setBikes((List) List.of(soldVehicle));
-             
-    //          break;
-    //         case "cars":
-    //          buyer.setCars((List) List.of(soldVehicle));
-             
-    //          break;
-    //         case "boats":
-    //          buyer.setBoats((List) List.of(soldVehicle));
-             
-    //          break;
-    //         case "planes":
-    //          buyer.setPlanes((List) List.of(soldVehicle));
-             
-    //          break;
-    //         default:
-    //          throw new IllegalArgumentException("Unknown vehicle type: " + vehicleType);
-    //     }
-    // }
 }

@@ -17,7 +17,6 @@ import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
 import org.acme.interfaces.VehicleMapper;
-import org.acme.middlewares.ApiMiddleware;
 import org.acme.model.Bikes;
 import org.acme.model.Boats;
 import org.acme.model.Cars;
@@ -39,7 +38,6 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class VehicleService {
-    @Inject ApiMiddleware apiMiddleware;
     @Inject BikesRepository bikesRepository;
     @Inject CarsRepository carsRepository;
     @Inject BoatsRepository boatsRepository;
@@ -104,8 +102,8 @@ public class VehicleService {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        var repository = getRepository(type);
-        return (T) repository.findById(id);
+        var repo = getRepository(type);
+        return (T) repo.findById(id);
     }
 
     /**
@@ -122,8 +120,8 @@ public class VehicleService {
         if (vehicle == null) {
             throw new IllegalArgumentException("Vehicle cannot be null");
         }
-        var repository = getRepository(type);
-        repository.persist(vehicle);
+        var repo = getRepository(type);
+        repo.persist(vehicle);
         return vehicle;
     }
 
@@ -141,8 +139,8 @@ public class VehicleService {
             throw new IllegalArgumentException("Lista de veículos não pode ser nula ou vazia");
         }
 
-        var repository = getRepository(type);
-        vehicles.forEach(repository::persist);
+        var repo = getRepository(type);
+        vehicles.forEach(repo::persist);
         return vehicles.size();
     }
 
@@ -216,8 +214,8 @@ public class VehicleService {
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
-        var repository = getRepository(type);
-        return repository.deleteById(id);
+        var repo = getRepository(type);
+        return repo.deleteById(id);
     }
 
     /**
@@ -233,8 +231,10 @@ public class VehicleService {
         if(idList.isEmpty()){
             throw new IllegalArgumentException("IdList cannot be empty");
         }
-        var repository = getRepository(type);
-        return repository.delete("id in ?1", idList);
+
+        //TODO: test, if broken, do rollback
+        var repo = getRepository(type);
+        return repo.delete("id in ?1", idList);
     }
 
     /**
@@ -283,6 +283,29 @@ public class VehicleService {
         
     }
 
+    /**
+     * Updates the owner of a vehicle to the specified customer and persists the change.
+     *
+     * <p>This method performs the following steps within a transactional boundary:
+     * <ol>
+     *   <li>Validates that {@code customerEmail} is not null or blank.</li>
+     *   <li>Attempts to locate the vehicle identified by {@code type} and {@code id}.</li>
+     *   <li>Retrieves the customer by email and maps the customer DTO to a domain/user object.</li>
+     *   <li>Sets the located vehicle's owner to the resolved buyer and updates the corresponding
+     *       user record via {@code userService.editUser(...)}.</li>
+     * </ol>
+     *
+     * <p>Because the method is transactional, all changes (vehicle owner assignment and user edits)
+     * are applied atomically and will be committed or rolled back together.
+     *
+     * @param type the vehicle type used to look up the vehicle (for example "car", "motorcycle")
+     * @param id the UUID of the vehicle to update
+     * @param customerEmail the email address of the customer who will become the vehicle owner;
+     *                      must not be {@code null} or blank
+     * @throws IllegalArgumentException if {@code customerEmail} is {@code null} or blank,
+     *                                  if no vehicle is found for the given {@code type} and {@code id},
+     *                                  or if no customer is found for {@code customerEmail}
+     */
     @Transactional
     public void updateVehicleSold(String type, UUID id, String customerEmail) {
         if (customerEmail == null || customerEmail.isBlank()) {
@@ -373,9 +396,9 @@ public class VehicleService {
                 ? Sort.descending(sortBy)
                 : Sort.ascending(sortBy);
 
-        var repository = getRepository(vehicleType);
+        var repo = getRepository(vehicleType);
 
-        var panacheQuery = repository.find(query.toString(), sort, params);
+        var panacheQuery = repo.find(query.toString(), sort, params);
 
         var page = Page.of(Math.max(0, searchParams.getPage()), Math.max(1, searchParams.getSize()));
         List<? extends Vehicles> result = panacheQuery
