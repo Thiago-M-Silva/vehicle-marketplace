@@ -1,16 +1,16 @@
 package org.acme.services;
 
-import org.acme.model.Users;
-
 import java.util.UUID;
 
+import org.acme.dtos.UserSearchDTO;
 import org.acme.model.Bikes;
 import org.acme.model.Boats;
 import org.acme.model.Cars;
 import org.acme.model.Planes;
+import org.acme.model.Users;
 
-import jakarta.inject.Inject;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class UtilsService {
@@ -47,13 +47,16 @@ public class UtilsService {
      */
     public void updateOwner(String sellerStripeId, String buyerEmail, UUID vehicleId, String vehicleType){
         if (sellerStripeId == null || buyerEmail == null || vehicleId == null){
-            throw new IllegalArgumentException("Seller, buyer or vehicle cannot be null");
+            throw new IllegalArgumentException("UtilsSevice - updateOwner: Seller, buyer or vehicle cannot be null");
         }
 
-        System.out.println("updateOwner called");
+        UserSearchDTO sellerSearch = new UserSearchDTO();
+        sellerSearch.setStripeAccountId(sellerStripeId);
+        UserSearchDTO buyerSearch = new UserSearchDTO();
+        buyerSearch.setEmail(buyerEmail);
 
-        Users seller = userService.usersRepository.find("stripeAccountId LIKE ?1", sellerStripeId).firstResult();
-        Users buyer = userService.usersRepository.find("email LIKE ?1", buyerEmail).firstResult();
+        Users seller = userService.searchUsers(sellerSearch).getFirst();
+        Users buyer = userService.searchUsers(buyerSearch).getFirst();
         var vehicle = vehicleService.findById(vehicleType, vehicleId);
 
         if (vehicle.getStorage() == 0){

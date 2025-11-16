@@ -31,6 +31,8 @@ public class VehicleSearchDTO {
     private String vehicleStatus;
     @QueryParam("fuelType")
     private String fuelType;
+    @QueryParam("ownerId")
+    private String ownerId;
     @QueryParam("sortBy")
     private String sortBy;
     @QueryParam("direction")

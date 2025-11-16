@@ -19,6 +19,8 @@ public class UserSearchDTO {
     private String state;
     @QueryParam("country")
     private String country;
+    @QueryParam("stripeAccountId")
+    private String stripeAccountId;
     @QueryParam("sortBy")
     private String sortBy;
     @QueryParam("direction")

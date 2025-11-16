@@ -65,6 +65,8 @@ public class VehicleDocumentController {
         }
     }
 
+
+
     @GET
     @Path("/{filename}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -76,9 +78,7 @@ public class VehicleDocumentController {
             VehicleDocuments doc = repository.find("vehicleId = ?1 and fileName = ?2", 
                                                  vehicleId, filename).firstResult();
             
-            if (doc == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
+            if (doc == null) return Response.status(Response.Status.NOT_FOUND).build();
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             gridFSService.downloadFile(filename, outputStream);

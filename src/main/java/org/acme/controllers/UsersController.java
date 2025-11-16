@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
-import org.acme.services.StripeService;
 import org.acme.services.UserService;
 
 import jakarta.annotation.security.PermitAll;
@@ -28,7 +27,6 @@ import jakarta.ws.rs.core.Response;
 public class UsersController {
 
     @Inject UserService userService;
-    @Inject StripeService stripeService;
 
     /**
      * Retrieves a list of all users.

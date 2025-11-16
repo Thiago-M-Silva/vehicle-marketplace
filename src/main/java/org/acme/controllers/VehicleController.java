@@ -165,7 +165,6 @@ public class VehicleController {
             Vehicles savedVehicle = vehicleService.save(vehicleType, vehicle);
             return Response.status(Response.Status.CREATED).entity(savedVehicle).build();
         } catch (Exception e) {
-            e.printStackTrace(); 
             return Response.status(Response.Status.BAD_REQUEST)
                            .entity("Error saving vehicle: " + e.getMessage())
                            .build();

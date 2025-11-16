@@ -1,5 +1,12 @@
 package org.acme.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Map;
+import java.util.UUID;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
@@ -20,13 +27,6 @@ import com.stripe.param.SubscriptionCreateParams;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Map;
-import java.util.UUID;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class StripeService {
@@ -116,7 +116,7 @@ public class StripeService {
     public PaymentIntent createMarketplacePayment(
             Long amount,
             String currency,
-            String sellerAccountId, // acct_xxx from Stripe Connect
+            String sellerAccountId, 
             Long applicationFee,
             UUID vehicleId,
             String vehicleType,
@@ -138,7 +138,8 @@ public class StripeService {
                     .setReceiptEmail(receiptEmail)
                     .putAllMetadata(Map.of(
                             "vehicle_id", vehicleId.toString(),
-                            "vehicle_type", vehicleType
+                            "vehicle_type", vehicleType,
+                            "seller_stripe_id", sellerAccountId
                     ));
 
             if (applicationFee != null && applicationFee > 0) {

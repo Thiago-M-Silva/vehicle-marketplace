@@ -232,7 +232,7 @@ public class VehicleService {
             throw new IllegalArgumentException("IdList cannot be empty");
         }
 
-        //TODO: test, if broken, do rollback
+        //TODO: delete many isn't working
         var repo = getRepository(type);
         return repo.delete("id in ?1", idList);
     }
@@ -380,6 +380,11 @@ public class VehicleService {
         if (searchParams.getFuelType() != null && !searchParams.getFuelType().isBlank()) {
             query.append(" AND fuelType = :fuelType");
             params.put("fuelType", EFuelType.valueOf(searchParams.getFuelType().toUpperCase()));
+        }
+        if (searchParams.getOwnerId() != null && !searchParams.getOwnerId().isBlank()) {
+            UUID ownerId = UUID.fromString(searchParams.getOwnerId());
+            query.append(" AND owner = :ownerId");
+            params.put("ownerId", ownerId);
         }
         if (searchParams.getVehicleStatus() != null && !searchParams.getVehicleStatus().isBlank()) {
             query.append(" AND vehicleStatus = :vehicleStatus");

@@ -29,7 +29,7 @@ public class PaymentController {
                     request.vehicleType(),
                     request.receiptEmail()
             );
-            return Response.ok(intent.toJson()).build(); // includes client_secret
+            return Response.ok(intent.toJson()).build(); 
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                            .entity("{\"error\":\"" + e.getMessage() + "\"}")
