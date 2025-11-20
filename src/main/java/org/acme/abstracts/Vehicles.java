@@ -91,6 +91,12 @@ public abstract class Vehicles extends PanacheEntityBase {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private BigDecimal price;
 
+    @Column(columnDefinition = "money")
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private BigDecimal rentalPriceMonthly;
+    private String stripeProductId;
+    private String stripePriceId;
+
     @CreationTimestamp
     @Column(updatable = false)
     private Instant createDate;

@@ -1,6 +1,7 @@
 package org.acme.controllers;
 
 import org.acme.dtos.PaymentDTO;
+import org.acme.dtos.RentDTO;
 import org.acme.services.StripeService;
 
 import jakarta.inject.Inject;
@@ -34,6 +35,26 @@ public class PaymentController {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                            .entity("{\"error\":\"" + e.getMessage() + "\"}")
                            .build();
+        }
+    }
+
+    @POST
+    @Path("/renting")
+    public Response createRentingPayment(RentDTO request){
+        try {
+            var rent = stripeService.createRentalSubscription(
+                request.vehicleId(),
+                request.vehicleType(),
+                request.customerId(),
+                request.sellerAccountId(),
+                request.applicationFee()
+            );
+
+            return Response.ok(rent.toJson()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("{\"error\":\"" + e.getMessage() + "\"}")
+                .build();
         }
     }
 }

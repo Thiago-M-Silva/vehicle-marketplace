@@ -27,6 +27,7 @@ import com.stripe.param.SubscriptionCreateParams;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class StripeService {
@@ -35,6 +36,8 @@ public class StripeService {
 
     @ConfigProperty(name = "stripe.webhook.secret")
     String webhookSecret;
+
+    @Inject VehicleService vehicleService;
 
     @PostConstruct
     void init(){
@@ -177,28 +180,58 @@ public class StripeService {
         return Customer.create(customerParams);
     }
 
-    //TODO: Review this method
-    public Subscription createSubscription(String customerId, String sellerAccountId, Long amount, String currency, Long applicationFee) throws StripeException {
-        // 1. Create a Product for the rental
-        ProductCreateParams productParams = ProductCreateParams.builder()
-                .setName("Vehicle Rental")
-                .setType(ProductCreateParams.Type.SERVICE)
-                .build();
-        Product product = Product.create(productParams);
+    //TODO: Test this function
+    public Subscription createRentalSubscription(
+        UUID vehicleId,
+        String vehicleType,
+        String customerId,
+        String sellerAccountId,
+        Long applicationFee
+    ) throws StripeException {
 
-        // 2. Create a Price for the Product
-        PriceCreateParams priceParams = PriceCreateParams.builder()
-                .setProduct(product.getId())
-                .setUnitAmount(amount)
-                .setCurrency(currency)
-                .setRecurring(PriceCreateParams.Recurring.builder().setInterval(PriceCreateParams.Recurring.Interval.MONTH).build())
-                .build();
-        Price price = Price.create(priceParams);
+        // 1. Verificar ou criar PRODUCT
+        var vehicle = vehicleService.findById(vehicleType, vehicleId);
 
-        // 3. Create the Subscription
-        SubscriptionCreateParams.Builder subscriptionBuilder = SubscriptionCreateParams.builder()
+        String productId = vehicle.getStripeProductId();
+        if (productId == null) {
+            Product product = Product.create(
+                    ProductCreateParams.builder()
+                            .setName("Rental - " + vehicle.getModel())
+                            .setType(ProductCreateParams.Type.SERVICE)
+                            .build()
+            );
+            productId = product.getId();
+            vehicle.setStripeProductId(productId);
+            // atualizar BD
+        }
+
+        // 2. Verificar ou criar PRICE
+        String priceId = vehicle.getStripePriceId();
+        if (priceId == null) {
+            Price price = Price.create(
+                    PriceCreateParams.builder()
+                            .setProduct(productId)
+                            .setUnitAmount(vehicle.getRentalPriceMonthly().longValue())
+                            .setCurrency("brl")
+                            .setRecurring(
+                                    PriceCreateParams.Recurring.builder()
+                                            .setInterval(PriceCreateParams.Recurring.Interval.MONTH)
+                                            .build()
+                            )
+                            .build()
+            );
+            priceId = price.getId();
+            vehicle.setStripePriceId(priceId);
+            // atualizar BD
+        }
+
+        // 3. Criar assinatura
+        SubscriptionCreateParams.Builder sub = SubscriptionCreateParams.builder()
                 .setCustomer(customerId)
-                .addItem(SubscriptionCreateParams.Item.builder().setPrice(price.getId()).build())
+                .addItem(SubscriptionCreateParams.Item.builder()
+                        .setPrice(priceId)
+                        .build()
+                )
                 .setPaymentBehavior(SubscriptionCreateParams.PaymentBehavior.DEFAULT_INCOMPLETE)
                 .addExpand("latest_invoice.payment_intent")
                 .setTransferData(
@@ -208,10 +241,10 @@ public class StripeService {
                 );
 
         if (applicationFee != null && applicationFee > 0) {
-            subscriptionBuilder.setApplicationFeePercent(calculateApplicationFeePercent(amount, applicationFee));
+            sub.setApplicationFeePercent(calculateApplicationFeePercent(vehicle.getRentalPriceMonthly().longValue(), applicationFee));
         }
 
-        return Subscription.create(subscriptionBuilder.build());
+        return Subscription.create(sub.build());
     }
 
     /**
