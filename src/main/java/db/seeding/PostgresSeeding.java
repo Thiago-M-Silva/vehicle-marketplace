@@ -171,6 +171,7 @@ public class PostgresSeeding {
             car.setColor(EColors.WHITE);
             car.setFuelType(EFuelType.ELECTRIC);
             car.setPrice(BigDecimal.valueOf(79999.99));
+            car.setRentalPriceMonthly(BigDecimal.valueOf(500));
 
             car1.setName("Creta");
             car1.setBrand("Hyundai");

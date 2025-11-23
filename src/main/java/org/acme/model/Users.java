@@ -64,6 +64,9 @@ public class Users {
 
     @Column(name = "stripe_account_id")
     private String stripeAccountId;
+    
+    @Column(name = "stripe_customer_id")
+    private String stripeCustomerId;
 
     @ManyToOne
     @JoinColumn(name = "transactionId")

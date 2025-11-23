@@ -180,7 +180,6 @@ public class StripeService {
         return Customer.create(customerParams);
     }
 
-    //TODO: Test this function
     public Subscription createRentalSubscription(
         UUID vehicleId,
         String vehicleType,
@@ -246,6 +245,15 @@ public class StripeService {
 
         return Subscription.create(sub.build());
     }
+
+     public Customer createCustomer(String email, String name) throws StripeException {
+       CustomerCreateParams params = CustomerCreateParams.builder()
+            .setEmail(email)
+            .setName(name)
+            .build();
+
+        return Customer.create(params);
+     }
 
     /**
      * Stripe subscriptions use application_fee_percent, not a fixed amount.

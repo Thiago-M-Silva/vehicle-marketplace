@@ -4,6 +4,9 @@ import java.util.UUID;
 
 import org.acme.dtos.InvoiceFallbackDTO;
 import org.acme.dtos.PaymentIntentFallbackDTO;
+import org.acme.dtos.PlanFallbackDTO;
+import org.acme.dtos.PriceFallbackDTO;
+import org.acme.dtos.ProductFallbackDTO;
 import org.acme.services.EmailService;
 import org.acme.services.StripeService;
 import org.acme.services.UtilsService;
@@ -60,25 +63,62 @@ public class StripeWebhookResource {
                 .getObject()
                 .orElse(null);
 
-        if (stripeObject == null) {
+       if (stripeObject == null) {
             try {
                 JsonNode root = objectMapper.readTree(payload);
                 JsonNode dataObject = root.path("data").path("object");
 
                 if (!dataObject.isMissingNode()) {
+
                     switch (event.getType()) {
+
+                        // -----------------------
+                        // PAYMENT INTENT
+                        // -----------------------
                         case "payment_intent.created":
                         case "payment_intent.succeeded":
-                        case "payment_intent.payment_failed":
+                        case "payment_intent.payment_failed": {
                             PaymentIntentFallbackDTO dto = objectMapper.treeToValue(dataObject, PaymentIntentFallbackDTO.class);
                             stripeObject = StripeFallbackFactory.fromDTO(dto);
                             break;
+                        }
 
+                        // -----------------------
+                        // INVOICE
+                        // -----------------------
                         case "invoice.paid":
-                        case "invoice.payment_failed":
-                            InvoiceFallbackDTO invoiceDTO = objectMapper.treeToValue(dataObject, InvoiceFallbackDTO.class);
-                            stripeObject = StripeFallbackFactory.fromDTO(invoiceDTO);
+                        case "invoice.payment_failed": {
+                            InvoiceFallbackDTO dto = objectMapper.treeToValue(dataObject, InvoiceFallbackDTO.class);
+                            stripeObject = StripeFallbackFactory.fromDTO(dto);
                             break;
+                        }
+
+                        // -----------------------
+                        // PRODUCT
+                        // -----------------------
+                        case "product.created": {
+                            ProductFallbackDTO dto = objectMapper.treeToValue(dataObject, ProductFallbackDTO.class);
+                            stripeObject = StripeFallbackFactory.fromDTO(dto);
+                            break;
+                        }
+
+                        // -----------------------
+                        // PRICE
+                        // -----------------------
+                        case "price.created": {
+                            PriceFallbackDTO dto = objectMapper.treeToValue(dataObject, PriceFallbackDTO.class);
+                            stripeObject = StripeFallbackFactory.fromDTO(dto);
+                            break;
+                        }
+
+                        // -----------------------
+                        // PLAN (depreciado, mas ainda enviado)
+                        // -----------------------
+                        case "plan.created": {
+                            PlanFallbackDTO dto = objectMapper.treeToValue(dataObject, PlanFallbackDTO.class);
+                            stripeObject = StripeFallbackFactory.fromDTO(dto);
+                            break;
+                        }
                     }
                 }
 

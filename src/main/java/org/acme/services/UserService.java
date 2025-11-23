@@ -5,19 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.acme.dtos.UserSearchDTO;
+import org.acme.dtos.UsersRequestDTO;
+import org.acme.dtos.UsersResponseDTO;
+import org.acme.infra.KeycloakAdminClient;
+import org.acme.interfaces.UserMapper;
 import org.acme.model.Users;
 import org.acme.repositories.UsersRepository;
 
+import com.stripe.model.Customer;
+
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
-
-import org.acme.dtos.UsersRequestDTO;
-import org.acme.dtos.UsersResponseDTO;
-import org.acme.dtos.UserSearchDTO;
-
-import org.acme.infra.KeycloakAdminClient;
-import org.acme.interfaces.UserMapper;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -42,15 +41,19 @@ public class UserService {
      * @throws IllegalArgumentException if the user CPF is null or empty
      */
     @Transactional
-    public UsersResponseDTO createUser(UsersRequestDTO data) {
+    public UsersResponseDTO createUser(UsersRequestDTO data) throws Exception {
         Users user = userMapper.toUser(data);
         String userKeycloakId = keycloakAdminClient.createUser(
                 data.name(),
                 data.email(),
                 data.password()
         );
+        Customer customer = stripeService.createCustomer(data.email(), data.name());
+
         user.setKeycloakId(userKeycloakId);
+        user.setStripeCustomerId(customer.getId());
         usersRepository.persist(user);
+
         return userMapper.toUserResponseDTO(user);
     }
 
