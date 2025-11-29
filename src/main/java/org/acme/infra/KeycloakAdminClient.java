@@ -1,14 +1,14 @@
 package org.acme.infra;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.core.Response;
-
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.Response;
 
 @ApplicationScoped
 public class KeycloakAdminClient {
@@ -25,6 +25,14 @@ public class KeycloakAdminClient {
     @ConfigProperty(name = "keycloak.admin.password")
     String adminPassword;
 
+    /**
+     * Creates and returns a new Keycloak instance configured with admin credentials.
+     * 
+     * This method builds a Keycloak client using the Password Grant OAuth2 flow
+     * to authenticate as an admin user against the master realm.
+     * 
+     * @return a configured {@link Keycloak} instance for administrative operations
+     */
     private Keycloak getInstance() {
         return KeycloakBuilder.builder()
                 .serverUrl(serverUrl) 

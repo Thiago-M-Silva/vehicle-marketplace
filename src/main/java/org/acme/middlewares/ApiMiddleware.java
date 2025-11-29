@@ -9,11 +9,14 @@ import org.acme.dtos.BikesRequestDTO;
 import org.acme.dtos.BoatsRequestDTO;
 import org.acme.dtos.CarsRequestDTO;
 import org.acme.dtos.PlanesRequestDTO;
-import org.acme.model.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.acme.interfaces.VehicleMapper;
+import org.acme.model.Bikes;
+import org.acme.model.Boats;
+import org.acme.model.Cars;
+import org.acme.model.Planes;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -109,7 +112,7 @@ public class ApiMiddleware {
                     String json = objectMapper.writeValueAsString(map);
                     jakarta.json.JsonObject jsonObject = jakarta.json.Json.createReader(new java.io.StringReader(json)).readObject();
                     return manageVehiclesTypeRequestDTO(vehicleType, jsonObject);
-                } catch (Exception e) {
+                } catch (JsonProcessingException e) {
                     throw new RuntimeException("Error parsing vehicle item: " + e.getMessage(), e);
                 }
             })
@@ -159,7 +162,6 @@ public class ApiMiddleware {
             default -> throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
     }
-
 
     /**
      * Processes a list of {@link Vehicles} and returns a list of corresponding DTOs based on the specified vehicle type.

@@ -13,6 +13,20 @@ import com.stripe.model.Price;
 import com.stripe.model.Product;
 import com.stripe.model.StripeObject;
 
+/**
+ * Factory class for converting Stripe fallback DTOs to their corresponding Stripe object representations.
+ * 
+ * This factory provides static methods to transform data transfer objects (DTOs) into Stripe domain objects
+ * when the primary Stripe API is unavailable or as a fallback mechanism. Each conversion method maps the
+ * relevant fields from the DTO to the target Stripe object.
+ * 
+ * Supported conversions:
+ * - {@link PaymentIntentFallbackDTO} to {@link PaymentIntent}
+ * - {@link InvoiceFallbackDTO} to {@link Invoice}
+ * - {@link ProductFallbackDTO} to {@link Product}
+ * - {@link PriceFallbackDTO} to {@link Price}
+ * - {@link PlanFallbackDTO} to {@link Plan}
+ */
 public class StripeFallbackFactory {
 
     public static PaymentIntent fromDTO(PaymentIntentFallbackDTO dto) {

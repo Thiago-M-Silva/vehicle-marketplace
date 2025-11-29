@@ -232,7 +232,6 @@ public class VehicleService {
             throw new IllegalArgumentException("IdList cannot be empty");
         }
 
-        //TODO: delete many isn't working
         var repo = getRepository(type);
         return repo.delete("id in ?1", idList);
     }

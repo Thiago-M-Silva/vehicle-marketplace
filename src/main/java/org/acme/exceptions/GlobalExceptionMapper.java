@@ -1,20 +1,17 @@
 package org.acme.exceptions;
 
+import org.acme.model.ApiError;
+import org.jboss.logging.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import jakarta.ws.rs.core.UriInfo;
-
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import org.jboss.logging.Logger;
-// import jakarta.validation.ConstraintViolationException;
-
-import org.acme.model.ApiError;
-// import org.hibernate.exception.ConstraintViolationException as HibernateConstraintException;
 
 /**
  * Global exception mapper to handle various exceptions and return structured JSON responses.
@@ -41,14 +38,6 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
             return build(Response.Status.BAD_REQUEST, "INVALID_JSON_SYNTAX", "Malformed JSON body", jpe.getOriginalMessage());
         }
 
-        // if (e instanceof jakarta.validation.ConstraintViolationException ve) {
-        //     var msg = ve.getConstraintViolations().stream()
-        //             .map(v -> v.getPropertyPath() + " " + v.getMessage())
-        //             .findFirst()
-        //             .orElse("Validation failed");
-        //     return build(Response.Status.BAD_REQUEST, "VALIDATION_ERROR", msg, ve.getMessage());
-        // }
-
         if (e instanceof org.hibernate.exception.ConstraintViolationException db) {
             return build(Response.Status.CONFLICT, "DATABASE_CONSTRAINT", "Constraint violation", db.getConstraintName());
         }
@@ -64,7 +53,6 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
             }
          */
 
-        // Default (unexpected) error
         return build(Response.Status.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", 
                 "An unexpected error occurred", e.getMessage());
     }

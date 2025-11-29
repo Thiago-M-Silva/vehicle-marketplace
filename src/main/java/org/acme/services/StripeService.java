@@ -116,6 +116,23 @@ public class StripeService {
         return link.getUrl();
     }
 
+/**
+ * Creates a Stripe PaymentIntent for a marketplace transaction.
+ * 
+ * This method initializes a payment intent that transfers funds to a seller's Stripe account
+ * while applying an optional application fee for the marketplace. The payment supports
+ * automatic payment methods and includes vehicle metadata for tracking.
+ * 
+ * @param amount the payment amount in the smallest currency unit (e.g., cents for USD)
+ * @param currency the ISO 4217 currency code (e.g., "usd", "eur")
+ * @param sellerAccountId the Stripe Connect account ID of the seller receiving the funds
+ * @param applicationFee the marketplace fee amount in the smallest currency unit, or null if no fee applies
+ * @param vehicleId the unique identifier of the vehicle being purchased
+ * @param vehicleType the type or category of the vehicle
+ * @param receiptEmail the email address where the payment receipt will be sent
+ * @return a PaymentIntent object representing the created marketplace payment
+ * @throws StripeException if the Stripe API request fails or returns an error
+ */
     public PaymentIntent createMarketplacePayment(
             Long amount,
             String currency,
@@ -180,6 +197,24 @@ public class StripeService {
         return Customer.create(customerParams);
     }
 
+/**
+ * Creates a Stripe subscription for a vehicle rental.
+ * 
+ * This method handles the creation of a recurring subscription for renting a vehicle.
+ * It ensures that the vehicle has associated Stripe product and price objects,
+ * creating them if necessary. The subscription is configured with transfer data
+ * to route payments to the seller's account, and an optional application fee.
+ * 
+ * @param vehicleId the unique identifier of the vehicle being rented
+ * @param vehicleType the type/category of the vehicle (used to query the vehicle service)
+ * @param customerId the Stripe customer ID of the renter
+ * @param sellerAccountId the Stripe connected account ID of the vehicle seller
+ * @param applicationFee the application fee amount in the smallest currency unit, or null if no fee applies
+ * 
+ * @return the created {@link Subscription} object with the latest invoice and payment intent expanded
+ * 
+ * @throws StripeException if an error occurs while communicating with the Stripe API
+ */
     public Subscription createRentalSubscription(
         UUID vehicleId,
         String vehicleType,
@@ -188,7 +223,6 @@ public class StripeService {
         Long applicationFee
     ) throws StripeException {
 
-        // 1. Verificar ou criar PRODUCT
         var vehicle = vehicleService.findById(vehicleType, vehicleId);
 
         String productId = vehicle.getStripeProductId();
@@ -201,10 +235,8 @@ public class StripeService {
             );
             productId = product.getId();
             vehicle.setStripeProductId(productId);
-            // atualizar BD
         }
 
-        // 2. Verificar ou criar PRICE
         String priceId = vehicle.getStripePriceId();
         if (priceId == null) {
             Price price = Price.create(
@@ -221,10 +253,8 @@ public class StripeService {
             );
             priceId = price.getId();
             vehicle.setStripePriceId(priceId);
-            // atualizar BD
         }
 
-        // 3. Criar assinatura
         SubscriptionCreateParams.Builder sub = SubscriptionCreateParams.builder()
                 .setCustomer(customerId)
                 .addItem(SubscriptionCreateParams.Item.builder()
@@ -246,6 +276,18 @@ public class StripeService {
         return Subscription.create(sub.build());
     }
 
+/**
+ * Creates a new Stripe customer with the provided email and name.
+ *
+ * <p>This method builds a CustomerCreateParams instance using the supplied
+ * email and name, then calls the Stripe API to create and return the
+ * corresponding Customer object.</p>
+ *
+ * @param email the customer's email address to associate with the Stripe customer; should be a valid email
+ * @param name  the customer's full name or display name
+ * @return the created Stripe Customer object as returned by the Stripe API
+ * @throws StripeException if the request to the Stripe API fails or returns an error
+ */
      public Customer createCustomer(String email, String name) throws StripeException {
        CustomerCreateParams params = CustomerCreateParams.builder()
             .setEmail(email)

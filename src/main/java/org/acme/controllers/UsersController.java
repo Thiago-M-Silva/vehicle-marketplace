@@ -154,6 +154,17 @@ public class UsersController {
         }
     }
 
+    /**
+     * Sets a user as a seller and generates an onboarding link.
+     * 
+     * This endpoint allows any user to be converted to a seller role and receives
+     * a generated onboarding link for seller registration completion.
+     * 
+     * @param id the UUID of the user to be set as a seller
+     * @return Response with HTTP 200 (OK) containing the generated onboarding link if successful,
+     *         or HTTP 404 (NOT_FOUND) with an error message if the operation fails
+     * @throws Exception if user not found or onboarding process fails
+     */
     @PUT
     @Path("/put/setSeller/{id}")
     @PermitAll

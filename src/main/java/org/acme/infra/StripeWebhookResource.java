@@ -34,20 +34,49 @@ public class StripeWebhookResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookResource.class);
 
-    @Inject
-    StripeService stripeService;
-    @Inject
-    EmailService emailService;
-    @Inject
-    UtilsService utilsService;
-    @Inject
-    ObjectMapper objectMapper; 
+    @Inject StripeService stripeService;
+    @Inject EmailService emailService;
+    @Inject UtilsService utilsService;
+    @Inject ObjectMapper objectMapper; 
 
+    /**
+     * Handles incoming Stripe webhook events.
+     * <p>
+     * This endpoint receives POST requests from Stripe containing event payloads.
+     * It verifies the event signature, deserializes the event data, and processes
+     * supported event types such as payment intents and invoices. If the event
+     * cannot be deserialized using the Stripe SDK, a fallback JSON deserialization
+     * is attempted for known event types.
+     * </p>
+     *
+     * <p>
+     * Supported event types include:
+     * <ul>
+     *   <li>payment_intent.created</li>
+     *   <li>payment_intent.succeeded</li>
+     *   <li>payment_intent.payment_failed</li>
+     *   <li>invoice.paid</li>
+     *   <li>invoice.payment_failed</li>
+     *   <li>product.created</li>
+     *   <li>price.created</li>
+     *   <li>plan.created</li>
+     * </ul>
+     * </p>
+     *
+     * <p>
+     * For each event, appropriate business logic is executed, such as sending emails
+     * or updating owner information. Unhandled or unknown event types are logged.
+     * </p>
+     *
+     * @param payload   The raw JSON payload sent by Stripe.
+     * @param sigHeader The Stripe-Signature header used to verify the event.
+     * @return A JAX-RS {@link Response} indicating the result of processing the webhook.
+     */
     @POST
     @Consumes("application/json")
     public Response handleWebhook(String payload, @HeaderParam("Stripe-Signature") String sigHeader) {
 
-        Event event = null;
+        Event event;
 
         try {
             event = Webhook.constructEvent(payload, sigHeader, stripeService.getWebhookSecret());
@@ -141,6 +170,7 @@ public class StripeWebhookResource {
             case "payment_intent.succeeded": {
                 PaymentIntent pi = (PaymentIntent) stripeObject;
                 LOGGER.info("PaymentIntent processed: {}", pi.getId());
+                emailService.sendPaymentSuccessEmailTeste(pi);
 
                 utilsService.updateOwner(
                         pi.getMetadata().get("seller_stripe_id"),
@@ -148,7 +178,6 @@ public class StripeWebhookResource {
                         UUID.fromString(pi.getMetadata().get("vehicle_id")),
                         pi.getMetadata().get("vehicle_type")
                 );
-                emailService.sendPaymentSuccessEmail(pi);
                 break;
             }
 

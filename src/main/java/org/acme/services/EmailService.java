@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 import com.stripe.model.Invoice;
 import com.stripe.model.PaymentIntent;
 
@@ -32,6 +36,36 @@ public class EmailService {
         String body = String.format("<h1>Welcome %s!</h1><p>Thank you for joining our platform.</p>", name);
 
         send(mailer.send(Mail.withHtml(to, subject, body)));
+    }
+
+    public void sendPaymentSuccessEmailTeste(PaymentIntent paymentIntent) {
+        Resend resend = new Resend("re_PyV2ro6T_A5h93GZLfXL7Nm3bKV33stCC");
+
+        BigDecimal amount = BigDecimal.valueOf(paymentIntent.getAmount()).movePointLeft(2);
+        String body = String.format(
+                "<h1>Payment Confirmation</h1>"
+                + "<p>Dear Customer,</p>"
+                + "<p>We are happy to inform you that your payment of <strong>%.2f %s</strong> was successful.</p>"
+                + "<p>Thank you for your business!</p>"
+                + "<hr>"
+                + "<p><small>Vehicle Marketplace © 2025<br/>"
+                + "Support: support@vehiclemarketplace.com</small></p>",
+                amount, paymentIntent.getCurrency().toUpperCase()
+        );
+
+        CreateEmailOptions params = CreateEmailOptions.builder()
+                .from("Acme <onboarding@resend.dev>")
+                .to(paymentIntent.getReceiptEmail())
+                .subject("it works!")
+                .html(body)
+                .build();
+
+         try {
+            CreateEmailResponse data = resend.emails().send(params);
+            System.out.println(data.getId());
+        } catch (ResendException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendPaymentSuccessEmail(PaymentIntent paymentIntent) {

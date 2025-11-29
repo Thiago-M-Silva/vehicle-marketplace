@@ -11,7 +11,6 @@ import org.acme.model.Users;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-
 @ApplicationScoped
 public class UtilsService {
     @Inject UserService userService;

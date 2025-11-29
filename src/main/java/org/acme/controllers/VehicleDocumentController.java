@@ -66,7 +66,6 @@ public class VehicleDocumentController {
     }
 
 
-
     @GET
     @Path("/{filename}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -74,7 +73,6 @@ public class VehicleDocumentController {
             @PathParam("vehicleId") UUID vehicleId,
             @PathParam("filename") String filename) {
         try {
-            // Verifica se o documento existe para este veículo
             VehicleDocuments doc = repository.find("vehicleId = ?1 and fileName = ?2", 
                                                  vehicleId, filename).firstResult();
             
