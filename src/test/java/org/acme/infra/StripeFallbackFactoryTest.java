@@ -8,8 +8,6 @@ import org.acme.dtos.PlanFallbackDTO;
 import org.acme.dtos.PriceFallbackDTO;
 import org.acme.dtos.ProductFallbackDTO;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import com.stripe.model.Invoice;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Plan;
@@ -22,7 +20,7 @@ class StripeFallbackFactoryTest {
 
     @Test
     void testPaymentIntentFromDTO() {
-        Map<String, Object> metadata = new HashMap<>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put("key", "value");
         PaymentIntentFallbackDTO dto = mock(PaymentIntentFallbackDTO.class);
         when(dto.id()).thenReturn("pi_123");
@@ -39,7 +37,7 @@ class StripeFallbackFactoryTest {
 
     @Test
     void testInvoiceFromDTO() {
-        Map<String, Object> metadata = new HashMap<>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put("order", "12345");
         InvoiceFallbackDTO dto = mock(InvoiceFallbackDTO.class);
         when(dto.id()).thenReturn("inv_456");

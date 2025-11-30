@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
@@ -24,7 +23,6 @@ import jakarta.ws.rs.core.Response;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mockStatic;
 
-@ExtendWith(MockitoExtension.class)
 public class StripeWebhookResourceTest {
 
     @Mock
@@ -51,12 +49,12 @@ public class StripeWebhookResourceTest {
     }
 
     @Test
-    void testHandleWebhookWithInvalidSignature() {
+    void testHandleWebhookWithInvalidSignature() throws SignatureVerificationException {
         String payload = "{}";
 
         mockStatic(Webhook.class);
         when(Webhook.constructEvent(payload, validSignature, webhookSecret))
-                .thenThrow(new SignatureVerificationException("Invalid signature", null, null));
+                .thenThrow(new SignatureVerificationException("Invalid signature", null));
 
         Response response = resource.handleWebhook(payload, validSignature);
 
@@ -64,7 +62,7 @@ public class StripeWebhookResourceTest {
     }
 
     @Test
-    void testHandleWebhookWithInvalidPayload() {
+    void testHandleWebhookWithInvalidPayload() throws SignatureVerificationException {
         String payload = "invalid json";
 
         mockStatic(Webhook.class);
@@ -77,7 +75,7 @@ public class StripeWebhookResourceTest {
     }
 
     @Test
-    void testHandlePaymentIntentSucceeded() {
+    void testHandlePaymentIntentSucceeded() throws SignatureVerificationException {
         String payload = "{\"data\":{\"object\":{}}}";
         Event event = new Event();
         event.setType("payment_intent.succeeded");
@@ -104,7 +102,7 @@ public class StripeWebhookResourceTest {
     }
 
     @Test
-    void testHandlePaymentIntentFailed() {
+    void testHandlePaymentIntentFailed() throws SignatureVerificationException {
         String payload = "{\"data\":{\"object\":{}}}";
         Event event = new Event();
         event.setType("payment_intent.payment_failed");
@@ -123,7 +121,7 @@ public class StripeWebhookResourceTest {
     }
 
     @Test
-    void testHandleInvoicePaid() {
+    void testHandleInvoicePaid() throws SignatureVerificationException {
         String payload = "{\"data\":{\"object\":{}}}";
         Event event = new Event();
         event.setType("invoice.paid");
@@ -150,7 +148,7 @@ public class StripeWebhookResourceTest {
     }
 
     @Test
-    void testHandleInvoiceFailed() {
+    void testHandleInvoiceFailed() throws SignatureVerificationException {
         String payload = "{\"data\":{\"object\":{}}}";
         Event event = new Event();
         event.setType("invoice.payment_failed");
@@ -170,7 +168,7 @@ public class StripeWebhookResourceTest {
     }
 
     @Test
-    void testHandleUnknownEventType() {
+    void testHandleUnknownEventType() throws SignatureVerificationException {
         String payload = "{\"data\":{\"object\":{}}}";
         Event event = new Event();
         event.setType("unknown.event");

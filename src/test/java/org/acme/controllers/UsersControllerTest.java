@@ -1,3 +1,4 @@
+package org.acme.controllers;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -9,21 +10,10 @@ import org.acme.dtos.UsersResponseDTO;
 import org.acme.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import jakarta.ws.rs.core.Response;
 
-
-
-package org.acme.controllers;
-
-
-
-
-
-@ExtendWith(MockitoExtension.class)
 public class UsersControllerTest {
 
     @Mock
@@ -39,13 +29,32 @@ public class UsersControllerTest {
     @BeforeEach
     void setUp() {
         testUserId = UUID.randomUUID();
-        testUserResponse = new UsersResponseDTO();
-        testUserResponse.setId(testUserId);
-        testUserResponse.setName("Test User");
+        testUserResponse = new UsersResponseDTO(
+                testUserId,
+                "Test User",
+                "test@example.com",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
 
-        testUserRequest = new UsersRequestDTO();
-        testUserRequest.setName("Test User");
-        testUserRequest.setEmail("test@example.com");
+        testUserRequest = new UsersRequestDTO(
+                null,
+                "Test User",
+                "test@example.com",
+                "password",
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     }
 
     @Test
@@ -102,7 +111,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    void testAddUserSuccess() {
+    void testAddUserSuccess() throws Exception {
         when(userService.createUser(testUserRequest)).thenReturn(testUserResponse);
 
         Response response = usersController.addUser(testUserRequest);
@@ -113,7 +122,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    void testAddUserException() {
+    void testAddUserException() throws Exception {
         when(userService.createUser(testUserRequest)).thenThrow(new RuntimeException("Creation failed"));
 
         Response response = usersController.addUser(testUserRequest);
@@ -163,7 +172,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    void testSetUserAsSellerSuccess() {
+    void testSetUserAsSellerSuccess() throws Exception {
         doNothing().when(userService).onboardSeller(testUserId);
         when(userService.generateOnboardingLink(testUserId)).thenReturn("http://onboarding.link");
 
@@ -176,7 +185,7 @@ public class UsersControllerTest {
     }
 
     @Test
-    void testSetUserAsSellerException() {
+    void testSetUserAsSellerException() throws Exception {
         doThrow(new RuntimeException("User not found")).when(userService).onboardSeller(testUserId);
 
         Response response = usersController.setUserAsSeller(testUserId);

@@ -17,6 +17,7 @@ import org.acme.repositories.PlanesRepository;
 import org.acme.repositories.VehicleDocumentsRepository;
 import org.bson.types.ObjectId;
 
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
@@ -27,6 +28,7 @@ import org.mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.*;
 
 import org.acme.dtos.UsersResponseDTO;
@@ -39,23 +41,30 @@ class VehicleServiceTest {
     @InjectMocks
     VehicleService vehicleService;
 
-    @Mock BikesRepository bikesRepository;
-    @Mock CarsRepository carsRepository;
-    @Mock BoatsRepository boatsRepository;
-    @Mock PlanesRepository planesRepository;
-    @Mock GridFSService gridFSService;
-    @Mock VehicleDocumentsRepository vehicleDocumentsRepository;
-    @Mock VehicleMapper vehicleMapper;
-    @Mock UserService userService;
+    @Mock
+    BikesRepository bikesRepository;
+    @Mock
+    CarsRepository carsRepository;
+    @Mock
+    BoatsRepository boatsRepository;
+    @Mock
+    PlanesRepository planesRepository;
+    @Mock
+    GridFSService gridFSService;
+    @Mock
+    VehicleDocumentsRepository vehicleDocumentsRepository;
+    @Mock
+    VehicleMapper vehicleMapper;
+    @Mock
+    UserService userService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        // Manually inject mocks for fields not handled by @InjectMocks
         vehicleService.bikesRepository = bikesRepository;
         vehicleService.carsRepository = carsRepository;
         vehicleService.boatsRepository = boatsRepository;
-        vehicleService.planesRepository = planesRepository; 
+        vehicleService.planesRepository = planesRepository;
         vehicleService.gridFSService = gridFSService;
         vehicleService.repository = vehicleDocumentsRepository;
         vehicleService.vehicleMapper = vehicleMapper;
@@ -186,8 +195,8 @@ class VehicleServiceTest {
         when(gridFSService.uploadFile(anyString(), anyString(), any(InputStream.class)))
                 .thenThrow(new RuntimeException("upload failed"));
 
-        assertThrows(RuntimeException.class, () ->
-                vehicleService.saveDocument(UUID.randomUUID(), "f", "c", is));
+        assertThrows(RuntimeException.class, ()
+                -> vehicleService.saveDocument(UUID.randomUUID(), "f", "c", is));
     }
 
     @Test
@@ -228,14 +237,14 @@ class VehicleServiceTest {
         Vehicles vehicle = mock(Vehicles.class);
         when(vehicleService.findById("unknown", id)).thenReturn(vehicle);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                vehicleService.editVehicleInfo("unknown", id, vehicle));
+        assertThrows(IllegalArgumentException.class, ()
+                -> vehicleService.editVehicleInfo("unknown", id, vehicle));
     }
 
     @Test
     void testEditVehicleInfo_NullVehicle_ThrowsException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                vehicleService.editVehicleInfo("bikes", UUID.randomUUID(), null));
+        assertThrows(IllegalArgumentException.class, ()
+                -> vehicleService.editVehicleInfo("bikes", UUID.randomUUID(), null));
     }
 
     @Test
@@ -243,8 +252,8 @@ class VehicleServiceTest {
         UUID id = UUID.randomUUID();
         when(vehicleService.findById("bikes", id)).thenReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                vehicleService.editVehicleInfo("bikes", id, mock(Bikes.class)));
+        assertThrows(IllegalArgumentException.class, ()
+                -> vehicleService.editVehicleInfo("bikes", id, mock(Bikes.class)));
     }
 
     @Test
@@ -257,8 +266,6 @@ class VehicleServiceTest {
 
         when(vehicleService.findById("bikes", id)).thenReturn(vehicle);
         when(userService.getUserByEmail(email)).thenReturn((UsersResponseDTO) customerDto);
-        when(userService.toUser((UsersResponseDTO) customerDto)).thenReturn((Users) buyer);
-        when(userService.toUserRequestDTO((Users) buyer)).thenReturn((UsersRequestDTO) mock(Object.class));
         doNothing().when(vehicle).setOwner((Users) buyer);
         doNothing().when(userService).editUser(any(), any());
 
@@ -269,10 +276,10 @@ class VehicleServiceTest {
 
     @Test
     void testUpdateVehicleSold_NullOrBlankEmail_ThrowsException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                vehicleService.updateVehicleSold("bikes", UUID.randomUUID(), null));
-        assertThrows(IllegalArgumentException.class, () ->
-                vehicleService.updateVehicleSold("bikes", UUID.randomUUID(), " "));
+        assertThrows(IllegalArgumentException.class, ()
+                -> vehicleService.updateVehicleSold("bikes", UUID.randomUUID(), null));
+        assertThrows(IllegalArgumentException.class, ()
+                -> vehicleService.updateVehicleSold("bikes", UUID.randomUUID(), " "));
     }
 
     @Test
@@ -280,8 +287,8 @@ class VehicleServiceTest {
         UUID id = UUID.randomUUID();
         when(vehicleService.findById("bikes", id)).thenReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                vehicleService.updateVehicleSold("bikes", id, "a@b.com"));
+        assertThrows(IllegalArgumentException.class, ()
+                -> vehicleService.updateVehicleSold("bikes", id, "a@b.com"));
     }
 
     @Test
@@ -290,30 +297,8 @@ class VehicleServiceTest {
         when(vehicleService.findById("bikes", id)).thenReturn(mock(Vehicles.class));
         when(userService.getUserByEmail(anyString())).thenReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () ->
-                vehicleService.updateVehicleSold("bikes", id, "a@b.com"));
-    }
-
-    @Test
-    void testSearchVehicle_Basic() {
-        VehicleSearchDTO dto = new VehicleSearchDTO();
-        dto.setPage(0);
-        dto.setSize(10);
-
-        PanacheRepositoryBase repo = mock(PanacheRepositoryBase.class);
-        var panacheQuery = mock(io.quarkus.panache.common.PanacheQuery.class);
-        List<Vehicles> expected = List.of(mock(Bikes.class));
-        when(bikesRepository.find(anyString(), any(Sort.class), anyMap())).thenReturn(panacheQuery);
-        when(panacheQuery.page(any(Page.class))).thenReturn(panacheQuery);
-        when(panacheQuery.list()).thenReturn(expected);
-
-        // Patch getRepository to return bikesRepository for "bikes"
-        VehicleService spyService = Mockito.spy(vehicleService);
-        doReturn(bikesRepository).when(spyService).getRepository("bikes");
-
-        List<? extends Vehicles> result = spyService.searchVehicle("bikes", dto);
-
-        assertEquals(expected, result);
+        assertThrows(IllegalArgumentException.class, ()
+                -> vehicleService.updateVehicleSold("bikes", id, "a@b.com"));
     }
 
     @Test
@@ -323,8 +308,8 @@ class VehicleServiceTest {
         dto.setModel("MT");
         dto.setYearMin(2015);
         dto.setYearMax(2020);
-        dto.setPriceMin(10000.0);
-        dto.setPriceMax(20000.0);
+        dto.setPriceMin(new BigDecimal(10000.0));
+        dto.setPriceMax(new BigDecimal(20000.0));
         dto.setCategory(ECategory.MONOCYCLE.name());
         dto.setColor(EColors.BLACK.name());
         dto.setFuelType(EFuelType.GASOLINE.name());
@@ -335,18 +320,30 @@ class VehicleServiceTest {
         dto.setPage(1);
         dto.setSize(5);
 
-        PanacheRepositoryBase repo = mock(PanacheRepositoryBase.class);
-        var panacheQuery = mock(io.quarkus.panache.common.PanacheQuery.class);
-        List<Vehicles> expected = List.of(mock(Bikes.class));
-        when(bikesRepository.find(anyString(), any(Sort.class), anyMap())).thenReturn(panacheQuery);
-        when(panacheQuery.page(any(Page.class))).thenReturn(panacheQuery);
-        when(panacheQuery.list()).thenReturn(expected);
+        var panacheQuery = mock(PanacheQuery.class);
+        List<Bikes> expected = List.of(mock(Bikes.class));
 
-        VehicleService spyService = Mockito.spy(vehicleService);
-        doReturn(bikesRepository).when(spyService).getRepository("bikes");
+        when(bikesRepository.find(anyString(), any(Sort.class), anyMap())).thenReturn((PanacheQuery<Bikes>) panacheQuery);
+        when(((PanacheQuery<Bikes>) panacheQuery).page(any(Page.class))).thenReturn((PanacheQuery<Bikes>) panacheQuery);
+        when(((PanacheQuery<Bikes>) panacheQuery).list()).thenReturn(expected);
 
-        List<? extends Vehicles> result = spyService.searchVehicle("bikes", dto);
+        List<? extends Vehicles> result = vehicleService.searchVehicle("bikes", dto);
 
         assertEquals(expected, result);
+
+        ArgumentCaptor<String> queryCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+        ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Page> pageCaptor = ArgumentCaptor.forClass(Page.class);
+
+        verify(bikesRepository).find(queryCaptor.capture(), sortCaptor.capture(), paramsCaptor.capture());
+        ((PanacheQuery<Bikes>) verify(panacheQuery)).page(pageCaptor.capture());
+        ((PanacheQuery<Bikes>) verify(panacheQuery)).list();
+
+        assertTrue(queryCaptor.getValue().contains("AND brand = :brand"));
+        assertTrue(queryCaptor.getValue().contains("AND model ILIKE :model"));
+        assertEquals(Sort.descending("price"), sortCaptor.getValue());
+        assertEquals(1, pageCaptor.getValue().index);
+        assertEquals(5, pageCaptor.getValue().size);
     }
 }

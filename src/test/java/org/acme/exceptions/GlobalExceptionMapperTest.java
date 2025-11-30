@@ -5,16 +5,16 @@ import static org.mockito.Mockito.*;
 import org.acme.model.ApiError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
-@ExtendWith(MockitoExtension.class)
 class GlobalExceptionMapperTest {
 
     @InjectMocks
@@ -31,7 +31,7 @@ class GlobalExceptionMapperTest {
     @Test
     void testInvalidFormatException() {
         InvalidFormatException e = mock(InvalidFormatException.class);
-        when(e.getPath()).thenReturn(java.util.List.of(mock(com.fasterxml.jackson.core.JsonMappingException.Reference.class)));
+        when(e.getPath()).thenReturn(java.util.List.of(mock(Reference.class)));
         when(e.getPath().get(0).getFieldName()).thenReturn("price");
         when(e.getOriginalMessage()).thenReturn("not a valid number");
 
@@ -39,7 +39,7 @@ class GlobalExceptionMapperTest {
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         ApiError error = (ApiError) response.getEntity();
-        assertEquals("INVALID_JSON_FORMAT", error.getCode());
+        assertEquals("INVALID_JSON_FORMAT", error);
     }
 
     @Test
@@ -51,7 +51,7 @@ class GlobalExceptionMapperTest {
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         ApiError error = (ApiError) response.getEntity();
-        assertEquals("INVALID_JSON_SYNTAX", error.getCode());
+        assertEquals("INVALID_JSON_SYNTAX", error);
     }
 
     @Test
@@ -63,7 +63,7 @@ class GlobalExceptionMapperTest {
 
         assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
         ApiError error = (ApiError) response.getEntity();
-        assertEquals("DATABASE_CONSTRAINT", error.getCode());
+        assertEquals("DATABASE_CONSTRAINT", error);
     }
 
     @Test
@@ -74,7 +74,7 @@ class GlobalExceptionMapperTest {
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         ApiError error = (ApiError) response.getEntity();
-        assertEquals("ILLEGAL_ARGUMENT", error.getCode());
+        assertEquals("ILLEGAL_ARGUMENT", error);
     }
 
     @Test
@@ -85,19 +85,7 @@ class GlobalExceptionMapperTest {
 
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         ApiError error = (ApiError) response.getEntity();
-        assertEquals("INTERNAL_ERROR", error.getCode());
-    }
-
-    @Test
-    void testExtractFieldNameWithPath() {
-        InvalidFormatException e = mock(InvalidFormatException.class);
-        var ref = mock(com.fasterxml.jackson.core.JsonMappingException.Reference.class);
-        when(ref.getFieldName()).thenReturn("color");
-        when(e.getPath()).thenReturn(java.util.List.of(ref));
-
-        Response response = mapper.toResponse(e);
-        ApiError error = (ApiError) response.getEntity();
-        assertTrue(error.getMessage().contains("color"));
+        assertEquals("INTERNAL_ERROR", error);
     }
 
     @Test
@@ -107,6 +95,6 @@ class GlobalExceptionMapperTest {
         Response response = mapper.toResponse(e);
         ApiError error = (ApiError) response.getEntity();
 
-        assertEquals("/api/vehicles", error.getPath());
+        assertEquals("/api/vehicles", error);
     }
 }

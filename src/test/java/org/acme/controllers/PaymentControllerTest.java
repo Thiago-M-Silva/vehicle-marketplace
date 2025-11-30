@@ -1,27 +1,21 @@
+package org.acme.controllers;
 
 import org.acme.dtos.PaymentDTO;
 import org.acme.dtos.RentDTO;
 import org.acme.services.StripeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import com.stripe.exception.StripeException;
+import com.stripe.exception.CardException;
+import java.util.UUID;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Subscription;
 import jakarta.ws.rs.core.Response;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
-
-package org.acme.controllers;
-
-
-
-@ExtendWith(MockitoExtension.class)
 class PaymentControllerTest {
 
     @Mock
@@ -32,21 +26,23 @@ class PaymentControllerTest {
 
     private PaymentDTO paymentDTO;
     private RentDTO rentDTO;
+    private UUID vehicleId;
 
     @BeforeEach
     void setUp() {
+        vehicleId = UUID.randomUUID();
         paymentDTO = new PaymentDTO(
                 1000L,
                 "usd",
                 "acct_seller123",
                 100L,
-                "vehicle_001",
+                vehicleId,
                 "sedan",
                 "buyer@example.com"
         );
 
         rentDTO = new RentDTO(
-                "vehicle_001",
+                vehicleId,
                 "sedan",
                 "cus_customer123",
                 "acct_seller123",
@@ -59,23 +55,24 @@ class PaymentControllerTest {
         PaymentIntent mockIntent = new PaymentIntent();
         mockIntent.setId("pi_1234567890");
         when(stripeService.createMarketplacePayment(
-                1000L, "usd", "acct_seller123", 100L, "vehicle_001", "sedan", "buyer@example.com"
+                paymentDTO.amount(), paymentDTO.currency(), paymentDTO.sellerAccountId(),
+                paymentDTO.applicationFee(), paymentDTO.vehicleId(), paymentDTO.vehicleType(), paymentDTO.receiptEmail()
         )).thenReturn(mockIntent);
 
         Response response = paymentController.createPayment(paymentDTO);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertNotNull(response.getEntity());
-        verify(stripeService, times(1)).createMarketplacePayment(
-                1000L, "usd", "acct_seller123", 100L, "vehicle_001", "sedan", "buyer@example.com"
-        );
+        verify(stripeService).createMarketplacePayment(
+                paymentDTO.amount(), paymentDTO.currency(), paymentDTO.sellerAccountId(),
+                paymentDTO.applicationFee(), paymentDTO.vehicleId(), paymentDTO.vehicleType(), paymentDTO.receiptEmail());
     }
 
     @Test
     void testCreatePaymentStripeException() throws StripeException {
         when(stripeService.createMarketplacePayment(
-                anyLong(), anyString(), anyString(), anyLong(), anyString(), anyString(), anyString()
-        )).thenThrow(new StripeException("Invalid payment intent"));
+                anyLong(), anyString(), anyString(), anyLong(), any(UUID.class), anyString(), anyString()
+        )).thenThrow(new CardException("Invalid payment intent", "card_error", "charge_123", "param", "code", "decline_code", null, null));
 
         Response response = paymentController.createPayment(paymentDTO);
 
@@ -88,23 +85,23 @@ class PaymentControllerTest {
         Subscription mockSubscription = new Subscription();
         mockSubscription.setId("sub_1234567890");
         when(stripeService.createRentalSubscription(
-                "vehicle_001", "sedan", "cus_customer123", "acct_seller123", 50L
+                rentDTO.vehicleId(), rentDTO.vehicleType(), rentDTO.customerId(),
+                rentDTO.sellerAccountId(), rentDTO.applicationFee()
         )).thenReturn(mockSubscription);
 
         Response response = paymentController.createRentingPayment(rentDTO);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertNotNull(response.getEntity());
-        verify(stripeService, times(1)).createRentalSubscription(
-                "vehicle_001", "sedan", "cus_customer123", "acct_seller123", 50L
-        );
+        verify(stripeService).createRentalSubscription(rentDTO.vehicleId(), rentDTO.vehicleType(), rentDTO.customerId(),
+                rentDTO.sellerAccountId(), rentDTO.applicationFee());
     }
 
     @Test
     void testCreateRentingPaymentStripeException() throws StripeException {
         when(stripeService.createRentalSubscription(
-                anyString(), anyString(), anyString(), anyString(), anyLong()
-        )).thenThrow(new StripeException("Rental subscription failed"));
+                any(UUID.class), anyString(), anyString(), anyString(), anyLong()
+        )).thenThrow(new CardException("Invalid payment intent", "card_error", "charge_123", "param", "code", "decline_code", null, null));
 
         Response response = paymentController.createRentingPayment(rentDTO);
 

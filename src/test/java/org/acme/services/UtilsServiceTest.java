@@ -2,23 +2,24 @@ package org.acme.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.acme.dtos.UserSearchDTO;
+
 import org.acme.model.Bikes;
 import org.acme.model.Boats;
 import org.acme.model.Cars;
 import org.acme.model.Planes;
 import org.acme.model.Users;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class UtilsServiceTest {
 
     @Mock
