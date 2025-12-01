@@ -170,14 +170,15 @@ public class StripeWebhookResource {
             case "payment_intent.succeeded": {
                 PaymentIntent pi = (PaymentIntent) stripeObject;
                 LOGGER.info("PaymentIntent processed: {}", pi.getId());
-                emailService.sendPaymentSuccessEmailTeste(pi);
-
+                
                 utilsService.updateOwner(
-                        pi.getMetadata().get("seller_stripe_id"),
-                        pi.getReceiptEmail(),
-                        UUID.fromString(pi.getMetadata().get("vehicle_id")),
-                        pi.getMetadata().get("vehicle_type")
+                    pi.getMetadata().get("seller_stripe_id"),
+                    pi.getReceiptEmail(),
+                    UUID.fromString(pi.getMetadata().get("vehicle_id")),
+                    pi.getMetadata().get("vehicle_type")
                 );
+                
+                emailService.sendPaymentSuccessEmail(pi);
                 break;
             }
 
