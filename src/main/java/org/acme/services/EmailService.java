@@ -14,35 +14,42 @@ import com.stripe.model.Invoice;
 import com.stripe.model.PaymentIntent;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class EmailService {
-    @ConfigProperty(name = "resend.api.key")
-    private String resendToken;
 
     private static final Logger LOGGER = Logger.getLogger(EmailService.class.getName());
 
-    Resend resend = new Resend(resendToken);
+    private final Resend resend;
+
+    @Inject
+    public EmailService(@ConfigProperty(name = "resend.api.key") String resendApiKey) {
+        this.resend = new Resend(resendApiKey);
+    }
 
     /**
      * Sends a payment success confirmation email to the customer.
      *
-     * <p>This method validates that the payment intent contains the required information
-     * (amount, currency, and receipt email address) before sending the email. If any required
-     * field is missing, the method returns without sending an email.
+     * <p>
+     * This method validates that the payment intent contains the required
+     * information (amount, currency, and receipt email address) before sending
+     * the email. If any required field is missing, the method returns without
+     * sending an email.
      *
-     * <p>The email body includes:
+     * <p>
+     * The email body includes:
      * <ul>
-     *   <li>A payment confirmation header</li>
-     *   <li>The payment amount and currency formatted to 2 decimal places</li>
-     *   <li>A thank you message</li>
-     *   <li>Footer with company information and support contact</li>
+     * <li>A payment confirmation header</li>
+     * <li>The payment amount and currency formatted to 2 decimal places</li>
+     * <li>A thank you message</li>
+     * <li>Footer with company information and support contact</li>
      * </ul>
      *
-     * @param paymentIntent the payment intent object containing payment details including
-     *                      amount (in cents), currency code, and receipt email address
-     * @throws ResendException if an error occurs while sending the email via the Resend service
-     *                         (exceptions are caught and logged at INFO level)
+     * @param paymentIntent the payment intent object containing payment details
+     * including amount (in cents), currency code, and receipt email address
+     * @throws ResendException if an error occurs while sending the email via
+     * the Resend service (exceptions are caught and logged at INFO level)
      *
      * @see PaymentIntent
      * @see CreateEmailOptions
@@ -82,28 +89,33 @@ public class EmailService {
     }
 
     /**
-     * Sends a payment confirmation email to the customer for the provided invoice.
+     * Sends a payment confirmation email to the customer for the provided
+     * invoice.
      *
-     * <p>Behavior:
-     * - If {@code invoice.getCustomerEmail()} is {@code null}, the method returns immediately and
-     *   no email is sent.
-     * - Constructs an HTML message with the fixed subject "Your Subscription Invoice has been Paid!"
-     *   and a body containing a confirmation header, a greeting, the subscription identifier,
-     *   and the paid amount formatted to two decimal places followed by the invoice currency in upper case.
-     * - The paid amount is derived from {@code invoice.getAmountPaid()} by interpreting it as minor
-     *   currency units and converting it to a {@link java.math.BigDecimal} with two decimal places.
-     * - Uses {@code CreateEmailOptions} with sender "Acme <onboarding@resend.dev>", recipient from the
-     *   invoice, the subject, and the generated HTML body, then sends the email via {@code resend.emails().send(...)}.
-     * - On successful send logs an INFO message containing the returned email ID.
-     * - On failure catches {@code ResendException} and prints the stack trace.
+     * <p>
+     * Behavior: - If {@code invoice.getCustomerEmail()} is {@code null}, the
+     * method returns immediately and no email is sent. - Constructs an HTML
+     * message with the fixed subject "Your Subscription Invoice has been Paid!"
+     * and a body containing a confirmation header, a greeting, the subscription
+     * identifier, and the paid amount formatted to two decimal places followed
+     * by the invoice currency in upper case. - The paid amount is derived from
+     * {@code invoice.getAmountPaid()} by interpreting it as minor currency
+     * units and converting it to a {@link java.math.BigDecimal} with two
+     * decimal places. - Uses {@code CreateEmailOptions} with sender "Acme
+     * <onboarding@resend.dev>", recipient from the invoice, the subject, and
+     * the generated HTML body, then sends the email via
+     * {@code resend.emails().send(...)}. - On successful send logs an INFO
+     * message containing the returned email ID. - On failure catches
+     * {@code ResendException} and prints the stack trace.
      *
-     * <p>Side effects:
-     * - Performs network I/O to deliver the email.
-     * - Writes logs via {@code LOGGER} and prints stack traces on error.
+     * <p>
+     * Side effects: - Performs network I/O to deliver the email. - Writes logs
+     * via {@code LOGGER} and prints stack traces on error.
      *
-     * @param invoice the invoice whose customer should receive the confirmation; if {@code null},
-     *                calling this method will result in a {@link NullPointerException}
-     *                when accessing its properties, so a non-null {@code Invoice} is expected.
+     * @param invoice the invoice whose customer should receive the
+     * confirmation; if {@code null}, calling this method will result in a
+     * {@link NullPointerException} when accessing its properties, so a non-null
+     * {@code Invoice} is expected.
      */
     public void sendInvoicePaidEmail(Invoice invoice) {
         if (invoice.getCustomerEmail() == null) {
@@ -137,20 +149,20 @@ public class EmailService {
 
     /**
      * Sends a payment failure notification email to the customer.
-     * 
-     * This method constructs and sends an HTML-formatted email to the receipt email
-     * address associated with the payment intent, informing the customer that their
-     * payment transaction has failed and prompting them to retry.
-     * 
-     * If no receipt email is found in the payment intent, the method returns early
-     * without sending an email.
-     * 
-     * @param paymentIntent the PaymentIntent object containing payment details and
-     *                      the recipient's email address
-     * 
-     * @throws ResendException if an error occurs while sending the email via the
-     *                         Resend service; exceptions are caught and logged
-     * 
+     *
+     * This method constructs and sends an HTML-formatted email to the receipt
+     * email address associated with the payment intent, informing the customer
+     * that their payment transaction has failed and prompting them to retry.
+     *
+     * If no receipt email is found in the payment intent, the method returns
+     * early without sending an email.
+     *
+     * @param paymentIntent the PaymentIntent object containing payment details
+     * and the recipient's email address
+     *
+     * @throws ResendException if an error occurs while sending the email via
+     * the Resend service; exceptions are caught and logged
+     *
      * @see PaymentIntent
      * @see CreateEmailOptions
      * @see CreateEmailResponse
@@ -183,19 +195,21 @@ public class EmailService {
     }
 
     /**
-     * Sends an email notification to the customer when their subscription invoice payment fails.
-     * 
-     * <p>This method constructs and sends a failure notification email containing instructions
-     * for the customer to verify their data and retry the payment. The email is sent using the
-     * Resend email service.
-     * 
-     * @param invoice the {@link Invoice} object containing customer email and payment details.
-     *                If the invoice's customer email is null, the method returns early without
-     *                sending an email.
-     * 
-     * @throws ResendException if an error occurs while sending the email via the Resend service.
-     *                         The exception is caught and logged at ERROR level.
-     * 
+     * Sends an email notification to the customer when their subscription
+     * invoice payment fails.
+     *
+     * <p>
+     * This method constructs and sends a failure notification email containing
+     * instructions for the customer to verify their data and retry the payment.
+     * The email is sent using the Resend email service.
+     *
+     * @param invoice the {@link Invoice} object containing customer email and
+     * payment details. If the invoice's customer email is null, the method
+     * returns early without sending an email.
+     *
+     * @throws ResendException if an error occurs while sending the email via
+     * the Resend service. The exception is caught and logged at ERROR level.
+     *
      * @see Invoice
      * @see CreateEmailOptions
      * @see CreateEmailResponse
