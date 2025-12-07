@@ -1,82 +1,168 @@
-Swagger-ui url: http://localhost:8080/q/swagger-ui/
+# **Rice Power Vehicles — Vehicle Marketplace (Backend)**
 
+A robust backend API built with **Quarkus 3.21.1** and **Java 21** that powers a comprehensive vehicle marketplace for buying, selling, and renting cars, bikes, boats, planes, and more. The system provides complete vehicle lifecycle management, document handling, payment processing, and role-based access control for both customers and administrators.
 
-# vehicle-marketplace
+---
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## **📘 About This Documentation**
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+This README provides a high-level overview of the backend architecture, core features, and setup instructions.
 
-## Running the application in dev mode
+**📚 For detailed documentation, visit the [Wiki](https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki)**
 
-You can run your application in dev mode that enables live coding using:
+---
 
-```shell script
+## **🚀 Getting Started**
+
+### **Prerequisites**
+
+* **Java** 21  
+* **Quarkus** 3.21.1  
+* **Node.js** 22.14.0  
+* **Docker** & Docker Compose
+
+### **Installation & Running**
+
+\# Clone the repository  
+git clone https://github.com/Thiago-M-Silva/vehicle-marketplace.git  
+cd vehicle-marketplace
+
+\# Configure environment variables  
+cp .env.example .env
+
+\# Start the application  
 ./mvnw quarkus:dev
-```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+### **Development URLs**
 
-## Packaging and running the application
+| Service | URL |
+| ----- | ----- |
+| Quarkus Dev UI | [http://localhost:8080/q/dev-ui/extensions](http://localhost:8080/q/dev-ui/extensions) |
+| Swagger API Docs | [http://localhost:8080/q/swagger-ui/](http://localhost:8080/q/swagger-ui/) |
+| Keycloak | [http://localhost:8081](http://localhost:8081/) |
+| Frontend (reference) | [http://localhost:5173](http://localhost:5173/) |
 
-The application can be packaged using:
+---
 
-```shell script
-./mvnw package
-```
+## **🏗️ Architecture Overview**
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+The application follows a **monolithic architecture** with a clean layered structure, integrating multiple external services:
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+### **Technology Stack**
 
-If you want to build an _über-jar_, execute the following command:
+* **PostgreSQL** — Structured relational data  
+* **MongoDB** — Document and file storage  
+* **Stripe** — Payment processing  
+* **Keycloak** — Authentication and role-based access control (RBAC)
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+### **Application Layers**
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Controllers   → HTTP endpoints and request handling  
+Services      → Business logic and orchestration  
+Repositories  → Data access and persistence  
+Models        → Domain objects and entities  
+Middlewares   → Request validation and filtering  
+Infra         → External service integrations
 
-## Creating a native executable
+---
 
-You can create a native executable using:
+## **✨ Core Features**
 
-```shell script
-./mvnw package -Dnative
-```
+### **🚗 Vehicle Management**
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+* Full CRUD operations for vehicles  
+* Multi-type support (cars, bikes, boats, planes, etc.)  
+* Document upload and management (PDF, JPG, PNG)  
+* Advanced search and filtering capabilities
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+### **👥 User Management**
 
-You can then execute your native executable with: `./target/vehicle-marketplace-1.0.0-SNAPSHOT-runner`
+* Self-service customer registration  
+* Admin-controlled seller and admin account creation  
+* Personal dashboard with trade history  
+* Role-based permissions and access control
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+### **💼 Transaction System**
 
-## Related Guides
+* Vehicle purchase workflows  
+* Flexible rental options (daily or custom periods)  
+* Stripe-powered secure payment processing  
+* Automated email confirmations and invoices
 
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- JDBC Driver - H2 ([guide](https://quarkus.io/guides/datasource)): Connect to the H2 database via JDBC
-- MongoDB with Panache ([guide](https://quarkus.io/guides/mongodb-panache)): Simplify your persistence code for MongoDB via the active record or the repository pattern
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- OpenID Connect ([guide](https://quarkus.io/guides/security-openid-connect)): Verify Bearer access tokens and authenticate users with Authorization Code Flow
-- Quinoa ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)): Develop, build, and serve your npm-compatible web applications such as React, Angular, Vue, Lit, Svelte, Astro, SolidJS, and others alongside Quarkus.
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
+---
 
-## Provided Code
+## **🧰 Technology Stack**
 
-### Quinoa
+| Category | Technologies |
+| ----- | ----- |
+| **Core** | Java 21, Quarkus 3.21.1 |
+| **Databases** | PostgreSQL, MongoDB |
+| **Payments** | Stripe |
+| **Email** | Resend |
+| **Authentication** | Keycloak (OIDC) |
+| **Infrastructure** | Docker, Docker Compose |
+| **Documentation** | Swagger (OpenAPI) |
+| **Testing** | JUnit, Mockito |
 
-Quinoa codestart added a tiny Vite app in src/main/webui. The page is configured to be visible on <a href="/quinoa">/quinoa</a>.
+---
 
-[Related guide section...](https://quarkiverse.github.io/quarkiverse-docs/quarkus-quinoa/dev/index.html)
+## **📂 Project Structure**
 
+VEHICLE-MARKETPLACE/  
+└── src/  
+    ├── main/  
+    │   ├── java/org/acme/  
+    │   │   ├── abstracts/        \# Abstract base classes  
+    │   │   ├── controllers/      \# REST endpoints  
+    │   │   ├── db/seeding/       \# Database seeders  
+    │   │   ├── dtos/             \# Data transfer objects  
+    │   │   ├── enums/            \# Enumerations  
+    │   │   ├── exceptions/       \# Custom exceptions  
+    │   │   ├── infra/            \# External integrations  
+    │   │   ├── interfaces/       \# Contracts and interfaces  
+    │   │   ├── middlewares/      \# Request interceptors  
+    │   │   ├── model/            \# Domain models  
+    │   │   ├── repositories/     \# Data access layer  
+    │   │   └── services/         \# Business logic  
+    │   └── resources/  
+    │       ├── db/               \# Database migrations  
+    │       ├── files/            \# Static files  
+    │       ├── import/           \# Import data  
+    │       ├── webui/            \# Web UI assets  
+    │       └── application.properties  
+    └── test/java/org/acme/       \# Test suite  
+        ├── controllers/  
+        ├── exceptions/  
+        ├── infra/  
+        ├── middlewares/  
+        └── services/
 
-### REST
+---
 
-Easily start your REST Web Services
+## **🔌 External Integrations**
 
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+### **Keycloak**
+
+* **OIDC-based authentication** for secure user sessions  
+* **Role-based authorization** (Customer, Seller, Admin)  
+* **Automated synchronization** with marketplace database
+
+### **Stripe**
+
+* **Secure payment processing** for purchases and rentals  
+* **Webhook integration** for real-time transaction events  
+* **Multiple payment methods** (Card, Boleto, PIX) in test mode
+
+### **Resend**
+
+* **Transactional email delivery** for confirmations and notifications  
+* **Automated invoice generation** and distribution  
+* **Password recovery** (planned feature)
+
+---
+
+## **📎 Additional Resources**
+
+For comprehensive documentation including architecture diagrams, domain models, API examples, and integration guides:
+
+**👉 [Visit the Wiki](https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki)**
