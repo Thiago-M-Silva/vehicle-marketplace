@@ -4,7 +4,7 @@ import Header from "@/sections/header";
 
 export const Home = () => {
     return (
-        <div className="h-full w-full border-2 border-amber-950">
+        <div className="border-2 border-amber-950">
             <Header />
             <Carousel
                 plugins={[

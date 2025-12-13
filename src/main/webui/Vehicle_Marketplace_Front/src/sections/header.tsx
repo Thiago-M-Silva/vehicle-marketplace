@@ -2,13 +2,16 @@ import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar"
 import { Menubar, MenubarMenu, MenubarTrigger, MenubarContent, MenubarItem } from "@radix-ui/react-menubar"
 
 const header = () => {
-  //TODO: search about inset
+  const title: String = 'Horse Power Vehicles'
+  const logo: string = '../assets/horse_power_vehicle_logo.png'
 
   return (
-    <>
-      <img src="" alt="" />
-      <h1>Rice Power Vehicles</h1>
-      <Menubar>
+    <div className="flex flex-row items-center justify-around bg-gray-300 w-full h-20">
+      <div className="flex gap-2">
+        <img src={logo} alt="Rice Power Vehicles logo" />
+        <h1>{ title }</h1>
+      </div>
+      <Menubar className="flex justify-around gap-80">
         <MenubarMenu>
           <MenubarTrigger>Buy</MenubarTrigger>
           <MenubarContent>
@@ -39,10 +42,10 @@ const header = () => {
         </MenubarMenu>
       </Menubar>
       <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarImage src="" />
+        <AvatarFallback>Random User</AvatarFallback>
       </Avatar>
-    </>
+    </div>
   )
 }
 

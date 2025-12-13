@@ -21,7 +21,7 @@ public class EmailServiceTest {
 
     @BeforeEach
     public void setup() {
-        emailService = new EmailService();
+        emailService = new EmailService(null);
     }
 
     @Test
