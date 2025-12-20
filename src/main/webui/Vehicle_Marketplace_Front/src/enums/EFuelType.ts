@@ -1,0 +1,16 @@
+export enum EFuelType {
+  DIESEL = 1,
+  ELECTRIC = 2,
+  HYBRID = 3,
+  LPG = 4,
+  CNG = 5,
+  ETHANOL = 6,
+  BIODIESEL = 7,
+  PROPANE = 8,
+  BUTANE = 9,
+  FUEL_OIL = 10,
+  JET_FUEL = 11,
+  KEROSENE = 12,
+  ALCOHOL = 13,
+  GASOLINE = 14,
+}
