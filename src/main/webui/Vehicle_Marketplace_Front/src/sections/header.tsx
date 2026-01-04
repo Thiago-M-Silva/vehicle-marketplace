@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar"
 import { Menubar, MenubarMenu, MenubarTrigger, MenubarContent, MenubarItem } from "@radix-ui/react-menubar"
-import logo from '../assets/horse_power_vehicle_logo.png'
+import logo from '../assets/logo/horse_power_vehicle_logo.png'
 
 const header = () => {
   const title: string = 'Horse Power Vehicles'

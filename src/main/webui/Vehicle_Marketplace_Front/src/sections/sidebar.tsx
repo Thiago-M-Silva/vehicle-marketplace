@@ -9,24 +9,38 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { FileCode, Home, Code, Search } from "lucide-react";
 
-// Menu items.
 const items = [
-  { title: "Home", url: "#", icon: Home },
-  { title: "Inbox", url: "#", icon: Inbox },
-  { title: "Calendar", url: "#", icon: Calendar },
-  { title: "Search", url: "#", icon: Search },
-  { title: "Settings", url: "#", icon: Settings },
+  { title: "Home", url: "http://localhost:5173/", icon: Home },
+  {
+    title: "Dev UI",
+    url: "http://localhost:8080/q/dev-ui/welcome",
+    icon: Code,
+  },
+  {
+    title: "Dev Services",
+    url: "http://localhost:8080/q/dev-ui/extensions",
+    icon: Code,
+  },
+  {
+    title: "Api Docs",
+    url: "http://localhost:8080/q/swagger-ui/",
+    icon: FileCode,
+  },
+  { title: "Keycloak", url: "http://localhost:8081", icon: Search },
 ];
 
 type Props = {};
 
 export const SidebarSection = ({}: Props) => {
   return (
-    <Sidebar>
-      <SidebarHeader />
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <SidebarTrigger />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
