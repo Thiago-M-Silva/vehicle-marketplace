@@ -11,58 +11,70 @@ import { Button } from "@/components/ui/button";
 import { dataToShowInResume } from "@/utils/tempMethods";
 import { useState } from "react";
 
-type Props = {};
-
-export const VehicleResumeSection = ({}: Props) => {
+export const VehicleResumeSection = () => {
   const [tabValue, setTabValue] = useState("bikes");
 
-  console.log(tabValue);
   const values = dataToShowInResume(tabValue);
+  const categories = ["bikes", "boats", "cars", "planes"];
 
-  console.log(values);
   return (
-    <div className="bg-gray-400 mx-10 py-10 rounded-lg">
-      <Tabs
-        defaultValue="bikes"
-        className="w-[90%] mx-auto mt-2 px-2 border-2 border-amber-400 "
-      >
-        <TabsList className="flex justify-between w-[85%] mx-auto">
-          <TabsTrigger value="bikes" onClick={() => setTabValue("bikes")}>
-            Motorbikes
-          </TabsTrigger>
-          <TabsTrigger value="boats" onClick={() => setTabValue("boats")}>
-            Boats
-          </TabsTrigger>
-          <TabsTrigger value="cars" onClick={() => setTabValue("cars")}>
-            Cars
-          </TabsTrigger>
-          <TabsTrigger value="planes" onClick={() => setTabValue("planes")}>
-            Planes
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value={tabValue}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-            {values.map((value: any, index: number) => (
-              <Card key={index}>
-                <CardHeader>
-                  <CardTitle>{value.name}</CardTitle>
-                  <CardDescription>{value.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div>{value.name}</div>
-                  <div>
-                    <img src="" alt="motorbike_image" />
-                  </div>
-                  <div>{value.description}</div>
-                </CardContent>
-                <CardFooter className="justify-center">
-                  <Button>See more</Button>
-                </CardFooter>
-              </Card>
+    <section className="w-full py-12 bg-slate-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Featured Vehicles
+          </h2>
+          <p className="mt-4 text-lg text-gray-600">
+            Browse our selection of premium vehicles across all categories.
+          </p>
+        </div>
+
+        <Tabs value={tabValue} onValueChange={setTabValue} className="w-full">
+          <TabsList className="flex w-full max-w-md mx-auto h-12 items-center justify-center rounded-lg bg-slate-200 p-1 text-slate-600">
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category}
+                value={category}
+                className="flex-1 inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-slate-950 data-[state=active]:shadow capitalize"
+              >
+                {category}
+              </TabsTrigger>
             ))}
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+          </TabsList>
+          <TabsContent
+            value={tabValue}
+            className="mt-8 focus-visible:outline-none"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {values.map((value: any, index: number) => (
+                <Card
+                  key={index}
+                  className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
+                >
+                  <div className="aspect-video w-full overflow-hidden bg-gray-100 relative">
+                    <img
+                      src={value.image}
+                      alt={value.name}
+                      className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
+                    />
+                  </div>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl">{value.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <CardDescription className="text-sm text-gray-600 line-clamp-3">
+                      {value.description}
+                    </CardDescription>
+                  </CardContent>
+                  <CardFooter className="pt-4">
+                    <Button className="w-full">See more</Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </section>
   );
 };
