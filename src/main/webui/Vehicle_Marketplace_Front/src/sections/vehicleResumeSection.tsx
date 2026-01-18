@@ -8,7 +8,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { dataToShowInResume } from "@/utils/tempMethods";
+import { dataToShowInResume } from "@/services/tempMethods";
 import { useState } from "react";
 
 export const VehicleResumeSection = () => {
