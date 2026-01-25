@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const execRequest = async (method: string, url: string, data: any) => {
+export const execRequest = async (method: string, url: string, data: any) => {
     try {
         const res = axios.request(
             {
@@ -9,9 +9,10 @@ const execRequest = async (method: string, url: string, data: any) => {
                 data: data
             }
         );
+
+        return res;
     } catch (error) {
-        
+        console.log(error);
+        return error;
     }
 }
-
-export const getAllVehicleByKind = async (params:type) => {}
