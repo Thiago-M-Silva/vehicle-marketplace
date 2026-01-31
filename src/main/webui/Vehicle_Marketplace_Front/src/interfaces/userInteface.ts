@@ -1,4 +1,5 @@
 import { EUserRoles } from "@/enums/ERoles";
+import { IBike, IBoat, ICar, IPlane } from "./vehiclesInteface";
 
 export interface IUser {
     id: string;
@@ -14,4 +15,8 @@ export interface IUser {
     rg: string;
     state: string;
     userType: EUserRoles;
+    Bike?: IBike;
+    Boat?: IBoat;
+    Car?: ICar;
+    Plane?: IPlane;
 }
