@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { dataToShowInResume } from "@/services/tempMethods";
 import { useState } from "react";
+import { redirectMethod } from "@/services/utils";
 
 export const VehicleResumeSection = () => {
   const [tabValue, setTabValue] = useState("bikes");
@@ -67,7 +68,7 @@ export const VehicleResumeSection = () => {
                     </CardDescription>
                   </CardContent>
                   <CardFooter className="pt-4">
-                    <Button className="w-full">See more</Button>
+                    <Button className="w-full" onClick={() => redirectMethod('/productInfo')}>See more</Button>
                   </CardFooter>
                 </Card>
               ))}

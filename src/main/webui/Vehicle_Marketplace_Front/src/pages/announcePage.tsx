@@ -1,7 +1,7 @@
 type Props = {
  
 }
-export const ProfilePage = ({}: Props) => {
+export const AnnouncePage = ({}: Props) => {
     return ( 
         <div>
             

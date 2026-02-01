@@ -61,7 +61,7 @@ export const CarouselSection = () => {
             </picture>
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <a
-                href="/product"
+                href="/productList"
                 className="bg-white text-black px-6 py-2 rounded-full font-semibold shadow-lg hover:bg-gray-100 transition-colors"
               >
                 See more

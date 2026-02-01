@@ -40,11 +40,11 @@ const Header = () => {
               align="start"
               sideOffset={5}
             >
-              <MenubarItem className={itemStyle}> All vehicles </MenubarItem>
-              <MenubarItem className={itemStyle}> Bikes </MenubarItem>
-              <MenubarItem className={itemStyle}> Boats </MenubarItem>
-              <MenubarItem className={itemStyle}> Cars </MenubarItem>
-              <MenubarItem className={itemStyle}> Planes </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/productList"> All vehicles </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/productList"> Bikes </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/productList"> Boats </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/productList"> Cars </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/productList"> Planes </a> </MenubarItem>
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
@@ -54,10 +54,10 @@ const Header = () => {
               align="start"
               sideOffset={5}
             >
-              <MenubarItem className={itemStyle}> Bikes </MenubarItem>
-              <MenubarItem className={itemStyle}> Boats </MenubarItem>
-              <MenubarItem className={itemStyle}> Cars </MenubarItem>
-              <MenubarItem className={itemStyle}> Planes </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/announcePage">Bikes</a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/announcePage">Boats</a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/announcePage">Cars</a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/announcePage">Planes</a> </MenubarItem>
             </MenubarContent>
           </MenubarMenu>
           <MenubarMenu>
