@@ -1,10 +1,10 @@
+import { Checkout } from "@/sections/checkoutSection";
+
 type Props = {
  
 }
 export const PurchasePage = ({}: Props) => {
     return ( 
-        <div>
-            
-        </div>
+        <Checkout data={null}/>
     );
 }
