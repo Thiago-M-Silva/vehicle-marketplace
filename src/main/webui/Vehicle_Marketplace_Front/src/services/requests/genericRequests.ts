@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-export const execRequest = async (method: string, url: string, data: any) => {
+export const execRequest = async (
+    method: string, 
+    url: string, 
+    data: any
+): Promise<any> => {
     try {
         const res = axios.request(
             {
