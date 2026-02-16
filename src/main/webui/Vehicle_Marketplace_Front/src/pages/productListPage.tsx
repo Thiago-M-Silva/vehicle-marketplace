@@ -12,69 +12,71 @@ import { FilterSection } from "@/sections/filterSection";
 import { VehicleSearchInterface } from "@/interfaces/vehicleSearchInterface";
 import bikePng from "../assets/bike/horse_power_vehicle_moto.png";
 import bikeWebp from "../assets/bike/horse_power_vehicle_moto.webp";
-import { IVehicle } from "@/interfaces/vehiclesInteface";
+import { IBike, IBoat, IVehicle } from "@/interfaces/vehiclesInteface";
 import {
   getAllVehicleByKind,
   searchVehicles,
 } from "@/services/requests/vehiclesRequest";
 import { LoadingSection } from "@/sections/loadingSection";
+import { useNavigate } from "react-router";
 
-type Props = {};
+// type Props = {};
+// // Mock data for display purposes
+// const MOCK_VEHICLES = [
+//   {
+//     id: 1,
+//     name: "Yamaha MT-07",
+//     price: "$ 8,999.00",
+//     description:
+//       "The MT-07 is designed to bring fun, affordability and enjoyment back to the street.",
+//     image: bikePng,
+//     webp: bikeWebp,
+//     brand: "Yamaha",
+//     year: 2022,
+//     category: "Motorcycle",
+//     type: "bikes",
+//   },
+//   {
+//     id: 2,
+//     name: "Speedster S",
+//     price: "$ 45,000.00",
+//     description: "High performance coupe with aerodynamic design.",
+//     image: bikePng, // Placeholder
+//     webp: bikeWebp,
+//     brand: "Speedster",
+//     year: 2023,
+//     category: "Car",
+//     type: "cars",
+//   },
+//   {
+//     id: 3,
+//     name: "Ocean Pro",
+//     price: "$ 25,000.00",
+//     description: "Perfect for weekend getaways on the water.",
+//     image: bikePng, // Placeholder
+//     webp: bikeWebp,
+//     brand: "Ocean",
+//     year: 2021,
+//     category: "Boat",
+//     type: "boats",
+//   },
+//   {
+//     id: 4,
+//     name: "Cirrus SR22",
+//     price: "$ 750,000.00",
+//     description: "The world's best-selling general aviation aircraft.",
+//     image: bikePng, // Placeholder
+//     webp: bikeWebp,
+//     brand: "Cirrus",
+//     year: 2020,
+//     category: "Plane",
+//     type: "planes",
+//   },
+// ];
 
-// Mock data for display purposes
-const MOCK_VEHICLES = [
-  {
-    id: 1,
-    name: "Yamaha MT-07",
-    price: "$ 8,999.00",
-    description:
-      "The MT-07 is designed to bring fun, affordability and enjoyment back to the street.",
-    image: bikePng,
-    webp: bikeWebp,
-    brand: "Yamaha",
-    year: 2022,
-    category: "Motorcycle",
-    type: "bikes",
-  },
-  {
-    id: 2,
-    name: "Speedster S",
-    price: "$ 45,000.00",
-    description: "High performance coupe with aerodynamic design.",
-    image: bikePng, // Placeholder
-    webp: bikeWebp,
-    brand: "Speedster",
-    year: 2023,
-    category: "Car",
-    type: "cars",
-  },
-  {
-    id: 3,
-    name: "Ocean Pro",
-    price: "$ 25,000.00",
-    description: "Perfect for weekend getaways on the water.",
-    image: bikePng, // Placeholder
-    webp: bikeWebp,
-    brand: "Ocean",
-    year: 2021,
-    category: "Boat",
-    type: "boats",
-  },
-  {
-    id: 4,
-    name: "Cirrus SR22",
-    price: "$ 750,000.00",
-    description: "The world's best-selling general aviation aircraft.",
-    image: bikePng, // Placeholder
-    webp: bikeWebp,
-    brand: "Cirrus",
-    year: 2020,
-    category: "Plane",
-    type: "planes",
-  },
-];
-
-export const ProductList = ({}: Props) => {
+export const ProductList = () => {
+  const navigate = useNavigate();
+  
   const [vehicles, setVehicles] = useState<Partial<IVehicle>[]>();
   const [loading, setLoading] = useState(true);
   const [kind, setKind] = useState("bikes");
@@ -87,7 +89,7 @@ export const ProductList = ({}: Props) => {
     const fetchVehicles = async () => {
       setLoading(true);
       const fetchedVehicles = await getAllVehicleByKind(kind);
-      setVehicles(fetchedVehicles);
+      setVehicles(fetchedVehicles.data);
       setLoading(false);
     };
     fetchVehicles();
@@ -104,6 +106,10 @@ export const ProductList = ({}: Props) => {
     setLoading(false);
     console.log("Searching with filters:", filters);
   };
+
+  const redirectToDetailsPage = (vehicle: Partial<IVehicle>) => {
+    navigate(`/productInfo/${kind}/${vehicle.id}`, { state: { vehicle } });
+  }
 
   const filteredVehicles = useMemo(() => {
     // The backend now handles filtering, so we just use the state.
@@ -215,7 +221,7 @@ export const ProductList = ({}: Props) => {
                     </p>
                   </CardContent>
                   <CardFooter className="pt-0 mt-auto">
-                    <Button className="w-full">View Details</Button>
+                    <Button className="w-full" onClick={() => redirectToDetailsPage(item)}>View Details</Button>
                   </CardFooter>
                 </Card>
               ))

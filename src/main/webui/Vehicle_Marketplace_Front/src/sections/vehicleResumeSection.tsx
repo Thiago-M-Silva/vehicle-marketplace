@@ -68,7 +68,14 @@ export const VehicleResumeSection = () => {
                     </CardDescription>
                   </CardContent>
                   <CardFooter className="pt-4">
-                    <Button className="w-full" onClick={() => redirectMethod('/productInfo')}>See more</Button>
+                    <Button
+                      className="w-full"
+                      onClick={() =>
+                        redirectMethod(`/productInfo/${tabValue}/${value.id}`)
+                      }
+                    >
+                      See more
+                    </Button>
                   </CardFooter>
                 </Card>
               ))}

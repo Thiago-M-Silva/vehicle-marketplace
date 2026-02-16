@@ -1,29 +1,46 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
-  IBike,
-  ICar,
-  IBoat,
-  IPlane
+  IVehicle
 } from '@/interfaces/vehiclesInteface'
 import bikePng from "../assets/bike/horse_power_vehicle_moto.png";
 import bikeWebp from "../assets/bike/horse_power_vehicle_moto.webp";
 import { Table, TableRow, TableBody, TableCell } from '@/components/ui/table';
 import { VehicleResumeSection } from '@/sections/vehicleResumeSection';
 import { Button } from '@/components/ui/button';
+import { useLocation, useParams } from 'react-router';
+import { getVehicleByKindAndId } from '@/services/requests/vehiclesRequest';
+import { useNavigate } from "react-router";
 
-type VehicleProp = {
-  vehicle: IBike | ICar | IBoat | IPlane | null
-}
+export const ProductInfo = () => {
+  const navigate = useNavigate();  
+  const location = useLocation();
+  const { kind, id } = useParams();
+  const [vehicle, setVehicle] = useState<IVehicle | null>(location.state?.vehicle || null);
 
-export const ProductInfo = ({ vehicle }: VehicleProp) => {
-  const item = {
-    webp: bikeWebp,
-    png: bikePng,
-    alt: "A modern sport motorcycle",
-    name: "Yamaha MT-07",
-    price: "$ 8,999.00",
-    description: "The MT-07 is designed to bring fun, affordability and enjoyment back to the street. Everything about this versatile naked bike – from its deep torque to the agile chassis and outstanding economy – make it irresistible to both newer and experienced riders."
+  useEffect(() => {
+    if(!vehicle && id){
+      const fetchVehicle = async () => {
+        const response = await getVehicleByKindAndId(kind as string, id);
+        setVehicle(response.data);
+      }
+
+      fetchVehicle();
+    }
+  }, [id, vehicle])
+
+  const redirectToCheckout = (byuOrRent: string) => {
+    byuOrRent === 'buy' ?  navigate('/purchasePage') : navigate('/rentingPage');
   }
+
+  const item = vehicle;
+  // const item = {
+  //   webp: bikeWebp,
+  //   png: bikePng,
+  //   alt: "A modern sport motorcycle",
+  //   name: "Yamaha MT-07",
+  //   price: "$ 8,999.00",
+  //   description: "The MT-07 is designed to bring fun, affordability and enjoyment back to the street. Everything about this versatile naked bike – from its deep torque to the agile chassis and outstanding economy – make it irresistible to both newer and experienced riders."
+  // }
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -33,10 +50,10 @@ export const ProductInfo = ({ vehicle }: VehicleProp) => {
           <div className="w-full">
             <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               <picture className="h-full w-full block">
-                <source srcSet={item.webp} type="image/webp" />
+                <source srcSet={item?.webp} type="image/webp" />
                 <img
-                  src={item.png}
-                  alt={item.alt}
+                  src={item?.image}
+                  alt={item?.name}
                   className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </picture>
@@ -46,13 +63,13 @@ export const ProductInfo = ({ vehicle }: VehicleProp) => {
           {/* Info Section */}
           <div className="flex flex-col gap-8">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{item.name}</h1>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">{item.price}</p>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{item?.name}</h1>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{item?.price}</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="w-full sm:w-auto px-8">Purchase Vehicle</Button>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto px-8">Contact Seller</Button>
+            <div className="flex m-auto flex-col sm:flex-row gap-4">
+              <Button size="lg" className="w-full sm:w-auto px-8" onClick={() => redirectToCheckout('buy')}>Purchase Vehicle</Button>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto px-8" onClick={() => redirectToCheckout('rent')}>Rent Vehicle</Button>
             </div>
 
             <div className="space-y-4">
@@ -60,12 +77,30 @@ export const ProductInfo = ({ vehicle }: VehicleProp) => {
               <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
                 <Table>
                   <TableBody>
-                    <TableRow><TableCell className="font-medium text-slate-500 w-1/3">Brand</TableCell><TableCell>Yamaha</TableCell></TableRow>
-                    <TableRow><TableCell className="font-medium text-slate-500">Model</TableCell><TableCell>MT-07</TableCell></TableRow>
-                    <TableRow><TableCell className="font-medium text-slate-500">Year</TableCell><TableCell>2024</TableCell></TableRow>
-                    <TableRow><TableCell className="font-medium text-slate-500">Category</TableCell><TableCell>Naked Bike</TableCell></TableRow>
-                    <TableRow><TableCell className="font-medium text-slate-500">Fuel Type</TableCell><TableCell>Gasoline</TableCell></TableRow>
-                    <TableRow><TableCell className="font-medium text-slate-500">Color</TableCell><TableCell>Ice Fluo</TableCell></TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-slate-500 w-1/3">Brand</TableCell>
+                      <TableCell>{item?.brand}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-slate-500">Model</TableCell>
+                      <TableCell>{item?.model}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-slate-500">Year</TableCell>
+                      <TableCell>{item?.year}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-slate-500">Category</TableCell>
+                      <TableCell>{item?.category}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-slate-500">Fuel Type</TableCell>
+                      <TableCell>{item?.fuelType}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-slate-500">Color</TableCell>
+                      <TableCell>{item?.color}</TableCell>
+                    </TableRow>
                   </TableBody>
                 </Table>
               </div>
@@ -73,7 +108,7 @@ export const ProductInfo = ({ vehicle }: VehicleProp) => {
 
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-slate-900">Description</h3>
-              <p className="text-slate-600 leading-relaxed">{item.description}</p>
+              <p className="text-slate-600 leading-relaxed">{item?.description}</p>
             </div>
           </div>
         </div>
