@@ -3,16 +3,16 @@ import { EColors } from "@/enums/EColors";
 import { EFuelType } from "@/enums/EFuelType";
 import { EVehicleStatus } from "@/enums/EVehicleStatus";
 
-export interface CreateVehicleObject {
+export interface ICreateVehicleObject {
     name: string,
     brand: string,
-    year: 2006,
-    price: 2500.00,
+    year: number,
+    price: number,
     model: string,
-    horsepower: 400,
+    horsepower: number,
     transmissionType: string,
     description: string,
-    storage: 10,
+    storage: number,
     vehicleStatus: EVehicleStatus,
     category: ECategory,
     color: EColors,
@@ -20,8 +20,8 @@ export interface CreateVehicleObject {
     docs?: any
 }
 
-export interface CreateVehicleWithDocsObject {
-    vehicle: CreateVehicleObject,
+export interface ICreateVehicleWithDocsObject {
+    vehicle: ICreateVehicleObject,
     file: any,
     filename: string,
     contentType: string

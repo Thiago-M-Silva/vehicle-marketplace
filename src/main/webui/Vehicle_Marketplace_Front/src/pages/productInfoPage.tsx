@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-  IVehicle
-} from '@/interfaces/vehiclesInteface'
-import bikePng from "../assets/bike/horse_power_vehicle_moto.png";
-import bikeWebp from "../assets/bike/horse_power_vehicle_moto.webp";
+import { IVehicle } from '@/interfaces/vehiclesInteface';
 import { Table, TableRow, TableBody, TableCell } from '@/components/ui/table';
 import { VehicleResumeSection } from '@/sections/vehicleResumeSection';
 import { Button } from '@/components/ui/button';
@@ -33,14 +29,6 @@ export const ProductInfo = () => {
   }
 
   const item = vehicle;
-  // const item = {
-  //   webp: bikeWebp,
-  //   png: bikePng,
-  //   alt: "A modern sport motorcycle",
-  //   name: "Yamaha MT-07",
-  //   price: "$ 8,999.00",
-  //   description: "The MT-07 is designed to bring fun, affordability and enjoyment back to the street. Everything about this versatile naked bike – from its deep torque to the agile chassis and outstanding economy – make it irresistible to both newer and experienced riders."
-  // }
 
   return (
     <div className="min-h-screen bg-slate-50">

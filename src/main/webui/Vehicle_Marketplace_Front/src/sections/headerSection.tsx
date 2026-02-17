@@ -21,16 +21,18 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto flex h-20 items-center justify-between px-4">
-        <div className="flex items-center gap-3">
-          <img
-            src={logo}
-            alt="Horse Power Vehicles logo"
-            className="h-10 w-auto"
-          />
-          <h1 className="hidden md:block text-xl font-bold tracking-tight text-slate-900">
-            {title}
-          </h1>
-        </div>
+        <a href="/">
+          <div className="flex items-center gap-3">
+            <img
+              src={logo}
+              alt="Horse Power Vehicles logo"
+              className="h-10 w-auto"
+            />
+            <h1 className="hidden md:block text-xl font-bold tracking-tight text-slate-900">
+              {title}
+            </h1>
+          </div>
+        </a>
 
         <Menubar className="flex items-center gap-1 rounded-lg bg-slate-100 p-1">
           <MenubarMenu>

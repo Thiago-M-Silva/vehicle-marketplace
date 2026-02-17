@@ -1,6 +1,6 @@
 import {
-  CreateVehicleObject,
-  CreateVehicleWithDocsObject,
+  ICreateVehicleObject,
+  ICreateVehicleWithDocsObject,
 } from "@/interfaces/createVehicleInterface";
 import { VehicleSearchInterface } from "@/interfaces/vehicleSearchInterface";
 import { execRequest } from "./genericRequests";
@@ -11,6 +11,7 @@ const { VITE_BACKEND_VEHICLE_URL } = import.meta.env;
 export const getAllVehicleByKind = async (kind: string) => {
   return execRequest("GET", `${VITE_BACKEND_VEHICLE_URL}/get/${kind}`, null);
 };
+
 export const getVehicleByKindAndId = async (kind: string, id: string) => {
   return execRequest("GET", `${VITE_BACKEND_VEHICLE_URL}/get/${kind}/${id}`, null);
 };
@@ -31,7 +32,7 @@ export const searchVehicles = async (
 
 export const createManyVehicles = async (
   kind: string,
-  vehicles: CreateVehicleObject[],
+  vehicles: ICreateVehicleObject[],
 ) => {
   return execRequest(
     "POST",
@@ -39,15 +40,17 @@ export const createManyVehicles = async (
     vehicles,
   );
 };
+
 export const createOneVehicle = async (
   kind: string,
-  vehicle: CreateVehicleObject,
+  vehicle: ICreateVehicleObject,
 ) => {
   return execRequest("POST", `${VITE_BACKEND_VEHICLE_URL}/save/${kind}`, vehicle);
 };
+
 export const createVehicleWithDocs = async (
   kind: string,
-  vehicle: CreateVehicleWithDocsObject,
+  vehicle: ICreateVehicleWithDocsObject,
 ) => {
   return execRequest(
     "POST",
@@ -63,6 +66,7 @@ export const deleteVehicleById = async (kind: string, id: string) => {
     null,
   );
 };
+
 export const deleteManyVehicles = async (kind: string, ids: string[]) => {
   return execRequest("DELETE", `${VITE_BACKEND_VEHICLE_URL}/delete/${kind}`, ids);
 };
@@ -70,7 +74,7 @@ export const deleteManyVehicles = async (kind: string, ids: string[]) => {
 export const editVehicleById = async (
   kind: string,
   id: string,
-  vehicle: CreateVehicleObject,
+  vehicle: ICreateVehicleObject,
 ) => {
   return execRequest(
     "PUT",

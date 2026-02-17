@@ -13,6 +13,7 @@ export const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/*" element={<Home />} />
       <Route path="/aboutPage" element={<AboutPage />} />
       <Route path="/userRegister" element={<EnterPage />} />
       <Route path="/rentingPage" element={<RentingPage />} />

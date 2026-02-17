@@ -20,60 +20,6 @@ import {
 import { LoadingSection } from "@/sections/loadingSection";
 import { useNavigate } from "react-router";
 
-// type Props = {};
-// // Mock data for display purposes
-// const MOCK_VEHICLES = [
-//   {
-//     id: 1,
-//     name: "Yamaha MT-07",
-//     price: "$ 8,999.00",
-//     description:
-//       "The MT-07 is designed to bring fun, affordability and enjoyment back to the street.",
-//     image: bikePng,
-//     webp: bikeWebp,
-//     brand: "Yamaha",
-//     year: 2022,
-//     category: "Motorcycle",
-//     type: "bikes",
-//   },
-//   {
-//     id: 2,
-//     name: "Speedster S",
-//     price: "$ 45,000.00",
-//     description: "High performance coupe with aerodynamic design.",
-//     image: bikePng, // Placeholder
-//     webp: bikeWebp,
-//     brand: "Speedster",
-//     year: 2023,
-//     category: "Car",
-//     type: "cars",
-//   },
-//   {
-//     id: 3,
-//     name: "Ocean Pro",
-//     price: "$ 25,000.00",
-//     description: "Perfect for weekend getaways on the water.",
-//     image: bikePng, // Placeholder
-//     webp: bikeWebp,
-//     brand: "Ocean",
-//     year: 2021,
-//     category: "Boat",
-//     type: "boats",
-//   },
-//   {
-//     id: 4,
-//     name: "Cirrus SR22",
-//     price: "$ 750,000.00",
-//     description: "The world's best-selling general aviation aircraft.",
-//     image: bikePng, // Placeholder
-//     webp: bikeWebp,
-//     brand: "Cirrus",
-//     year: 2020,
-//     category: "Plane",
-//     type: "planes",
-//   },
-// ];
-
 export const ProductList = () => {
   const navigate = useNavigate();
   
@@ -112,7 +58,6 @@ export const ProductList = () => {
   }
 
   const filteredVehicles = useMemo(() => {
-    // The backend now handles filtering, so we just use the state.
     return vehicles || [];
   }, [vehicles]);
 
