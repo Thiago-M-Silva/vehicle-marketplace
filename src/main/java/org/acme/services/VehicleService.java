@@ -1,6 +1,7 @@
 package org.acme.services;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,37 +39,55 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class VehicleService {
-    @Inject BikesRepository bikesRepository;
-    @Inject CarsRepository carsRepository;
-    @Inject BoatsRepository boatsRepository;
-    @Inject PlanesRepository planesRepository;
-    @Inject GridFSService gridFSService;
-    @Inject VehicleDocumentsRepository repository;
-    @Inject VehicleMapper vehicleMapper;
-    @Inject UserService userService;
+
+    @Inject
+    BikesRepository bikesRepository;
+    @Inject
+    CarsRepository carsRepository;
+    @Inject
+    BoatsRepository boatsRepository;
+    @Inject
+    PlanesRepository planesRepository;
+    @Inject
+    GridFSService gridFSService;
+    @Inject
+    VehicleDocumentsRepository repository;
+    @Inject
+    VehicleMapper vehicleMapper;
+    @Inject
+    UserService userService;
 
     /**
-     * Retrieves the appropriate PanacheRepositoryBase instance for the specified vehicle type.
+     * Retrieves the appropriate PanacheRepositoryBase instance for the
+     * specified vehicle type.
      * <p>
-     * This method returns a repository corresponding to the given vehicle type string.
-     * Supported types are "bikes", "cars", "boats", and "planes". The returned repository
-     * is cast to the generic type T which must extend Vehicles.
+     * This method returns a repository corresponding to the given vehicle type
+     * string. Supported types are "bikes", "cars", "boats", and "planes". The
+     * returned repository is cast to the generic type T which must extend
+     * Vehicles.
      * </p>
-     * 
-     * @param vehicleType the type of vehicle (e.g., "bikes", "cars", "boats", "planes")
+     *
+     * @param vehicleType the type of vehicle (e.g., "bikes", "cars", "boats",
+     * "planes")
      * @param <T> the type of vehicle entity, extending Vehicles
      * @return the repository for the specified vehicle type
      * @throws IllegalArgumentException if the vehicle type is unknown
-     * @suppressWarnings("unchecked") because of the generic cast based on runtime type
+     * @suppressWarnings("unchecked") because of the generic cast based on
+     * runtime type
      */
     @SuppressWarnings("unchecked")
     private <T extends Vehicles> PanacheRepositoryBase<T, UUID> getRepository(String vehicleType) {
         return (PanacheRepositoryBase<T, UUID>) switch (vehicleType.toLowerCase()) {
-            case "bikes" -> bikesRepository;
-            case "cars"  -> carsRepository;
-            case "boats" -> boatsRepository;
-            case "planes"-> planesRepository;
-            default      -> throw new IllegalArgumentException("Unknown vehicle type: " + vehicleType);
+            case "bikes" ->
+                bikesRepository;
+            case "cars" ->
+                carsRepository;
+            case "boats" ->
+                boatsRepository;
+            case "planes" ->
+                planesRepository;
+            default ->
+                throw new IllegalArgumentException("Unknown vehicle type: " + vehicleType);
         };
     }
 
@@ -89,12 +108,62 @@ public class VehicleService {
     }
 
     /**
+     * Retrieves a paginated list of all vehicles across all categories. The
+     * order of categories is fixed: Bikes, Cars, Boats, Planes.
+     *
+     * @param page the page number (0-based)
+     * @param size the number of items per page
+     * @return a list of {@link Vehicles} for the requested page
+     * @throws RuntimeException if an error occurs while retrieving the vehicles
+     */
+    public List<Vehicles> listAll(int page, int size) {
+        try {
+            List<Vehicles> result = new ArrayList<>();
+            long globalOffset = (long) page * size;
+            long remainingLimit = size;
+
+            List<PanacheRepositoryBase<? extends Vehicles, UUID>> repos = List.of(
+                    bikesRepository, carsRepository, boatsRepository, planesRepository
+            );
+
+            for (var repo : repos) {
+                if (remainingLimit <= 0) {
+                    break;
+                }
+
+                long count = repo.count();
+
+                if (globalOffset < count) {
+                    long available = count - globalOffset;
+                    long toFetch = Math.min(remainingLimit, available);
+
+                    // Panache range is inclusive (startIndex, lastIndex)
+                    int start = (int) globalOffset;
+                    int end = (int) (start + toFetch - 1);
+
+                    result.addAll(repo.findAll().range(start, end).list());
+
+                    remainingLimit -= toFetch;
+                    globalOffset = 0; // Offset is consumed, start from 0 for next repos
+                } else {
+                    // Skip this repository entirely, reducing the global offset
+                    globalOffset -= count;
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to list vehicles", e);
+        }
+    }
+
+    /**
      * Finds a vehicle entity by its type and unique identifier.
      *
      * @param type the type of the vehicle (used to determine the repository)
      * @param id the unique identifier of the vehicle to find; must not be null
      * @param <T> the type of the vehicle entity extending {@link Vehicles}
-     * @return the vehicle entity of type {@code T} with the specified ID, or {@code null} if not found
+     * @return the vehicle entity of type {@code T} with the specified ID, or
+     * {@code null} if not found
      * @throws IllegalArgumentException if {@code id} is {@code null}
      */
     @SuppressWarnings("unchecked")
@@ -107,9 +176,11 @@ public class VehicleService {
     }
 
     /**
-     * Saves the given vehicle entity to the appropriate repository based on the specified type.
+     * Saves the given vehicle entity to the appropriate repository based on the
+     * specified type.
      *
-     * @param type the type of the vehicle, used to determine the correct repository
+     * @param type the type of the vehicle, used to determine the correct
+     * repository
      * @param vehicle the vehicle entity to be persisted; must not be null
      * @param <T> the type of the vehicle, extending {@link Vehicles}
      * @return the persisted vehicle entity
@@ -126,10 +197,13 @@ public class VehicleService {
     }
 
     /**
-     * Persists a list of vehicles of the specified type into the corresponding repository.
+     * Persists a list of vehicles of the specified type into the corresponding
+     * repository.
      *
-     * @param type the type of vehicles to be saved, used to determine the appropriate repository
-     * @param vehicles the list of vehicles to be persisted; must not be null or empty
+     * @param type the type of vehicles to be saved, used to determine the
+     * appropriate repository
+     * @param vehicles the list of vehicles to be persisted; must not be null or
+     * empty
      * @return the number of vehicles successfully persisted
      * @throws IllegalArgumentException if the vehicles list is null or empty
      */
@@ -145,24 +219,28 @@ public class VehicleService {
     }
 
     /**
-     * Saves a vehicle of the specified type along with its associated document, if provided.
+     * Saves a vehicle of the specified type along with its associated document,
+     * if provided.
      *
-     * <p>This method first persists the given vehicle entity. If a document InputStream and filename are provided,
-     * it also saves the document associated with the saved vehicle.</p>
+     * <p>
+     * This method first persists the given vehicle entity. If a document
+     * InputStream and filename are provided, it also saves the document
+     * associated with the saved vehicle.</p>
      *
-     * @param <T>         the type of the vehicle, extending {@link Vehicles}
-     * @param type        the type identifier for the vehicle
-     * @param vehicle     the vehicle entity to be saved
-     * @param fileStream  the InputStream of the document to be saved (can be {@code null})
-     * @param filename    the name of the document file (can be {@code null})
+     * @param <T> the type of the vehicle, extending {@link Vehicles}
+     * @param type the type identifier for the vehicle
+     * @param vehicle the vehicle entity to be saved
+     * @param fileStream the InputStream of the document to be saved (can be
+     * {@code null})
+     * @param filename the name of the document file (can be {@code null})
      * @param contentType the MIME type of the document
      * @return the saved vehicle entity
      */
     @Transactional
-    public <T extends Vehicles> T saveVehicleWithDocuments(String type, T vehicle, InputStream fileStream, String filename, String contentType){
+    public <T extends Vehicles> T saveVehicleWithDocuments(String type, T vehicle, InputStream fileStream, String filename, String contentType) {
         T savedVehicle = save(type, vehicle);
 
-        if(fileStream != null && filename != null) {
+        if (fileStream != null && filename != null) {
             saveDocument(savedVehicle.getId(), filename, contentType, fileStream);
         }
 
@@ -170,24 +248,27 @@ public class VehicleService {
     }
 
     /**
-     * Saves a document associated with a vehicle by uploading the file to GridFS and persisting its metadata.
+     * Saves a document associated with a vehicle by uploading the file to
+     * GridFS and persisting its metadata.
      *
-     * @param vehicleId   the UUID of the vehicle to associate the document with; may be null
-     * @param filename    the name of the file to be saved
+     * @param vehicleId the UUID of the vehicle to associate the document with;
+     * may be null
+     * @param filename the name of the file to be saved
      * @param contentType the MIME type of the file
-     * @param fileStream  the InputStream of the file to be uploaded
-     * @return the persisted {@link VehicleDocuments} entity containing metadata about the uploaded document
+     * @param fileStream the InputStream of the file to be uploaded
+     * @return the persisted {@link VehicleDocuments} entity containing metadata
+     * about the uploaded document
      * @throws RuntimeException if the file upload fails
      */
     @Transactional
-    public VehicleDocuments saveDocument(UUID vehicleId, String filename, String contentType, InputStream fileStream){
+    public VehicleDocuments saveDocument(UUID vehicleId, String filename, String contentType, InputStream fileStream) {
         ObjectId fileObjectId = null;
-        try (InputStream is = fileStream){
+        try (InputStream is = fileStream) {
             fileObjectId = gridFSService.uploadFile(filename, contentType, is);
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload document for vehicle ID: " + vehicleId, e);
         }
-        
+
         VehicleDocuments doc = new VehicleDocuments();
 
         doc.vehicleId = vehicleId == null ? null : vehicleId.toString();
@@ -205,7 +286,8 @@ public class VehicleService {
      * Deletes a vehicle entity by its unique identifier and type.
      *
      * @param type the type of the vehicle repository to use
-     * @param id the unique identifier of the vehicle to delete; must not be null
+     * @param id the unique identifier of the vehicle to delete; must not be
+     * null
      * @return true if the entity was successfully deleted, false otherwise
      * @throws IllegalArgumentException if the provided id is null
      */
@@ -219,16 +301,18 @@ public class VehicleService {
     }
 
     /**
-     * Deletes multiple vehicles of the specified type whose IDs are provided in the list.
+     * Deletes multiple vehicles of the specified type whose IDs are provided in
+     * the list.
      *
-     * @param type   the type of vehicle repository to use for deletion
-     * @param idList the list of UUIDs representing the vehicles to be deleted; must not be empty
+     * @param type the type of vehicle repository to use for deletion
+     * @param idList the list of UUIDs representing the vehicles to be deleted;
+     * must not be empty
      * @return the number of vehicles deleted
      * @throws IllegalArgumentException if {@code idList} is empty
      */
     @Transactional
-    public Long deleteManyVehicles(String type, List<UUID> idList){
-        if(idList.isEmpty()){
+    public Long deleteManyVehicles(String type, List<UUID> idList) {
+        if (idList.isEmpty()) {
             throw new IllegalArgumentException("IdList cannot be empty");
         }
 
@@ -239,22 +323,25 @@ public class VehicleService {
     /**
      * Edits the information of an existing vehicle based on its type and ID.
      * <p>
-     * This method updates the details of a vehicle (bike, boat, car, or plane) by mapping the provided
-     * {@link Vehicles} object to the appropriate request DTO and applying the changes to the existing entity.
+     * This method updates the details of a vehicle (bike, boat, car, or plane)
+     * by mapping the provided {@link Vehicles} object to the appropriate
+     * request DTO and applying the changes to the existing entity.
      * </p>
      *
-     * @param type    the type of the vehicle ("bikes", "boats", "cars", or "planes")
-     * @param id      the unique identifier of the vehicle to be edited
+     * @param type the type of the vehicle ("bikes", "boats", "cars", or
+     * "planes")
+     * @param id the unique identifier of the vehicle to be edited
      * @param vehicle the updated vehicle information; must not be {@code null}
-     * @throws IllegalArgumentException if {@code vehicle} is {@code null}, if the vehicle with the specified
-     *                                  {@code id} does not exist, or if the {@code type} is unknown
+     * @throws IllegalArgumentException if {@code vehicle} is {@code null}, if
+     * the vehicle with the specified {@code id} does not exist, or if the
+     * {@code type} is unknown
      */
     @Transactional
     public void editVehicleInfo(String type, UUID id, Vehicles vehicle) {
         if (vehicle == null) {
             throw new IllegalArgumentException("Vehicle cannot be null");
         }
-        
+
         var existingVehicle = findById(type, id);
         if (existingVehicle == null) {
             throw new IllegalArgumentException("Vehicle not found with ID: " + id);
@@ -269,41 +356,49 @@ public class VehicleService {
                 BoatsRequestDTO dto = vehicleMapper.toBoatsRequestDTO((Boats) vehicle);
                 vehicleMapper.updateBoatsFromDTO(dto, existingVehicle);
             }
-            case "cars"  -> {
+            case "cars" -> {
                 CarsRequestDTO dto = vehicleMapper.toCarsRequestDTO((Cars) vehicle);
                 vehicleMapper.updateCarsFromDTO(dto, existingVehicle);
             }
-            case "planes"-> {
+            case "planes" -> {
                 PlanesRequestDTO dto = vehicleMapper.toPlanesRequestDTO((Planes) vehicle);
                 vehicleMapper.updatePlanesFromDTO(dto, existingVehicle);
             }
-            default -> throw new IllegalArgumentException("Unknown vehicle type: " + type);
+            default ->
+                throw new IllegalArgumentException("Unknown vehicle type: " + type);
         }
-        
+
     }
 
     /**
-     * Updates the owner of a vehicle to the specified customer and persists the change.
+     * Updates the owner of a vehicle to the specified customer and persists the
+     * change.
      *
-     * <p>This method performs the following steps within a transactional boundary:
+     * <p>
+     * This method performs the following steps within a transactional boundary:
      * <ol>
-     *   <li>Validates that {@code customerEmail} is not null or blank.</li>
-     *   <li>Attempts to locate the vehicle identified by {@code type} and {@code id}.</li>
-     *   <li>Retrieves the customer by email and maps the customer DTO to a domain/user object.</li>
-     *   <li>Sets the located vehicle's owner to the resolved buyer and updates the corresponding
-     *       user record via {@code userService.editUser(...)}.</li>
+     * <li>Validates that {@code customerEmail} is not null or blank.</li>
+     * <li>Attempts to locate the vehicle identified by {@code type} and
+     * {@code id}.</li>
+     * <li>Retrieves the customer by email and maps the customer DTO to a
+     * domain/user object.</li>
+     * <li>Sets the located vehicle's owner to the resolved buyer and updates
+     * the corresponding user record via {@code userService.editUser(...)}.</li>
      * </ol>
      *
-     * <p>Because the method is transactional, all changes (vehicle owner assignment and user edits)
-     * are applied atomically and will be committed or rolled back together.
+     * <p>
+     * Because the method is transactional, all changes (vehicle owner
+     * assignment and user edits) are applied atomically and will be committed
+     * or rolled back together.
      *
-     * @param type the vehicle type used to look up the vehicle (for example "car", "motorcycle")
+     * @param type the vehicle type used to look up the vehicle (for example
+     * "car", "motorcycle")
      * @param id the UUID of the vehicle to update
-     * @param customerEmail the email address of the customer who will become the vehicle owner;
-     *                      must not be {@code null} or blank
-     * @throws IllegalArgumentException if {@code customerEmail} is {@code null} or blank,
-     *                                  if no vehicle is found for the given {@code type} and {@code id},
-     *                                  or if no customer is found for {@code customerEmail}
+     * @param customerEmail the email address of the customer who will become
+     * the vehicle owner; must not be {@code null} or blank
+     * @throws IllegalArgumentException if {@code customerEmail} is {@code null}
+     * or blank, if no vehicle is found for the given {@code type} and
+     * {@code id}, or if no customer is found for {@code customerEmail}
      */
     @Transactional
     public void updateVehicleSold(String type, UUID id, String customerEmail) {
@@ -312,11 +407,11 @@ public class VehicleService {
         }
 
         var vehicle = findById(type, id);
-        
+
         if (vehicle == null) {
             throw new IllegalArgumentException("Vehicle not found with ID: " + id);
         }
-        
+
         var customer = userService.getUserByEmail(customerEmail);
         if (customer == null) {
             throw new IllegalArgumentException("Customer not found with email: " + customerEmail);
@@ -328,19 +423,22 @@ public class VehicleService {
     }
 
     /**
-     * Searches for vehicles based on the provided vehicle type and search parameters.
-     * Dynamically builds a query using the fields from the {@link VehicleSearchDTO} to filter results.
-     * Supports filtering by brand, model, year range, price range, category, color, fuel type, and vehicle status.
-     * Also supports sorting and pagination.
+     * Searches for vehicles based on the provided vehicle type and search
+     * parameters. Dynamically builds a query using the fields from the
+     * {@link VehicleSearchDTO} to filter results. Supports filtering by brand,
+     * model, year range, price range, category, color, fuel type, and vehicle
+     * status. Also supports sorting and pagination.
      *
-     * @param vehicleType the type of vehicle to search for (e.g., "car", "truck", etc.)
-     * @param searchParams the search parameters containing filter, sort, and pagination options
+     * @param vehicleType the type of vehicle to search for (e.g., "car",
+     * "truck", etc.)
+     * @param searchParams the search parameters containing filter, sort, and
+     * pagination options
      * @return a list of vehicles matching the search criteria
      */
     public List<? extends Vehicles> searchVehicle(
-        String vehicleType,
-        VehicleSearchDTO searchParams
-    ){
+            String vehicleType,
+            VehicleSearchDTO searchParams
+    ) {
         StringBuilder query = new StringBuilder("1 = 1");
         Map<String, Object> params = new HashMap<>();
 

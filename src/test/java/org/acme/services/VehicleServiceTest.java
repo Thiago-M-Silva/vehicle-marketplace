@@ -76,7 +76,7 @@ class VehicleServiceTest {
         List<Bikes> bikes = List.of(mock(Bikes.class));
         when(bikesRepository.listAll()).thenReturn(bikes);
 
-        List<Vehicles> result = vehicleService.listAll("bikes");
+        List<Vehicles> result = vehicleService.listAll();
 
         assertEquals(bikes, result);
         verify(bikesRepository).listAll();
@@ -85,7 +85,7 @@ class VehicleServiceTest {
     @Test
     void testListAll_ThrowsRuntimeException() {
         when(bikesRepository.listAll()).thenThrow(new RuntimeException("DB error"));
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> vehicleService.listAll("bikes"));
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> vehicleService.listAll());
         assertTrue(ex.getMessage().contains("Failed to list vehicles"));
     }
 

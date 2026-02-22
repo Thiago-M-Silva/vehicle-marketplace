@@ -10,33 +10,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { FilterSection } from "@/sections/filterSection";
 import { VehicleSearchInterface } from "@/interfaces/vehicleSearchInterface";
-import bikePng from "../assets/bike/horse_power_vehicle_moto.png";
-import bikeWebp from "../assets/bike/horse_power_vehicle_moto.webp";
-import { IBike, IBoat, IVehicle } from "@/interfaces/vehiclesInteface";
+import { IVehicle } from "@/interfaces/vehiclesInteface";
+import { IBackendErrorMessageInterface } from "@/interfaces/backendErrorMessageInterface";
 import {
   getAllVehicleByKind,
   searchVehicles,
 } from "@/services/requests/vehiclesRequest";
 import { LoadingSection } from "@/sections/loadingSection";
 import { useNavigate } from "react-router";
+import { ErrorSection } from "@/sections/errorSection";
 
 export const ProductList = () => {
   const navigate = useNavigate();
-  
+
   const [vehicles, setVehicles] = useState<Partial<IVehicle>[]>();
   const [loading, setLoading] = useState(true);
   const [kind, setKind] = useState("bikes");
-  const [filters, setFilters] = useState<Partial<VehicleSearchInterface>>({
-    category: "all",
-    sortBy: "price",
-  });
+  const [filters, setFilters] = useState<Partial<VehicleSearchInterface>>({});
+  const [error, setError] = useState<IBackendErrorMessageInterface | null>(
+    null,
+  );
+  const [searchParam, setSearchParam] = useState("");
 
   useEffect(() => {
     const fetchVehicles = async () => {
       setLoading(true);
-      const fetchedVehicles = await getAllVehicleByKind(kind);
-      setVehicles(fetchedVehicles.data);
-      setLoading(false);
+      setError(null);
+
+      try {
+        const fetchedVehicles = await getAllVehicleByKind(kind);
+        setVehicles(fetchedVehicles.data);
+        setLoading(false);
+      } catch (err: any) {
+        setLoading(false);
+        setError(
+          err.response?.data || { status: 500, message: "Unexpected Error" },
+        );
+      }
     };
     fetchVehicles();
   }, [kind]);
@@ -47,19 +57,34 @@ export const ProductList = () => {
 
   const handleSearch = async () => {
     setLoading(true);
-    const searchResult: IVehicle[] = await searchVehicles(kind, filters);
-    setVehicles(searchResult);
-    setLoading(false);
-    console.log("Searching with filters:", filters);
+    setError(null);
+    try {
+      const searchResult: IVehicle[] = await searchVehicles(kind, filters);
+      setVehicles(searchResult);
+    } catch (err: any) {
+      setError(err.response?.data || { status: 500, message: "Search Failed" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const redirectToDetailsPage = (vehicle: Partial<IVehicle>) => {
     navigate(`/productInfo/${kind}/${vehicle.id}`, { state: { vehicle } });
-  }
+  };
 
   const filteredVehicles = useMemo(() => {
-    return vehicles || [];
-  }, [vehicles]);
+    if (!vehicles) return [];
+    if (!searchParam) return vehicles;
+
+    const lowerSearchParam = searchParam.toLowerCase();
+    return vehicles.filter(
+      (vehicle) =>
+        vehicle.brand?.toLowerCase().includes(lowerSearchParam) ||
+        vehicle.model?.toLowerCase().includes(lowerSearchParam) ||
+        vehicle.description?.toLowerCase().includes(lowerSearchParam) ||
+        vehicle.name?.toLowerCase().includes(lowerSearchParam),
+    );
+  }, [vehicles, searchParam]);
 
   const tabs = [
     { id: "all", label: "All Vehicles" },
@@ -73,6 +98,10 @@ export const ProductList = () => {
     return <LoadingSection />;
   }
 
+  if (error) {
+    return <ErrorSection error={error} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto px-4">
@@ -81,8 +110,8 @@ export const ProductList = () => {
             <Input
               placeholder="Search by model or brand..."
               className="h-12 text-lg pl-4 pr-12"
-              value={filters.model || ""}
-              onChange={(e) => handleFilterChange({ model: e.target.value })}
+              value={searchParam || ""}
+              onChange={(e) => setSearchParam(e.target.value)}
             />
             <Button
               className="absolute right-2 top-1/2 -translate-y-1/2"
@@ -166,7 +195,12 @@ export const ProductList = () => {
                     </p>
                   </CardContent>
                   <CardFooter className="pt-0 mt-auto">
-                    <Button className="w-full" onClick={() => redirectToDetailsPage(item)}>View Details</Button>
+                    <Button
+                      className="w-full"
+                      onClick={() => redirectToDetailsPage(item)}
+                    >
+                      View Details
+                    </Button>
                   </CardFooter>
                 </Card>
               ))

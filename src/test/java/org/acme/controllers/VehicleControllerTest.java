@@ -45,24 +45,24 @@ class VehicleControllerTest {
     }
 
     @Test
-    void testGetAllVehiclesSuccess() {
+    void testgetAllVehiclesByTypeSuccess() {
         List<Vehicles> vehicles = Arrays.asList(mockVehicle);
         List<Object> responseDTOs = Arrays.asList(new Object());
 
-        when(vehicleService.listAll(vehicleType)).thenReturn(vehicles);
+        when(vehicleService.listAll()).thenReturn(vehicles);
         when(apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles)).thenReturn(responseDTOs);
 
-        Response response = vehicleController.getAllVehicles(vehicleType);
+        Response response = vehicleController.getAllVehiclesByType(vehicleType);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         verify(vehicleService).listAll(vehicleType);
     }
 
     @Test
-    void testGetAllVehiclesException() {
-        when(vehicleService.listAll(vehicleType)).thenThrow(new RuntimeException("DB Error"));
+    void testgetAllVehiclesByTypeException() {
+        when(vehicleService.listAll()).thenThrow(new RuntimeException("DB Error"));
 
-        Response response = vehicleController.getAllVehicles(vehicleType);
+        Response response = vehicleController.getAllVehiclesByType(vehicleType);
 
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error retrieving vehicles"));
@@ -105,18 +105,13 @@ class VehicleControllerTest {
     // void testSearchSuccess() {
     //     VehicleSearchDTO searchParams = new VehicleSearchDTO();
     //     List<Vehicles> results = Arrays.asList(mockVehicle);
-
     //     when(vehicleService.searchVehicle(eq(vehicleType), any(VehicleSearchDTO.class))).thenReturn(results);
-
     //     Response response = vehicleController.search(vehicleType, searchParams);
-
     //     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     //     assertEquals(results, response.getEntity()); // now expects raw vehicles list
-
     //     verify(vehicleService).searchVehicle(vehicleType, searchParams);
     //     verifyNoInteractions(apiMiddleware); // optional but recommended
     // }
-
     @Test
     void testSearchException() {
         VehicleSearchDTO searchParams = new VehicleSearchDTO();

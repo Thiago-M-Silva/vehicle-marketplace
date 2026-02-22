@@ -1,10 +1,11 @@
+import { IBackendErrorMessageInterface } from '@/interfaces/backendErrorMessageInterface';
 import axios from 'axios';
 
 export const execRequest = async (
     method: string, 
     url: string, 
     data: any
-): Promise<any> => {
+): Promise<any | IBackendErrorMessageInterface> => {
     try {
         const res = axios.request(
             {
@@ -15,8 +16,8 @@ export const execRequest = async (
         );
 
         return res;
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
-        return error;
+        throw error as IBackendErrorMessageInterface;
     }
 }
