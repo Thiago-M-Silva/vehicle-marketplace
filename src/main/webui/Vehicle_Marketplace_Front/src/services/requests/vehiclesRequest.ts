@@ -9,8 +9,8 @@ import { IBackendErrorMessageInterface } from "@/interfaces/backendErrorMessageI
 
 const { VITE_BACKEND_VEHICLE_URL } = import.meta.env;
 
-export const getAllVehicleByKind = async (kind: string): Promise<any | IBackendErrorMessageInterface> => {
-  return execRequest("GET", `${VITE_BACKEND_VEHICLE_URL}/get/${kind}`, null);
+export const getAllVehicleByKind = async (kind: string, page: number, size: number): Promise<any | IBackendErrorMessageInterface> => {
+  return execRequest("GET", `${VITE_BACKEND_VEHICLE_URL}/get/${kind}/${page}/${size}`, null );
 };
 
 export const getVehicleByKindAndId = async (kind: string, id: string): Promise<IVehicle | IBackendErrorMessageInterface> => {
@@ -19,6 +19,7 @@ export const getVehicleByKindAndId = async (kind: string, id: string): Promise<I
 
 export const searchVehicles = async (kind: string, params: Partial<VehicleSearchInterface>): Promise<any | IBackendErrorMessageInterface> => {
   const url = new URL(`${VITE_BACKEND_VEHICLE_URL}/get/search/${kind}?`);
+
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.append(key, String(value));
   }

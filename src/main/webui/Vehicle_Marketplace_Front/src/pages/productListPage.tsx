@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,72 +19,101 @@ import {
 import { LoadingSection } from "@/sections/loadingSection";
 import { useNavigate } from "react-router";
 import { ErrorSection } from "@/sections/errorSection";
+import bikePng from "../assets/bike/horse_power_vehicle_moto.png";
+import bikeWebp from "../assets/bike/horse_power_vehicle_moto.webp";
+import boatPng from "../assets/boat/horse_power_vehicle_boat.png";
+import boatWebp from "../assets/boat/horse_power_vehicle_boat.webp";
+import carPng from "../assets/car/horse_power_vehicle_car.png";
+import carWebp from "../assets/car/horse_power_vehicle_car.webp";
+import planePng from "../assets/plane/horse_power_vehicle_aircraft.png";
+import planeWebp from "../assets/plane/horse_power_vehicle_aircraft.webp";
 
 export const ProductList = () => {
   const navigate = useNavigate();
 
-  const [vehicles, setVehicles] = useState<Partial<IVehicle>[]>();
+  const [vehicles, setVehicles] = useState<Partial<IVehicle>[]>([]);
   const [loading, setLoading] = useState(true);
-  const [kind, setKind] = useState("bikes");
+  const [kind, setKind] = useState("all");
   const [filters, setFilters] = useState<Partial<VehicleSearchInterface>>({});
   const [error, setError] = useState<IBackendErrorMessageInterface | null>(
     null,
   );
   const [searchParam, setSearchParam] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const PAGE_SIZE = 9;
 
   useEffect(() => {
-    const fetchVehicles = async () => {
+    const fetchVehiclesData = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        const fetchedVehicles = await getAllVehicleByKind(kind);
-        setVehicles(fetchedVehicles.data);
-        setLoading(false);
+        const searchFilters = {
+          ...filters,
+          page: currentPage,
+          size: PAGE_SIZE,
+        };
+        // Assuming searchVehicles is updated to return { data: [], total: number }
+        const response = !!filters
+          ? await getAllVehicleByKind(kind, currentPage, PAGE_SIZE)
+          : await searchVehicles(kind, searchFilters);
+        setVehicles(response.data);
+        setTotalPages(Math.ceil(response.total / PAGE_SIZE));
       } catch (err: any) {
-        setLoading(false);
         setError(
           err.response?.data || { status: 500, message: "Unexpected Error" },
         );
+      } finally {
+        setLoading(false);
       }
     };
-    fetchVehicles();
-  }, [kind]);
+    fetchVehiclesData();
+  }, [kind, currentPage, filters]);
 
   const handleFilterChange = (newFilters: Partial<VehicleSearchInterface>) => {
+    setCurrentPage(0);
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
   const handleSearch = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const searchResult: IVehicle[] = await searchVehicles(kind, filters);
-      setVehicles(searchResult);
-    } catch (err: any) {
-      setError(err.response?.data || { status: 500, message: "Search Failed" });
-    } finally {
-      setLoading(false);
-    }
+    setCurrentPage(0);
+    setFilters((prev) => ({
+      ...prev,
+      ...(searchParam && { model: searchParam }),
+    }));
   };
 
   const redirectToDetailsPage = (vehicle: Partial<IVehicle>) => {
     navigate(`/productInfo/${kind}/${vehicle.id}`, { state: { vehicle } });
   };
 
-  const filteredVehicles = useMemo(() => {
-    if (!vehicles) return [];
-    if (!searchParam) return vehicles;
+  const handleKindChange = (newKind: string) => {
+    setKind(newKind);
+    setFilters({});
+    setSearchParam("");
+    setCurrentPage(0);
+  };
 
-    const lowerSearchParam = searchParam.toLowerCase();
-    return vehicles.filter(
-      (vehicle) =>
-        vehicle.brand?.toLowerCase().includes(lowerSearchParam) ||
-        vehicle.model?.toLowerCase().includes(lowerSearchParam) ||
-        vehicle.description?.toLowerCase().includes(lowerSearchParam) ||
-        vehicle.name?.toLowerCase().includes(lowerSearchParam),
-    );
-  }, [vehicles, searchParam]);
+  const handlePlaceHolderImage = (
+    image: any,
+    isWebp = false,
+  ) => {
+    if (image) return image;
+
+    const typeToCheck = (kind).toLowerCase();
+
+    if (typeToCheck.includes("bike")) {
+      return isWebp ? bikeWebp : bikePng;
+    }
+    if (typeToCheck.includes("boat")) {
+      return isWebp ? boatWebp : boatPng;
+    }
+    if (typeToCheck.includes("plane")) {
+      return isWebp ? planeWebp : planePng;
+    }
+
+    return isWebp ? carWebp : carPng;
+  };
 
   const tabs = [
     { id: "all", label: "All Vehicles" },
@@ -139,11 +168,8 @@ export const ProductList = () => {
             {tabs.map((tab) => (
               <Button
                 key={tab.id}
-                variant={filters.category === tab.id ? "default" : "outline"}
-                onClick={() => {
-                  handleFilterChange({ category: tab.id });
-                  setKind(tab.id);
-                }}
+                variant={kind === tab.id ? "default" : "outline"}
+                onClick={() => handleKindChange(tab.id)}
                 className="min-w-[100px]"
               >
                 {tab.label}
@@ -162,17 +188,23 @@ export const ProductList = () => {
           </div>
 
           <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredVehicles.length > 0 ? (
-              filteredVehicles.map((item) => (
+            {vehicles.length > 0 ? (
+              vehicles.map((item) => (
                 <Card
                   key={item.id}
                   className="group flex flex-col overflow-hidden border-slate-200 hover:shadow-xl transition-all duration-300 bg-white"
                 >
                   <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100 relative">
                     <picture className="w-full h-full block">
-                      <source srcSet={item.webp} type="image/webp" />
+                      <source
+                        srcSet={handlePlaceHolderImage(
+                          item.webp,
+                          true
+                        )}
+                        type="image/webp"
+                      />
                       <img
-                        src={item.image}
+                        src={handlePlaceHolderImage(item.image)}
                         alt={item.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
@@ -212,6 +244,26 @@ export const ProductList = () => {
               </div>
             )}
           </div>
+
+          {vehicles.length > 0 && (
+            <div className="lg:col-span-4 flex justify-center items-center gap-4 mt-8">
+              <Button
+                onClick={() => setCurrentPage((p) => p - 1)}
+                disabled={currentPage === 0}
+              >
+                Previous
+              </Button>
+              <span>
+                Page {currentPage + 1} of {totalPages}
+              </span>
+              <Button
+                onClick={() => setCurrentPage((p) => p + 1)}
+                disabled={currentPage >= totalPages - 1}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

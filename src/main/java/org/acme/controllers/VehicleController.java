@@ -42,45 +42,31 @@ public class VehicleController {
     GridFSService gridFSService;
 
     /**
-     * Retrieves a list of all vehicles.
-     *
-     * @return a {@link Response} containing a list of vehicles if successful,
-     * or an error message with HTTP 500 status if an exception occurs.
-     */
-    @GET
-    @Path("/get/{page}/{size}")
-    public Response getAllVehicles(
-            @PathParam("page") int page,
-            @PathParam("size") int size
-    ) {
-        try {
-            //TODO make a DTO for this function
-            List<Vehicles> vehicles = vehicleService.listAll(page, size);
-            return Response.ok(vehicles).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving vehicles: " + e.getMessage())
-                    .build();
-        }
-    }
-
-    /**
      * Retrieves a list of all vehicles of a specified type.
      *
      * @param vehicleType the type of vehicles to retrieve (e.g., "car",
      * "truck")
+     * @param page the page number
+     * @param size the page size
      * @return a {@link Response} containing a list of vehicles if successful,
      * or an error message with HTTP 500 status if an exception occurs.
      */
     @GET
-    @Path("/get/{vehicleType}")
+    @Path("/get/{vehicleType}/{page}/{size}")
     public Response getAllVehiclesByType(
-            @PathParam("vehicleType") String vehicleType
+            @PathParam("vehicleType") String vehicleType,
+            @PathParam("page") int page,
+            @PathParam("size") int size
     ) {
         try {
-            List<Vehicles> vehicles = vehicleService.listAll(vehicleType);
-            var responseDTOs = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
-            return Response.ok(responseDTOs).build();
+            if(vehicleType.equals("all")){
+                List<Vehicles> vehicles = vehicleService.listAll(page, size);
+                return Response.ok(vehicles).build();
+            } else {
+                List<Vehicles> vehicles = vehicleService.listAll(vehicleType, page, size);
+                var responseDTOs = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles);
+                return Response.ok(responseDTOs).build();
+            }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving vehicles: " + e.getMessage())

@@ -95,13 +95,14 @@ public class VehicleService {
      * Retrieves a list of all vehicles of the specified type.
      *
      * @param type the type of vehicles to list (e.g., "car", "truck", etc.)
+     * @param page the page number
+     * @param size the page size
      * @return a list of {@link Vehicles} matching the specified type
      * @throws RuntimeException if an error occurs while retrieving the vehicles
      */
-    public List<Vehicles> listAll(String type) {
+    public List<Vehicles> listAll(String type, int page, int size) {
         try {
-            List<Vehicles> vehicles = getRepository(type).listAll();
-            return vehicles;
+            return getRepository(type).findAll().page(Page.of(page, size)).list();
         } catch (Exception e) {
             throw new RuntimeException("Failed to list vehicles for type: " + type, e);
         }
