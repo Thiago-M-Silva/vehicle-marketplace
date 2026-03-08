@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,45 +19,39 @@ import {
 import { LoadingSection } from "@/sections/loadingSection";
 import { useNavigate } from "react-router";
 import { ErrorSection } from "@/sections/errorSection";
-import bikePng from "../assets/bike/horse_power_vehicle_moto.png";
-import bikeWebp from "../assets/bike/horse_power_vehicle_moto.webp";
-import boatPng from "../assets/boat/horse_power_vehicle_boat.png";
-import boatWebp from "../assets/boat/horse_power_vehicle_boat.webp";
-import carPng from "../assets/car/horse_power_vehicle_car.png";
-import carWebp from "../assets/car/horse_power_vehicle_car.webp";
-import planePng from "../assets/plane/horse_power_vehicle_aircraft.png";
-import planeWebp from "../assets/plane/horse_power_vehicle_aircraft.webp";
+import placeholderPng from "../assets/others/placeholder.png";
 
 export const ProductList = () => {
   const navigate = useNavigate();
+  const PAGE_SIZE = 9;
 
   const [vehicles, setVehicles] = useState<Partial<IVehicle>[]>([]);
   const [loading, setLoading] = useState(true);
-  const [kind, setKind] = useState("all");
+  const [kind, setKind] = useState("bikes");
+  const originalVehicles = useRef<Partial<IVehicle>[]>([]);
   const [filters, setFilters] = useState<Partial<VehicleSearchInterface>>({});
-  const [error, setError] = useState<IBackendErrorMessageInterface | null>(
-    null,
-  );
+  const [error, setError] = useState<IBackendErrorMessageInterface | null>(null);
   const [searchParam, setSearchParam] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const PAGE_SIZE = 9;
+  const [appliedFilters, setAppliedFilters] = useState<Partial<VehicleSearchInterface>>({});
 
   useEffect(() => {
     const fetchVehiclesData = async () => {
       setLoading(true);
       setError(null);
+
       try {
-        const searchFilters = {
-          ...filters,
-          page: currentPage,
-          size: PAGE_SIZE,
-        };
-        // Assuming searchVehicles is updated to return { data: [], total: number }
-        const response = !!filters
-          ? await getAllVehicleByKind(kind, currentPage, PAGE_SIZE)
-          : await searchVehicles(kind, searchFilters);
+        const hasFilters = Object.values(appliedFilters).some(
+          (value) => value !== null && value !== "" && value !== undefined,
+        );
+
+        const response = hasFilters
+          ? await searchVehicles(kind, appliedFilters)
+          : await getAllVehicleByKind(kind, currentPage, PAGE_SIZE);
+
         setVehicles(response.data);
+        originalVehicles.current = response.data;
         setTotalPages(Math.ceil(response.total / PAGE_SIZE));
       } catch (err: any) {
         setError(
@@ -67,20 +61,43 @@ export const ProductList = () => {
         setLoading(false);
       }
     };
+
     fetchVehiclesData();
-  }, [kind, currentPage, filters]);
+  }, [kind, currentPage, appliedFilters]);
 
   const handleFilterChange = (newFilters: Partial<VehicleSearchInterface>) => {
-    setCurrentPage(0);
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  const handleSearch = async () => {
+  const handleApplyFilters = () => {
     setCurrentPage(0);
-    setFilters((prev) => ({
-      ...prev,
-      ...(searchParam && { model: searchParam }),
-    }));
+    setAppliedFilters(filters);
+  };
+
+  const handleSearch = () => {
+    const lowerTerm = searchParam.toLowerCase();
+
+    if (!lowerTerm) {
+      setVehicles(originalVehicles.current); // Restore original list
+      return;
+    }
+
+    const filtered = originalVehicles.current.filter((v: Partial<IVehicle>) => {
+      // Define which fields are searchable
+      const searchableFields = [
+        v.name,
+        v.brand,
+        v.model,
+        v.category,
+        v.color,
+        v.year,
+      ];
+      // Check if any field contains the search term
+      return searchableFields.some((field) =>
+        field?.toString().toLowerCase().includes(lowerTerm),
+      );
+    });
+    setVehicles(filtered);
   };
 
   const redirectToDetailsPage = (vehicle: Partial<IVehicle>) => {
@@ -91,32 +108,12 @@ export const ProductList = () => {
     setKind(newKind);
     setFilters({});
     setSearchParam("");
+    setAppliedFilters({});
     setCurrentPage(0);
   };
 
-  const handlePlaceHolderImage = (
-    image: any,
-    isWebp = false,
-  ) => {
-    if (image) return image;
-
-    const typeToCheck = (kind).toLowerCase();
-
-    if (typeToCheck.includes("bike")) {
-      return isWebp ? bikeWebp : bikePng;
-    }
-    if (typeToCheck.includes("boat")) {
-      return isWebp ? boatWebp : boatPng;
-    }
-    if (typeToCheck.includes("plane")) {
-      return isWebp ? planeWebp : planePng;
-    }
-
-    return isWebp ? carWebp : carPng;
-  };
-
   const tabs = [
-    { id: "all", label: "All Vehicles" },
+    // { id: "all", label: "All Vehicles" },
     { id: "bikes", label: "Bikes" },
     { id: "cars", label: "Cars" },
     { id: "boats", label: "Boats" },
@@ -183,7 +180,7 @@ export const ProductList = () => {
             <FilterSection
               filters={filters}
               onFilterChange={handleFilterChange}
-              onSearch={handleSearch}
+              onSearch={handleApplyFilters}
             />
           </div>
 
@@ -197,14 +194,11 @@ export const ProductList = () => {
                   <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100 relative">
                     <picture className="w-full h-full block">
                       <source
-                        srcSet={handlePlaceHolderImage(
-                          item.webp,
-                          true
-                        )}
+                        srcSet={item.webp ?? placeholderPng}
                         type="image/webp"
                       />
                       <img
-                        src={handlePlaceHolderImage(item.image)}
+                        src={item.image ?? placeholderPng}
                         alt={item.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />

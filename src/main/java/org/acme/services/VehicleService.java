@@ -444,7 +444,7 @@ public class VehicleService {
         Map<String, Object> params = new HashMap<>();
 
         if (searchParams.getBrand() != null && !searchParams.getBrand().isBlank()) {
-            query.append(" AND brand = :brand");
+            query.append(" AND brand ILIKE :brand");
             params.put("brand", searchParams.getBrand());
         }
         if (searchParams.getModel() != null && !searchParams.getModel().isBlank()) {
@@ -468,15 +468,15 @@ public class VehicleService {
             params.put("priceMax", searchParams.getPriceMax());
         }
         if (searchParams.getCategory() != null && !searchParams.getCategory().isBlank()) {
-            query.append(" AND category = :category");
+            query.append(" AND category ILIKE :category");
             params.put("category", ECategory.valueOf(searchParams.getCategory().toUpperCase()));
         }
         if (searchParams.getColor() != null && !searchParams.getColor().isBlank()) {
-            query.append(" AND color = :color");
+            query.append(" AND color ILIKE :color");
             params.put("color", EColors.valueOf(searchParams.getColor().toUpperCase()));
         }
         if (searchParams.getFuelType() != null && !searchParams.getFuelType().isBlank()) {
-            query.append(" AND fuelType = :fuelType");
+            query.append(" AND fuelType ILIKE :fuelType");
             params.put("fuelType", EFuelType.valueOf(searchParams.getFuelType().toUpperCase()));
         }
         if (searchParams.getOwnerId() != null && !searchParams.getOwnerId().isBlank()) {
@@ -485,7 +485,7 @@ public class VehicleService {
             params.put("ownerId", ownerId);
         }
         if (searchParams.getVehicleStatus() != null && !searchParams.getVehicleStatus().isBlank()) {
-            query.append(" AND vehicleStatus = :vehicleStatus");
+            query.append(" AND vehicleStatus ILIKE :vehicleStatus");
             params.put("vehicleStatus", EStatus.valueOf(searchParams.getVehicleStatus().toUpperCase()));
         }
 
