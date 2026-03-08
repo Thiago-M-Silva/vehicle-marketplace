@@ -21,8 +21,7 @@ export interface IVehicle {
     owner: IUser;
     price: number;
     rentalPriceMonthly: number;
-    //TODO: improve this later, backend should provide them
-    image?: any;
+    image?: string[];
     webp?: any;
 }
 

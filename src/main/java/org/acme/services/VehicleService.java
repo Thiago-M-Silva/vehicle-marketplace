@@ -1,5 +1,6 @@
 package org.acme.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -509,5 +510,29 @@ public class VehicleService {
                 .list();
 
         return result;
+    }
+
+    /**
+     * Retrieves all images associated with a vehicle as Base64 encoded strings.
+     *
+     * @param vehicleId the UUID of the vehicle
+     * @return a list of Base64 strings representing the images (prefixed with
+     * data URI scheme)
+     */
+    public List<String> getVehicleImages(UUID vehicleId) {
+        List<VehicleDocuments> docs = repository.find("vehicleId", vehicleId.toString()).list();
+        List<String> images = new ArrayList<>();
+
+        for (VehicleDocuments doc : docs) {
+            try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+                gridFSService.downloadFile(doc.fileName, os);
+                byte[] bytes = os.toByteArray();
+                String base64 = java.util.Base64.getEncoder().encodeToString(bytes);
+                images.add("data:" + doc.contentType + ";base64," + base64);
+            } catch (Exception e) {
+                System.out.print(e.getMessage());
+            }
+        }
+        return images;
     }
 }

@@ -1,7 +1,7 @@
 package org.acme.dtos;
 
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.List;
 
 import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
@@ -9,7 +9,6 @@ import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
 
 public record CarsResponseDTO(
-    UUID id,
     String name, 
     String brand, 
     int year,
@@ -23,5 +22,6 @@ public record CarsResponseDTO(
     ECategory category,
     EColors color,
     EFuelType fuelType,
-    UsersResponseDTO owner
+    UsersResponseDTO owner,
+    List<String> images
 ) {}

@@ -6,6 +6,10 @@ import java.util.stream.Collectors;
 
 import org.acme.abstracts.Vehicles;
 import org.acme.dtos.BikesRequestDTO;
+import org.acme.dtos.BikesResponseDTO;
+import org.acme.dtos.CarsResponseDTO;
+import org.acme.dtos.BoatsResponseDTO;
+import org.acme.dtos.PlanesResponseDTO;
 import org.acme.dtos.BoatsRequestDTO;
 import org.acme.dtos.CarsRequestDTO;
 import org.acme.dtos.PlanesRequestDTO;
@@ -14,6 +18,7 @@ import org.acme.model.Bikes;
 import org.acme.model.Boats;
 import org.acme.model.Cars;
 import org.acme.model.Planes;
+import org.acme.services.VehicleService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +35,9 @@ public class ApiMiddleware {
 
     @Inject
     ObjectMapper objectMapper;
+
+    @Inject
+    VehicleService vehicleService;
 
     /**
      * Processes a vehicle request based on the specified vehicle type and
@@ -154,14 +162,30 @@ public class ApiMiddleware {
         }
 
         return switch (vehicleType.toLowerCase()) {
-            case "bikes" ->
-                mapper.toBikesDTOList((List<Bikes>) vehicles);
-            case "cars" ->
-                mapper.toCarsDTOList((List<Cars>) vehicles);
-            case "boats" ->
-                mapper.toBoatsDTOList((List<Boats>) vehicles);
-            case "planes" ->
-                mapper.toPlanesDTOList((List<Planes>) vehicles);
+            case "bikes" -> {
+                List<Bikes> bikes = (List<Bikes>) vehicles;
+                yield bikes.stream()
+                .map(bike -> (BikesResponseDTO) manageVehicleTypeResponseDTO("bikes", bike))
+                .collect(Collectors.toList());
+            }
+            case "cars" -> {
+                List<Cars> cars = (List<Cars>) vehicles;
+                yield cars.stream()
+                .map(car -> (CarsResponseDTO) manageVehicleTypeResponseDTO("cars", car))
+                .collect(Collectors.toList());
+            }
+            case "boats" -> {
+                List<Boats> boats = (List<Boats>) vehicles;
+                yield boats.stream()
+                .map(boat -> (BoatsResponseDTO) manageVehicleTypeResponseDTO("boats", boat))
+                .collect(Collectors.toList());
+            }
+            case "planes" -> {
+                List<Planes> planes = (List<Planes>) vehicles;
+                yield planes.stream()
+                .map(plane -> (PlanesResponseDTO) manageVehicleTypeResponseDTO("planes", plane))
+                .collect(Collectors.toList());
+            }
             default ->
                 throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };
@@ -185,14 +209,34 @@ public class ApiMiddleware {
         }
 
         return switch (vehicleType.toLowerCase()) {
-            case "bikes" ->
-                mapper.toBikesDTO((Bikes) vehicle);
-            case "cars" ->
-                mapper.toCarsDTO((Cars) vehicle);
-            case "boats" ->
-                mapper.toBoatsDTO((Boats) vehicle);
-            case "planes" ->
-                mapper.toPlanesDTO((Planes) vehicle);
+            case "bikes" -> {
+                var dto = mapper.toBikesDTO((Bikes) vehicle);
+                var images = vehicleService.getVehicleImages(vehicle.getId());
+                yield new BikesResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
+                dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), images);
+            }
+            case "cars" -> {
+                var dto = mapper.toCarsDTO((Cars) vehicle);
+                var images = vehicleService.getVehicleImages(vehicle.getId());
+                yield new CarsResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
+                dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), images);
+            }
+            case "boats" -> {
+                var dto = mapper.toBoatsDTO((Boats) vehicle);
+                var images = vehicleService.getVehicleImages(vehicle.getId());
+                yield new BoatsResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
+                dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), dto.numberOfCabins(), images);
+            }
+            case "planes" -> {
+                var dto = mapper.toPlanesDTO((Planes) vehicle);
+                var images = vehicleService.getVehicleImages(vehicle.getId());
+                yield new PlanesResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
+                dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), images);
+            }
             default ->
                 throw new IllegalArgumentException("Tipo de veículo inválido: " + vehicleType);
         };

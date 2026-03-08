@@ -1,6 +1,7 @@
 package org.acme.dtos;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
@@ -22,7 +23,8 @@ public record BoatsResponseDTO(
     EColors color,
     EFuelType fuelType,
     UsersResponseDTO owner,
-    int numberOfCabins
+    int numberOfCabins,
+    List<String> images
 ) {
 
 }
