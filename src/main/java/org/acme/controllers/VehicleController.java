@@ -2,17 +2,17 @@ package org.acme.controllers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
-import org.acme.dtos.VehicleDocumentRequestDTO;
 import org.acme.dtos.VehicleSearchDTO;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.GridFSService;
 import org.acme.services.VehicleService;
-import org.jboss.resteasy.reactive.MultipartForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import jakarta.inject.Inject;
 import jakarta.json.Json;
@@ -20,6 +20,7 @@ import jakarta.json.JsonObject;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -31,7 +32,6 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/vehicles")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class VehicleController {
 
     @Inject
@@ -59,7 +59,7 @@ public class VehicleController {
             @PathParam("size") int size
     ) {
         try {
-            if(vehicleType.equals("all")){
+            if (vehicleType.equals("all")) {
                 List<Vehicles> vehicles = vehicleService.listAll(page, size);
                 return Response.ok(vehicles).build();
             } else {
@@ -105,10 +105,10 @@ public class VehicleController {
     @Path("/get/{vehicleType}/{id}")
     public Response getVehiclesById(
             @PathParam("vehicleType") String vehicleType,
-            @PathParam("id") UUID id
+            @PathParam("id") String id
     ) {
         try {
-            Vehicles vehicle = vehicleService.findById(vehicleType, id);
+            Vehicles vehicle = vehicleService.findById(vehicleType, UUID.fromString(id));
             return Response.ok(vehicle).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -153,6 +153,7 @@ public class VehicleController {
      */
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response saveAllVehicles(
             @PathParam("vehicleType") String vehicleType,
             List<Map<String, Object>> vehicles
@@ -178,6 +179,7 @@ public class VehicleController {
      */
     @POST
     @Path("/save/{vehicleType}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response addVehicle(
             @PathParam("vehicleType") String vehicleType,
             JsonObject body
@@ -209,40 +211,33 @@ public class VehicleController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response saveVehicleWithDocs(
             @PathParam("vehicleType") String vehicleType,
-            @MultipartForm VehicleDocumentRequestDTO data
-    ) {
+            @FormParam("vehicles") String vehicles,
+            @FormParam("files") List<FileUpload> files) {
         try {
-            if (data == null) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Form data is required")
-                        .build();
-            }
-
-            if (data.vehicles == null || data.vehicles.isBlank()) {
+            if (vehicles == null || vehicles.isBlank()) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Field 'vehicles' (JSON) is required in the multipart form")
                         .build();
             }
 
-            JsonObject json = Json.createReader(new StringReader(data.vehicles)).readObject();
-
-            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, json);
-
-            if (data.file == null || data.filename == null || data.filename.isBlank()) {
+            if (files == null || files.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("File and filename are required")
+                        .entity("At least one file is required")
                         .build();
             }
 
-            Vehicles savedVehicles = vehicleService.saveVehicleWithDocuments(
-                    vehicleType,
-                    (Vehicles) vehicleRequestDTO,
-                    data.file,
-                    data.filename,
-                    data.contentType
-            );
+            JsonObject json = Json.createReader(new StringReader(vehicles)).readObject();
+            var vehicleRequestDTO = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, json);
+            Vehicles savedVehicle = vehicleService.save(vehicleType, (Vehicles) vehicleRequestDTO);
 
-            return Response.status(Response.Status.CREATED).entity(savedVehicles).build();
+            for (FileUpload file : files) {
+                try (var inputStream = Files.newInputStream(file.uploadedFile())) {
+                    vehicleService.saveDocument(savedVehicle.getId(), file.fileName(), file.contentType(),
+                            inputStream);
+                }
+            }
+
+            return Response.status(Response.Status.CREATED).entity(savedVehicle).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Erro ao salvar veículo e documentos: " + e.getMessage())
@@ -263,10 +258,10 @@ public class VehicleController {
     @Path("/delete/{vehicleType}/{id}")
     public Response deleteVehicle(
             @PathParam("vehicleType") String vehicleType,
-            @PathParam("id") UUID id
+            @PathParam("id") String id
     ) {
         try {
-            vehicleService.deleteById(vehicleType, id);
+            vehicleService.deleteById(vehicleType, UUID.fromString(id));
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
@@ -286,6 +281,7 @@ public class VehicleController {
      */
     @DELETE
     @Path("/delete/{vehicleType}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteManyVehicles(
             @PathParam("vehicleType") String vehicleType,
             List<UUID> id
@@ -312,15 +308,16 @@ public class VehicleController {
      */
     @PUT
     @Path("/edit/{vehicleType}/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response editVehicle(
             @PathParam("vehicleType") String vehicleType,
-            @PathParam("id") UUID id,
+            @PathParam("id") String id,
             JsonObject body
     ) {
         try {
             Vehicles vehicle = apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, body);
 
-            vehicleService.editVehicleInfo(vehicleType, id, vehicle);
+            vehicleService.editVehicleInfo(vehicleType, UUID.fromString(id), vehicle);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)

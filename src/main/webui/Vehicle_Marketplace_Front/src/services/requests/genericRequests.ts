@@ -1,23 +1,24 @@
-import { IBackendErrorMessageInterface } from '@/interfaces/backendErrorMessageInterface';
-import axios from 'axios';
+import { IBackendErrorMessageInterface } from "@/interfaces/backendErrorMessageInterface";
+import axios from "axios";
 
 export const execRequest = async (
-    method: string, 
-    url: string, 
-    data: any
+  method: string,
+  url: string,
+  data: any,
 ): Promise<any | IBackendErrorMessageInterface> => {
-    try {
-        const res = axios.request(
-            {
-                method: method,
-                url: url,
-                data: data
-            }
-        );
+  try {
+    const res = await axios.request({
+      method: method,
+      url: url,
+      data: data,
+    });
 
-        return res;
-    } catch (error: any) {
-        console.log(error);
-        throw error as IBackendErrorMessageInterface;
+    return res.data;
+  } catch (error: any) {
+    console.log(error);
+    if (error.response) {
+      throw error.response.data as IBackendErrorMessageInterface;
     }
-}
+    throw error;
+  }
+};

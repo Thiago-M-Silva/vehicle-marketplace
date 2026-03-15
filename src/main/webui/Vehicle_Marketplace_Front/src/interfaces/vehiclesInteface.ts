@@ -21,7 +21,7 @@ export interface IVehicle {
     owner: IUser;
     price: number;
     rentalPriceMonthly: number;
-    image?: string[];
+    image?: string;
     webp?: any;
 }
 

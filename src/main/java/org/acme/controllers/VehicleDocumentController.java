@@ -25,7 +25,6 @@ import jakarta.ws.rs.core.Response;
 
 @Path("vehicles/{vehicleId}/documents")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.MULTIPART_FORM_DATA)
 public class VehicleDocumentController {
 
     @Inject
@@ -73,10 +72,11 @@ public class VehicleDocumentController {
      */
     @POST
     @Path("/upload")
-    public Response uploadDocument(@PathParam("vehicleId") UUID vehicleId, @MultipartForm DocumentUploadForm form) {
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadDocument(@PathParam("vehicleId") String vehicleId, @MultipartForm DocumentUploadForm form) {
         try {
             VehicleDocuments doc = vehicleService.saveDocument(
-                    vehicleId,
+                    UUID.fromString(vehicleId),
                     form.filename,
                     form.contentType,
                     form.file
@@ -113,7 +113,7 @@ public class VehicleDocumentController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response downloadDocument(@PathParam("vehicleId") UUID vehicleId) {
+    public Response downloadDocument(@PathParam("vehicleId") String vehicleId) {
         try {
             VehicleDocuments doc = repository.find("vehicleId = ?1", vehicleId).firstResult();
 

@@ -50,12 +50,13 @@ export const ProductList = () => {
           ? await searchVehicles(kind, appliedFilters)
           : await getAllVehicleByKind(kind, currentPage, PAGE_SIZE);
 
-        setVehicles(response.data);
-        originalVehicles.current = response.data;
+        console.log(response, 'response: ');
+        setVehicles(response);
+        originalVehicles.current = response;
         setTotalPages(Math.ceil(response.total / PAGE_SIZE));
       } catch (err: any) {
         setError(
-          err.response?.data || { status: 500, message: "Unexpected Error" },
+          err.response || { status: 500, message: "Unexpected Error" },
         );
       } finally {
         setLoading(false);

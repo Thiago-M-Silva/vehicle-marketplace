@@ -8,34 +8,63 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ECategory } from "@/enums/ECategory";
+import { EColors } from "@/enums/EColors";
+import { EFuelType } from "@/enums/EFuelType";
+import { EVehicleStatus } from "@/enums/EVehicleStatus";
+import {
   createVehicleWithDocs,
   createOneVehicle,
 } from "@/services/requests/vehiclesRequest";
 
 export const AnnouncePage = () => {
+  const vehicleKinds: Map<string, string> = new Map([
+    ["Bike", "bikes"],
+    ["Boat", "boats"],
+    ["Car", "cars"],
+    ["Plane", "planes"],
+  ]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const data: any = Object.fromEntries(formData.entries());
 
-    // Convert year to number if present
-    if (data.year) {
-      data.year = Number(data.year);
-    }
-
-    const fileInput = e.currentTarget.querySelector(
+    const fileInput = form.querySelector(
       'input[type="file"]',
     ) as HTMLInputElement;
     const files = fileInput?.files;
 
     try {
       if (files && files.length > 0) {
-        // If files are present, use createVehicleWithDocs
-        const payload = { ...data, files };
-        const response = await createVehicleWithDocs(payload.kind, payload);
+        const vehicleData: { [key: string]: any } = {};
+        formData.forEach((value, key) => {
+          if (key !== "files") {
+            vehicleData[key] = value;
+          }
+        });
+
+        if (vehicleData.year) vehicleData.year = Number(vehicleData.year);
+
+        const uploadFormData = new FormData();
+        uploadFormData.append("vehicles", JSON.stringify(vehicleData));
+
+        for (const file of files) {
+          uploadFormData.append("files", file);
+        }
+
+        const response = await createVehicleWithDocs(data.kind, uploadFormData);
         console.log(response);
       } else {
         delete data.files; // Remove empty file entry if present
+        if (data.year) data.year = Number(data.year);
         const response = await createOneVehicle(data.kind, data);
         console.log(response);
       }
@@ -69,11 +98,20 @@ export const AnnouncePage = () => {
                     <label className="text-sm font-medium text-slate-900">
                       Vehicle Kind
                     </label>
-                    <Input
-                      placeholder="e.g. Bike, Boat, Car, Plane"
-                      name="kind"
-                      aria-label="kind"
-                    />
+                    <Select name="kind">
+                      <SelectTrigger aria-label="kind">
+                        <SelectValue placeholder="Select Kind" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from(vehicleKinds.entries()).map(
+                          ([key, value]) => (
+                            <SelectItem key={key} value={value}>
+                              {key}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
@@ -130,11 +168,20 @@ export const AnnouncePage = () => {
                     <label className="text-sm font-medium text-slate-900">
                       Category
                     </label>
-                    <Input
-                      placeholder="e.g. Motorcycle"
-                      name="category"
-                      aria-label="category"
-                    />
+                    <Select name="category">
+                      <SelectTrigger aria-label="category">
+                        <SelectValue placeholder="Select Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(ECategory)
+                          .filter((k) => isNaN(Number(k)))
+                          .map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {category}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -159,31 +206,58 @@ export const AnnouncePage = () => {
                     <label className="text-sm font-medium text-slate-900">
                       Transmission
                     </label>
-                    <Input
-                      placeholder="e.g. Manual"
-                      name="transmission"
-                      aria-label="transmissionType"
-                    />
+                    <Select name="transmission">
+                      <SelectTrigger aria-label="transmissionType">
+                        <SelectValue placeholder="Select Transmission" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["Manual", "Automatic", "Semi-Automatic", "CVT"].map(
+                          (type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
                       Fuel Type
                     </label>
-                    <Input
-                      placeholder="e.g. Gasoline"
-                      name="fuelType"
-                      aria-label="fuelType"
-                    />
+                    <Select name="fuelType">
+                      <SelectTrigger aria-label="fuelType">
+                        <SelectValue placeholder="Select Fuel Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(EFuelType)
+                          .filter((k) => isNaN(Number(k)))
+                          .map((fuel) => (
+                            <SelectItem key={fuel} value={fuel}>
+                              {fuel}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
                       Color
                     </label>
-                    <Input
-                      placeholder="e.g. Blue"
-                      name="color"
-                      aria-label="color"
-                    />
+                    <Select name="color">
+                      <SelectTrigger aria-label="color">
+                        <SelectValue placeholder="Select Color" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(EColors)
+                          .filter((k) => isNaN(Number(k)))
+                          .map((color) => (
+                            <SelectItem key={color} value={color}>
+                              {color}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
@@ -199,11 +273,20 @@ export const AnnouncePage = () => {
                     <label className="text-sm font-medium text-slate-900">
                       Condition
                     </label>
-                    <Input
-                      placeholder="e.g. Used"
-                      name="vehicleStatus"
-                      aria-label="vehicleStatus"
-                    />
+                    <Select name="vehicleStatus">
+                      <SelectTrigger aria-label="vehicleStatus">
+                        <SelectValue placeholder="Select Condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(EVehicleStatus)
+                          .filter((k) => isNaN(Number(k)))
+                          .map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {status}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
