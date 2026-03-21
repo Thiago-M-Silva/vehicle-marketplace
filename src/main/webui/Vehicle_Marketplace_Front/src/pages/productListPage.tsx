@@ -30,11 +30,15 @@ export const ProductList = () => {
   const [kind, setKind] = useState("bikes");
   const originalVehicles = useRef<Partial<IVehicle>[]>([]);
   const [filters, setFilters] = useState<Partial<VehicleSearchInterface>>({});
-  const [error, setError] = useState<IBackendErrorMessageInterface | null>(null);
+  const [error, setError] = useState<IBackendErrorMessageInterface | null>(
+    null,
+  );
   const [searchParam, setSearchParam] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [appliedFilters, setAppliedFilters] = useState<Partial<VehicleSearchInterface>>({});
+  const [appliedFilters, setAppliedFilters] = useState<
+    Partial<VehicleSearchInterface>
+  >({});
 
   useEffect(() => {
     const fetchVehiclesData = async () => {
@@ -50,14 +54,12 @@ export const ProductList = () => {
           ? await searchVehicles(kind, appliedFilters)
           : await getAllVehicleByKind(kind, currentPage, PAGE_SIZE);
 
-        console.log(response, 'response: ');
         setVehicles(response);
         originalVehicles.current = response;
-        setTotalPages(Math.ceil(response.total / PAGE_SIZE));
+
+        setTotalPages(Math.ceil(response.length / PAGE_SIZE));
       } catch (err: any) {
-        setError(
-          err.response || { status: 500, message: "Unexpected Error" },
-        );
+        setError(err.response || { status: 500, message: "Unexpected Error" });
       } finally {
         setLoading(false);
       }
@@ -139,6 +141,7 @@ export const ProductList = () => {
               className="h-12 text-lg pl-4 pr-12"
               value={searchParam || ""}
               onChange={(e) => setSearchParam(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
             <Button
               className="absolute right-2 top-1/2 -translate-y-1/2"
@@ -195,11 +198,11 @@ export const ProductList = () => {
                   <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100 relative">
                     <picture className="w-full h-full block">
                       <source
-                        srcSet={item.webp ?? placeholderPng}
-                        type="image/webp"
+                        srcSet={item.images?.[0] ?? placeholderPng}
+                        type="image/jpeg"
                       />
                       <img
-                        src={item.image ?? placeholderPng}
+                        src={item.images?.[0] ?? placeholderPng}
                         alt={item.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />

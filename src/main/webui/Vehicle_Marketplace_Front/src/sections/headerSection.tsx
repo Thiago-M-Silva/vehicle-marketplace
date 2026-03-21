@@ -6,6 +6,7 @@ import {
   MenubarContent,
   MenubarItem,
 } from "@radix-ui/react-menubar";
+import { Button } from "@/components/ui/button";
 import logo from "../assets/logo/horse_power_vehicle_logo.png";
 
 const Header = () => {
@@ -36,31 +37,10 @@ const Header = () => {
 
         <Menubar className="flex items-center gap-1 rounded-lg bg-slate-100 p-1">
           <MenubarMenu>
-            <MenubarTrigger className={triggerStyle}>Buy</MenubarTrigger>
-            <MenubarContent
-              className={contentStyle}
-              align="start"
-              sideOffset={5}
-            >
-              <MenubarItem className={itemStyle}> <a href="/productList"> All vehicles </a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="/productList"> Bikes </a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="/productList"> Boats </a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="/productList"> Cars </a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="/productList"> Planes </a> </MenubarItem>
-            </MenubarContent>
+            <MenubarTrigger className={triggerStyle}><a href="/productList">Buy</a></MenubarTrigger>
           </MenubarMenu>
           <MenubarMenu>
-            <MenubarTrigger className={triggerStyle}>Sell</MenubarTrigger>
-            <MenubarContent
-              className={contentStyle}
-              align="start"
-              sideOffset={5}
-            >
-              <MenubarItem className={itemStyle}> <a href="/announcePage">Bikes</a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="/announcePage">Boats</a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="/announcePage">Cars</a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="/announcePage">Planes</a> </MenubarItem>
-            </MenubarContent>
+            <MenubarTrigger className={triggerStyle}><a href="/announcePage">Announce</a></MenubarTrigger>
           </MenubarMenu>
           <MenubarMenu>
             <MenubarTrigger className={triggerStyle}>Rent</MenubarTrigger>
@@ -73,6 +53,19 @@ const Header = () => {
               <MenubarItem className={itemStyle}> Boats </MenubarItem>
               <MenubarItem className={itemStyle}> Cars </MenubarItem>
               <MenubarItem className={itemStyle}> Planes </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+          <MenubarMenu>
+            <MenubarTrigger className={triggerStyle}>About</MenubarTrigger>
+            <MenubarContent
+              className={contentStyle}
+              align="start"
+              sideOffset={5}
+            >
+              <MenubarItem className={itemStyle}> <a href="/aboutPage"> Project </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki"> Wiki </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="http://localhost:8080/q/swagger-ui/"> Swagger API </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href=""> Postman Doc </a> </MenubarItem>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
