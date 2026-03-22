@@ -216,7 +216,10 @@ export const ProductList = () => {
                       {item.name}
                     </CardTitle>
                     <p className="text-lg font-bold text-slate-900">
-                      {item.price}
+                      {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(Number(item.price))}
                     </p>
                   </CardHeader>
                   <CardContent className="flex-grow">

@@ -72,9 +72,11 @@ const Header = () => {
 
         <Avatar className="h-10 w-10 overflow-hidden rounded-full border bg-slate-100">
           <AvatarImage src="" className="h-full w-full object-cover" />
-          <AvatarFallback className="flex h-full w-full items-center justify-center bg-slate-100 text-sm font-medium text-slate-600">
-            RU
-          </AvatarFallback>
+          <a href="/profilePage">
+            <AvatarFallback className="flex h-full w-full items-center justify-center bg-slate-100 text-sm font-medium text-slate-600">
+              RU
+            </AvatarFallback>
+          </a>
         </Avatar>
       </div>
     </header>

@@ -22,6 +22,7 @@ import {
   createVehicleWithDocs,
   createOneVehicle,
 } from "@/services/requests/vehiclesRequest";
+import logo from "../assets/logo/horse_power_vehicle_logo.png";
 
 export const AnnouncePage = () => {
   const vehicleKinds: Map<string, string> = new Map([
@@ -74,9 +75,18 @@ export const AnnouncePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8"
+      style={{
+        backgroundImage: `url(${logo})`,
+        backgroundSize: "contain",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="container mx-auto max-w-4xl">
-        <Card className="shadow-lg border-slate-200">
+        <Card className="shadow-lg border-slate-200 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center sm:text-left">
             <CardTitle className="text-3xl font-bold tracking-tight text-slate-900">
               Announce Your Vehicle
@@ -99,7 +109,10 @@ export const AnnouncePage = () => {
                       Vehicle Kind
                     </label>
                     <Select name="kind">
-                      <SelectTrigger aria-label="kind">
+                      <SelectTrigger
+                        aria-label="kind"
+                        className="border-slate-400 mx-auto mt-0.5"
+                      >
                         <SelectValue placeholder="Select Kind" />
                       </SelectTrigger>
                       <SelectContent>
@@ -121,6 +134,7 @@ export const AnnouncePage = () => {
                       placeholder="e.g. Yamaha MT-07"
                       name="name"
                       aria-label="name"
+                      className="border-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
@@ -131,6 +145,7 @@ export const AnnouncePage = () => {
                       placeholder="e.g. Yamaha"
                       name="brand"
                       aria-label="brand"
+                      className="border-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
@@ -141,6 +156,7 @@ export const AnnouncePage = () => {
                       placeholder="e.g. MT-07"
                       name="model"
                       aria-label="model"
+                      className="border-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
@@ -152,6 +168,7 @@ export const AnnouncePage = () => {
                       placeholder="e.g. 2024"
                       name="year"
                       aria-label="year"
+                      className="border-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
@@ -162,6 +179,7 @@ export const AnnouncePage = () => {
                       placeholder="$ 0.00"
                       name="price"
                       aria-label="price"
+                      className="border-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
@@ -169,7 +187,10 @@ export const AnnouncePage = () => {
                       Category
                     </label>
                     <Select name="category">
-                      <SelectTrigger aria-label="category">
+                      <SelectTrigger
+                        aria-label="category"
+                        className="border-slate-400 mx-auto mt-0.5"
+                      >
                         <SelectValue placeholder="Select Category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -200,6 +221,7 @@ export const AnnouncePage = () => {
                       placeholder="e.g. 75 hp"
                       name="horsePower"
                       aria-label="horsepower"
+                      className="border-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
@@ -207,7 +229,10 @@ export const AnnouncePage = () => {
                       Transmission
                     </label>
                     <Select name="transmission">
-                      <SelectTrigger aria-label="transmissionType">
+                      <SelectTrigger
+                        aria-label="transmissionType"
+                        className="border-slate-400 mx-auto mt-0.5"
+                      >
                         <SelectValue placeholder="Select Transmission" />
                       </SelectTrigger>
                       <SelectContent>
@@ -226,7 +251,10 @@ export const AnnouncePage = () => {
                       Fuel Type
                     </label>
                     <Select name="fuelType">
-                      <SelectTrigger aria-label="fuelType">
+                      <SelectTrigger
+                        aria-label="fuelType"
+                        className="border-slate-400 mx-auto mt-0.5"
+                      >
                         <SelectValue placeholder="Select Fuel Type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -245,7 +273,10 @@ export const AnnouncePage = () => {
                       Color
                     </label>
                     <Select name="color">
-                      <SelectTrigger aria-label="color">
+                      <SelectTrigger
+                        aria-label="color"
+                        className="border-slate-400 mx-auto mt-0.5"
+                      >
                         <SelectValue placeholder="Select Color" />
                       </SelectTrigger>
                       <SelectContent>
@@ -267,6 +298,7 @@ export const AnnouncePage = () => {
                       placeholder="e.g. 14L"
                       name="storage"
                       aria-label="storage"
+                      className="border-slate-400"
                     />
                   </div>
                   <div className="space-y-2">
@@ -274,7 +306,10 @@ export const AnnouncePage = () => {
                       Condition
                     </label>
                     <Select name="vehicleStatus">
-                      <SelectTrigger aria-label="vehicleStatus">
+                      <SelectTrigger
+                        aria-label="vehicleStatus"
+                        className="border-slate-400 mx-auto mt-0.5"
+                      >
                         <SelectValue placeholder="Select Condition" />
                       </SelectTrigger>
                       <SelectContent>
@@ -301,7 +336,7 @@ export const AnnouncePage = () => {
                     Description
                   </label>
                   <textarea
-                    className="flex min-h-[120px] w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex min-h-[120px] w-full rounded-md border border-slate-400 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     placeholder="Provide a detailed description of the vehicle..."
                     name="description"
                     aria-label="description"
@@ -320,7 +355,7 @@ export const AnnouncePage = () => {
                   </label>
                   <Input
                     type="file"
-                    className="cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                    className="cursor-pointer border-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
                     name="files"
                     aria-label="docs"
                     multiple
