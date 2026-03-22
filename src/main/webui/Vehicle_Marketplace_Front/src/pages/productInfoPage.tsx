@@ -17,7 +17,7 @@ export const ProductInfo = () => {
     if(!vehicle && id){
       const fetchVehicle = async () => {
         const response = await getVehicleByKindAndId(kind as string, id);
-        setVehicle(response.data);
+        setVehicle(response.data as IVehicle);
       }
 
       fetchVehicle();

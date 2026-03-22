@@ -6,7 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { IUser } from "@/interfaces/userInteface";
 import { VehicleResumeSection } from "@/sections/vehicleResumeSection";
+import { getUserById } from "@/services/requests/usersRequests";
+import { useEffect, useState } from "react";
 
 // Mock user data for display
 const MOCK_USER = {
@@ -25,9 +28,18 @@ const MOCK_USER = {
   avatar: "https://github.com/shadcn.png",
 };
 
-type Props = {};
+export const ProfilePage = () => {
+  const [user, setUser] = useState<IUser | null>(null);
 
-export const ProfilePage = ({}: Props) => {
+  useEffect(() => {
+    const getUserInfo = async () => {
+      const result = await getUserById("b04dcaa7-c601-46ef-8396-af239b8a9f3c");
+      setUser(result);
+    }
+
+    getUserInfo()
+  }, [])
+
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-6xl space-y-8">

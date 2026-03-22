@@ -11,11 +11,26 @@ import { Button } from "@/components/ui/button";
 import { dataToShowInResume } from "@/services/tempMethods";
 import { useState } from "react";
 import { redirectMethod } from "@/services/utils";
+import { IBike, IBoat, ICar, IPlane } from "@/interfaces/vehiclesInteface";
 
-export const VehicleResumeSection = () => {
+type vehiclesProps = {
+  bikes?: IBike[];
+  boats?: IBoat[];
+  cars?: ICar[];
+  planes?: IPlane[];
+};
+
+export const VehicleResumeSection = ({ bikes, boats, cars, planes }: vehiclesProps) => {
   const [tabValue, setTabValue] = useState("bikes");
+  
+  const data: Record<string, any[] | undefined> = {
+    bikes,
+    boats,
+    cars,
+    planes,
+  };
 
-  const values = dataToShowInResume(tabValue);
+  const values = data[tabValue] || dataToShowInResume(tabValue);
   const categories = ["bikes", "boats", "cars", "planes"];
 
   return (
