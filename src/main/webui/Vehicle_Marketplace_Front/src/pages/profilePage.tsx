@@ -9,6 +9,7 @@ import {
 import { IUser } from "@/interfaces/userInteface";
 import { VehicleResumeSection } from "@/sections/vehicleResumeSection";
 import { getUserById } from "@/services/requests/usersRequests";
+import { isAuthenticated } from "@/services/utils";
 import { useEffect, useState } from "react";
 
 // Mock user data for display
@@ -30,6 +31,11 @@ const MOCK_USER = {
 
 export const ProfilePage = () => {
   const [user, setUser] = useState<IUser | null>(null);
+
+  if(!isAuthenticated()){
+    window.location.href = "/enter";
+    return;
+  }
 
   useEffect(() => {
     const getUserInfo = async () => {

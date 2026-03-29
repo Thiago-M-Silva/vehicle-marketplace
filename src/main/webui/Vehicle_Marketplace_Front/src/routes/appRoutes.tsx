@@ -8,12 +8,14 @@ import { AboutPage } from "@/pages/aboutPage";
 import { RentingPage } from "@/pages/rentingPage";
 import { PurchasePage } from "@/pages/purchasePage";
 import { ProfilePage } from "@/pages/profilePage";
+import { CallbackPage } from "@/pages/callbackPage";
 
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/*" element={<Home />} />
+      <Route path="/enter" element={<EnterPage />} />
       <Route path="/aboutPage" element={<AboutPage />} />
       <Route path="/userRegister" element={<EnterPage />} />
       <Route path="/rentingPage" element={<RentingPage />} />
@@ -22,6 +24,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/purchasePage" element={<PurchasePage />} />
       <Route path="/productInfo/:kind/:id" element={<ProductInfo />} />
       <Route path="/productList" element={<ProductList />} />
+      <Route path="/callback" element={<CallbackPage />} />
     </Routes>
   );
 };

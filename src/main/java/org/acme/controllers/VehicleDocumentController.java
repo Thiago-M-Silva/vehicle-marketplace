@@ -12,6 +12,7 @@ import org.acme.services.GridFSService;
 import org.acme.services.VehicleService;
 import org.jboss.resteasy.reactive.MultipartForm;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
@@ -73,6 +74,7 @@ public class VehicleDocumentController {
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @PermitAll
     public Response uploadDocument(@PathParam("vehicleId") String vehicleId, @MultipartForm DocumentUploadForm form) {
         try {
             VehicleDocuments doc = vehicleService.saveDocument(
@@ -113,6 +115,7 @@ public class VehicleDocumentController {
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @PermitAll
     public Response downloadDocument(@PathParam("vehicleId") String vehicleId) {
         try {
             VehicleDocuments doc = repository.find("vehicleId = ?1", vehicleId).firstResult();
@@ -138,6 +141,7 @@ public class VehicleDocumentController {
     @GET
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
     public Response getAllVehiclesWithImages() {
         try {
             List<VehicleDocuments> docs = repository.findAll().list();

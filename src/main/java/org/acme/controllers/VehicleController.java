@@ -8,12 +8,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.acme.abstracts.Vehicles;
+import org.acme.dtos.VehicleDocumentRequestDTO;
 import org.acme.dtos.VehicleSearchDTO;
 import org.acme.middlewares.ApiMiddleware;
 import org.acme.services.GridFSService;
 import org.acme.services.VehicleService;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -53,6 +56,7 @@ public class VehicleController {
      */
     @GET
     @Path("/get/{vehicleType}/{page}/{size}")
+    @PermitAll
     public Response getAllVehiclesByType(
             @PathParam("vehicleType") String vehicleType,
             @PathParam("page") int page,
@@ -84,6 +88,7 @@ public class VehicleController {
     @GET
     @Path("/get/download/{vehicleId}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @PermitAll
     public Response download(@PathParam("vehicleId") String vehicleId) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         gridFSService.downloadFile(vehicleId, outputStream);
@@ -103,6 +108,7 @@ public class VehicleController {
      */
     @GET
     @Path("/get/{vehicleType}/{id}")
+    @PermitAll
     public Response getVehiclesById(
             @PathParam("vehicleType") String vehicleType,
             @PathParam("id") String id
@@ -128,6 +134,7 @@ public class VehicleController {
      */
     @GET
     @Path("/get/search/{vehicleType}")
+    @PermitAll
     public Response search(
             @PathParam("vehicleType") String vehicleType,
             @BeanParam VehicleSearchDTO searchParams
@@ -154,6 +161,7 @@ public class VehicleController {
     @POST
     @Path("/save/saveAllVehicles/{vehicleType}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public Response saveAllVehicles(
             @PathParam("vehicleType") String vehicleType,
             List<Map<String, Object>> vehicles
@@ -180,6 +188,7 @@ public class VehicleController {
     @POST
     @Path("/save/{vehicleType}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("client")
     public Response addVehicle(
             @PathParam("vehicleType") String vehicleType,
             JsonObject body
@@ -209,6 +218,7 @@ public class VehicleController {
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @RolesAllowed("client")
     public Response saveVehicleWithDocs(
             @PathParam("vehicleType") String vehicleType,
             @FormParam("vehicles") String vehicles,
@@ -256,6 +266,7 @@ public class VehicleController {
      */
     @DELETE
     @Path("/delete/{vehicleType}/{id}")
+    @RolesAllowed("admin")
     public Response deleteVehicle(
             @PathParam("vehicleType") String vehicleType,
             @PathParam("id") String id
@@ -282,6 +293,7 @@ public class VehicleController {
     @DELETE
     @Path("/delete/{vehicleType}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed("admin")
     public Response deleteManyVehicles(
             @PathParam("vehicleType") String vehicleType,
             List<UUID> id
@@ -309,6 +321,7 @@ public class VehicleController {
     @PUT
     @Path("/edit/{vehicleType}/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @PermitAll
     public Response editVehicle(
             @PathParam("vehicleType") String vehicleType,
             @PathParam("id") String id,

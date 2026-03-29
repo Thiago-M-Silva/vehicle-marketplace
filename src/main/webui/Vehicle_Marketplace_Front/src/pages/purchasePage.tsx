@@ -1,9 +1,12 @@
 import { Checkout } from "@/sections/checkoutSection";
+import { isAuthenticated } from "@/services/utils";
 
-type Props = {
- 
-}
-export const PurchasePage = ({}: Props) => {
+export const PurchasePage = () => {
+    if(!isAuthenticated()){
+        window.location.href = "/enter";
+        return;
+    }
+    
     return ( 
         <Checkout data={null}/>
     );

@@ -40,8 +40,7 @@ public class UsersController {
      */
     @GET
     @Path("/get")
-    // @RolesAllowed("admin")
-    @PermitAll
+    @RolesAllowed("admin")
     public Response getAllUsers() {
         try {
             List<UsersResponseDTO> users = userService.getAllUsers();
@@ -98,7 +97,7 @@ public class UsersController {
      */
     @POST
     @Path("/save")
-    @PermitAll
+    @RolesAllowed("client")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUser(UsersRequestDTO data) {
         try {

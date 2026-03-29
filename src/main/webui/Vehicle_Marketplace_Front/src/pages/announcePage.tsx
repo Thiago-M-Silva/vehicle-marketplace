@@ -23,6 +23,7 @@ import {
   createOneVehicle,
 } from "@/services/requests/vehiclesRequest";
 import logo from "../assets/logo/horse_power_vehicle_logo.png";
+import { isAuthenticated } from "@/services/utils";
 
 export const AnnouncePage = () => {
   const vehicleKinds: Map<string, string> = new Map([
@@ -31,6 +32,11 @@ export const AnnouncePage = () => {
     ["Car", "cars"],
     ["Plane", "planes"],
   ]);
+
+  if(!isAuthenticated()){
+    window.location.href = "/enter";
+    return;
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
