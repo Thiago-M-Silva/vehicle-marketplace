@@ -33,7 +33,8 @@ export const AnnouncePage = () => {
     ["Plane", "planes"],
   ]);
 
-  if(!isAuthenticated()){
+  if (!isAuthenticated()) {
+    sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
     window.location.href = "/enter";
     return;
   }

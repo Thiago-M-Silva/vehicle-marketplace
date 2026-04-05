@@ -1,0 +1,34 @@
+{
+    "realm": "marketplace",
+    "enabled": true,
+    "clients": [
+        {
+            "clientId": "frontend",
+            "enabled": true,
+            "publicClient": true,
+            "directAccessGrantsEnabled": true,
+            "webOrigins": [
+                "*"
+            ],
+            "redirectUris": [
+                "http://localhost:5173/*"
+            ],
+            "standardFlowEnabled": true
+        }
+    ],
+    "users": [
+        {
+            "username": "alice",
+            "enabled": true,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "alice"
+                }
+            ],
+            "realmRoles": [
+                "client"
+            ]
+        }
+    ]
+}

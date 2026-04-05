@@ -29,6 +29,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "form-data": "^4.0.5",
+    "keycloak-js": "^26.2.3",
     "lucide-react": "^0.545.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",

@@ -97,7 +97,7 @@ public class UsersController {
      */
     @POST
     @Path("/save")
-    @RolesAllowed("client")
+    @PermitAll
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUser(UsersRequestDTO data) {
         try {

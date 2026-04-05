@@ -32,7 +32,8 @@ const MOCK_USER = {
 export const ProfilePage = () => {
   const [user, setUser] = useState<IUser | null>(null);
 
-  if(!isAuthenticated()){
+  if (!isAuthenticated()) {
+    sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
     window.location.href = "/enter";
     return;
   }
@@ -41,10 +42,10 @@ export const ProfilePage = () => {
     const getUserInfo = async () => {
       const result = await getUserById("b04dcaa7-c601-46ef-8396-af239b8a9f3c");
       setUser(result);
-    }
+    };
 
-    getUserInfo()
-  }, [])
+    getUserInfo();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">

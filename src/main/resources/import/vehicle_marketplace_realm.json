@@ -769,6 +769,46 @@
       "optionalClientScopes": []
     },
     {
+      "id": "frontend-client-uuid",
+      "clientId": "frontend",
+      "name": "Vehicle Marketplace Frontend",
+      "description": "Client for the React/Vite frontend application",
+      "rootUrl": "http://localhost:5173",
+      "baseUrl": "http://localhost:5173",
+      "enabled": true,
+      "alwaysDisplayInConsole": true,
+      "clientAuthenticatorType": "public",
+      "redirectUris": [
+        "http://localhost:5173/*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "post.logout.redirect.uris": "+",
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "basic",
+        "email"
+      ]
+    },
+    {
       "id": "76ec2660-5a70-4ffb-9c43-b5d03425d6fa",
       "clientId": "realm-management",
       "name": "${client_realm-management}",
@@ -2104,7 +2144,7 @@
         },
         {
           "authenticatorFlow": true,
-          "requirement": "ALTERNATIVE",
+          "requirement": "REQUIRED",
           "priority": 30,
           "autheticatorFlow": true,
           "flowAlias": "forms",
