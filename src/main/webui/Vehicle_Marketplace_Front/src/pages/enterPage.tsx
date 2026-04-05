@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { IUser, IUserCreationData } from "@/interfaces/userInteface";
+import { IUser } from "@/interfaces/userInteface";
 import {
   Card,
   CardContent,
@@ -12,6 +12,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useSearchParams } from "react-router";
 import { createUser } from "@/services/requests/usersRequests";
+import { useAuth } from "@/hooks/use-auth";
 
 export const EnterPage = () => {
   const {
@@ -22,6 +23,7 @@ export const EnterPage = () => {
   } = import.meta.env;
 
   const [searchParams] = useSearchParams();
+  const { login } = useAuth();
 
   const [registerData, setRegisterData] = useState({
     name: "",
@@ -160,7 +162,7 @@ export const EnterPage = () => {
             {/* ---------------- LOGIN ---------------- */}
             <TabsContent value="login">
               <div className="space-y-4">
-                <Button className="w-full" onClick={handleLogin}>
+                <Button className="w-full" onClick={() => login()}>
                   Sign in with Keycloak
                 </Button>
 
