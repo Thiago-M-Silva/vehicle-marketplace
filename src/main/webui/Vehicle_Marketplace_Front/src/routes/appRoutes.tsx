@@ -8,7 +8,7 @@ import { AboutPage } from "@/pages/aboutPage";
 import { RentingPage } from "@/pages/rentingPage";
 import { PurchasePage } from "@/pages/purchasePage";
 import { ProfilePage } from "@/pages/profilePage";
-import { CallbackPage } from "@/pages/callbackPage";
+import { ProtectedRoute } from "./protectedRoute";
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -19,12 +19,13 @@ export const AppRoutes: React.FC = () => {
       <Route path="/aboutPage" element={<AboutPage />} />
       <Route path="/userRegister" element={<EnterPage />} />
       <Route path="/rentingPage" element={<RentingPage />} />
-      <Route path="/profilePage" element={<ProfilePage />} />
-      <Route path="/announcePage" element={<AnnouncePage />} />
-      <Route path="/purchasePage" element={<PurchasePage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="/profilePage" element={<ProfilePage />} />
+        <Route path="/announcePage" element={<AnnouncePage />} />
+        <Route path="/purchasePage" element={<PurchasePage />} />
+      </Route>
       <Route path="/productInfo/:kind/:id" element={<ProductInfo />} />
       <Route path="/productList" element={<ProductList />} />
-      <Route path="/callback" element={<CallbackPage />} />
     </Routes>
   );
 };

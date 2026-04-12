@@ -6,11 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { IUser } from "@/interfaces/userInteface";
+import { useAuth } from "@/hooks/use-auth";
 import { VehicleResumeSection } from "@/sections/vehicleResumeSection";
-import { getUserById } from "@/services/requests/usersRequests";
-import { isAuthenticated } from "@/services/utils";
-import { useEffect, useState } from "react";
+import type { KeycloakTokenParsed } from "keycloak-js";
 
 // Mock user data for display
 const MOCK_USER = {
@@ -30,22 +28,21 @@ const MOCK_USER = {
 };
 
 export const ProfilePage = () => {
-  const [user, setUser] = useState<IUser | null>(null);
+  const { logout, getUser } = useAuth();
+  const authUser = getUser() as
+    | (KeycloakTokenParsed & {
+        email?: string;
+        name?: string;
+        preferred_username?: string;
+      })
+    | undefined;
 
-  if (!isAuthenticated()) {
-    sessionStorage.setItem("redirectAfterLogin", window.location.pathname);
-    window.location.href = "/enter";
-    return;
-  }
-
-  useEffect(() => {
-    const getUserInfo = async () => {
-      const result = await getUserById("b04dcaa7-c601-46ef-8396-af239b8a9f3c");
-      setUser(result);
-    };
-
-    getUserInfo();
-  }, []);
+  const profileData = {
+    ...MOCK_USER,
+    username: authUser?.preferred_username || MOCK_USER.username,
+    fullName: authUser?.name || authUser?.preferred_username || MOCK_USER.fullName,
+    email: authUser?.email || MOCK_USER.email,
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -66,16 +63,16 @@ export const ProfilePage = () => {
             <CardHeader className="flex flex-col items-center text-center pb-2">
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-100 mb-4 shadow-sm">
                 <img
-                  src={MOCK_USER.avatar}
-                  alt={MOCK_USER.username}
+                  src={profileData.avatar}
+                  alt={profileData.username}
                   className="w-full h-full object-cover"
                 />
               </div>
               <CardTitle className="text-2xl font-bold text-slate-900">
-                {MOCK_USER.fullName}
+                {profileData.fullName}
               </CardTitle>
               <CardDescription className="text-sm font-medium">
-                @{MOCK_USER.username}
+                @{profileData.username}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -83,6 +80,7 @@ export const ProfilePage = () => {
               <Button
                 variant="outline"
                 className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                onClick={() => void logout()}
               >
                 Log Out
               </Button>
@@ -100,11 +98,11 @@ export const ProfilePage = () => {
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
-                  { label: "Email", value: MOCK_USER.email },
-                  { label: "Phone", value: MOCK_USER.phone },
-                  { label: "Birth Date", value: MOCK_USER.birthDate },
-                  { label: "CPF", value: MOCK_USER.cpf },
-                  { label: "RG", value: MOCK_USER.rg },
+                  { label: "Email", value: profileData.email },
+                  { label: "Phone", value: profileData.phone },
+                  { label: "Birth Date", value: profileData.birthDate },
+                  { label: "CPF", value: profileData.cpf },
+                  { label: "RG", value: profileData.rg },
                 ].map((item) => (
                   <div key={item.label} className="space-y-1">
                     <label className="text-sm font-medium text-slate-500">
@@ -127,14 +125,14 @@ export const ProfilePage = () => {
                       Street Address
                     </label>
                     <p className="text-base font-medium text-slate-900">
-                      {MOCK_USER.address}
+                      {profileData.address}
                     </p>
                   </div>
                   {[
-                    { label: "City", value: MOCK_USER.city },
-                    { label: "State", value: MOCK_USER.state },
-                    { label: "Country", value: MOCK_USER.country },
-                    { label: "Zip Code", value: MOCK_USER.zip },
+                    { label: "City", value: profileData.city },
+                    { label: "State", value: profileData.state },
+                    { label: "Country", value: profileData.country },
+                    { label: "Zip Code", value: profileData.zip },
                   ].map((item) => (
                     <div key={item.label} className="space-y-1">
                       <label className="text-sm font-medium text-slate-500">

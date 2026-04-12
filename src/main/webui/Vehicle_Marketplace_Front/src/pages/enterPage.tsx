@@ -10,20 +10,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useSearchParams } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { createUser } from "@/services/requests/usersRequests";
 import { useAuth } from "@/hooks/use-auth";
 
 export const EnterPage = () => {
-  const {
-    VITE_KEYCLOAK_URL,
-    VITE_KEYCLOAK_REALM,
-    VITE_KEYCLOAK_CLIENT_ID,
-    VITE_KEYCLOAK_REDIRECT_URI,
-  } = import.meta.env;
-
   const [searchParams] = useSearchParams();
-  const { login } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { login, initialized, isAuthenticated } = useAuth();
+  const from = (location.state as { from?: string } | null)?.from || "/";
 
   const [registerData, setRegisterData] = useState({
     name: "",
@@ -56,24 +52,25 @@ export const EnterPage = () => {
     }
   }, [searchParams]);
 
-  const handleLogin = () => {
-    if (!VITE_KEYCLOAK_CLIENT_ID || !VITE_KEYCLOAK_URL) {
-      console.error("Keycloak environment variables are missing!");
-      setError("System configuration error. Please contact admin.");
-      return;
+  useEffect(() => {
+    if (initialized && isAuthenticated) {
+      navigate(from, { replace: true });
     }
+  }, [from, initialized, isAuthenticated, navigate]);
 
-    const params = new URLSearchParams({
-      client_id: VITE_KEYCLOAK_CLIENT_ID,
-      redirect_uri: VITE_KEYCLOAK_REDIRECT_URI,
-      response_type: "code",
-      scope: "openid",
-      prompt: "login", // FORÇA a exibição da tela de login para teste
-    });
+  const handleLogin = async () => {
+    setError("");
 
-    window.location.href = `${VITE_KEYCLOAK_URL}/realms/${VITE_KEYCLOAK_REALM}/protocol/openid-connect/auth?${params.toString()}`;
+    try {
+      await login({
+        redirectUri: `${window.location.origin}${from}`,
+      });
+    } catch (err) {
+      console.error("Failed to start Keycloak login", err);
+      setError("Unable to start login right now.");
+    }
   };
-
+  
   // -------------------------
   // REGISTER (Your Backend)
   // -------------------------
@@ -109,7 +106,9 @@ export const EnterPage = () => {
       };
 
       await createUser(fixedRegisterData);
-      handleLogin();
+      await login({
+        redirectUri: `${window.location.origin}${from}`,
+      });
     } catch (err: any) {
       // Captura mensagens específicas do backend/Keycloak (como o 409 Conflict)
       const apiError = err.response?.data?.errorMessage || err.errorMessage;
@@ -162,7 +161,11 @@ export const EnterPage = () => {
             {/* ---------------- LOGIN ---------------- */}
             <TabsContent value="login">
               <div className="space-y-4">
-                <Button className="w-full" onClick={() => login()}>
+                <Button
+                  className="w-full"
+                  onClick={handleLogin}
+                  disabled={!initialized}
+                >
                   Sign in with Keycloak
                 </Button>
 
