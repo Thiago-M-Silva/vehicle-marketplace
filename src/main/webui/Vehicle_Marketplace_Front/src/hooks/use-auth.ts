@@ -26,12 +26,55 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 let keycloakInitPromise: Promise<boolean> | null = null;
 const KEYCLOAK_INIT_TIMEOUT_MS = 8000;
+const KEYCLOAK_STORAGE_KEY = "vehicle-marketplace:keycloak-session";
+
+type StoredKeycloakSession = {
+  token?: string;
+  refreshToken?: string;
+  idToken?: string;
+};
+
+const loadStoredSession = (): StoredKeycloakSession => {
+  const rawSession = window.localStorage.getItem(KEYCLOAK_STORAGE_KEY);
+
+  if (!rawSession) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(rawSession) as StoredKeycloakSession;
+  } catch (error) {
+    console.warn("Failed to parse stored Keycloak session.", error);
+    window.localStorage.removeItem(KEYCLOAK_STORAGE_KEY);
+    return {};
+  }
+};
+
+const persistSession = () => {
+  window.localStorage.setItem(
+    KEYCLOAK_STORAGE_KEY,
+    JSON.stringify({
+      token: keycloak.token,
+      refreshToken: keycloak.refreshToken,
+      idToken: keycloak.idToken,
+    }),
+  );
+};
+
+const clearPersistedSession = () => {
+  window.localStorage.removeItem(KEYCLOAK_STORAGE_KEY);
+};
 
 const initializeKeycloak = () => {
   if (!keycloakInitPromise) {
+    const { token, refreshToken, idToken } = loadStoredSession();
+
     const initPromise = keycloak.init({
       onLoad: "check-sso",
       pkceMethod: "S256",
+      token,
+      refreshToken,
+      idToken,
       silentCheckSsoRedirectUri: `${location.origin}/silent-check-sso.html`,
     });
 
@@ -56,7 +99,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | undefined>(undefined);
 
   const syncAuthState = () => {
-    setIsAuthenticated(!!keycloak.authenticated);
+    const authenticated = !!keycloak.authenticated;
+
+    if (authenticated && keycloak.token && keycloak.refreshToken) {
+      persistSession();
+    } else {
+      clearPersistedSession();
+    }
+
+    setIsAuthenticated(authenticated);
     setToken(keycloak.token);
     setInitialized(true);
   };
@@ -82,6 +133,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .then(syncIfMounted)
         .catch(() => {
           keycloak.clearToken();
+          clearPersistedSession();
           syncIfMounted();
         });
     };
@@ -91,6 +143,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .catch((error) => {
         console.error("Failed to initialize Keycloak", error);
         if (isMounted) {
+          clearPersistedSession();
           setInitialized(true);
           setIsAuthenticated(false);
           setToken(undefined);
