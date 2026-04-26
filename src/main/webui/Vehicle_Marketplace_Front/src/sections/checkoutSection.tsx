@@ -9,18 +9,57 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { IPaymentInterface } from "@/interfaces/tradeInterface";
+import { useState } from "react";
+import { paymentRequest } from "@/services/requests/tradesRequests";
+import { IUser } from "@/interfaces/userInteface";
 
 type Props = {
-  data: IBike | ICar | IBoat | IPlane | null;
+  data: {
+    user: IUser;
+    vehicle: IBike | ICar | IBoat | IPlane;
+  };
 };
 
 export const Checkout = ({ data }: Props) => {
+  const [loading, setLoading] = useState(false);
+
+  console.log(data);
+
+  const vehicle = data.vehicle.info;
+  const vehicleType = data.vehicle.type;
+  const buyer = data.user;
+
+  const handlePurchase = async () => {
+    const tradeData: IPaymentInterface = {
+      amount: vehicle.price,
+      currency: "USD",
+      sellerAccountId: vehicle.owner?.stripeAccountId || "",
+      applicationFee: 0,
+      vehicleId: vehicle.id,
+      vehicleType: vehicleType,
+      receiptEmail: buyer.email,
+    };
+
+    try {
+      setLoading(true);
+      await paymentRequest(tradeData);
+      
+    } catch (error) {
+      console.error("Error processing purchase:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fallback values if data is null (for preview purposes or graceful degradation)
-  const vehicleName = (data as any)?.name || "Vehicle Name";
-  const vehiclePrice = (data as any)?.price || "$ 0.00";
-  const vehicleImage = (data as any)?.webp || (data as any)?.image || "";
-  const vehicleDescription =
-    (data as any)?.description || "No description available.";
+  const vehicleName = vehicle.name || "Vehicle Name";
+  const vehiclePriceFormatted = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(vehicle.price || 0);
+  const vehicleImage = vehicle.webp || vehicle.images?.[0] || "";
+  const vehicleDescription = vehicle.description || "No description available.";
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -89,7 +128,11 @@ export const Checkout = ({ data }: Props) => {
                   <label className="text-sm font-medium text-slate-900">
                     Email Address
                   </label>
-                  <Input type="email" placeholder="john.doe@example.com" />
+                  <Input
+                    type="email"
+                    placeholder={buyer.email}
+                    defaultValue={buyer.email}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-900">
@@ -131,29 +174,34 @@ export const Checkout = ({ data }: Props) => {
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Subtotal</span>
                   <span className="font-medium text-slate-900">
-                    {vehiclePrice}
+                    {vehiclePriceFormatted}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Processing Fee</span>
-                  <span className="font-medium text-slate-900">$ 0.00</span>
+                  <span className="font-medium text-slate-900">$0.00</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-600">Tax</span>
-                  <span className="font-medium text-slate-900">$ 0.00</span>
+                  <span className="font-medium text-slate-900">$0.00</span>
                 </div>
                 <div className="border-t border-slate-100 pt-4 flex justify-between items-center">
                   <span className="font-bold text-lg text-slate-900">
                     Total
                   </span>
                   <span className="font-bold text-lg text-slate-900">
-                    {vehiclePrice}
+                    {vehiclePriceFormatted}
                   </span>
                 </div>
               </CardContent>
               <CardFooter className="pt-2 pb-6">
-                <Button className="w-full py-6 text-lg" size="lg">
-                  Complete Purchase
+                <Button
+                  className="w-full py-6 text-lg"
+                  size="lg"
+                  onClick={handlePurchase}
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Complete Purchase"}
                 </Button>
               </CardFooter>
             </Card>

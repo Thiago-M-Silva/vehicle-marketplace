@@ -15,6 +15,8 @@ export interface IUser {
     rg: string;
     state: string;
     userType: EUserRoles;
+    stripeAccountId?: string;
+    keycloakId: string;
     Bike?: IBike;
     Boat?: IBoat;
     Car?: ICar;

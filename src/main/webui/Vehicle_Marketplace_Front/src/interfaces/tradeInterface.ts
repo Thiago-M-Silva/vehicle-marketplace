@@ -1,4 +1,4 @@
-export interface PaymentInterface {
+export interface IPaymentInterface {
     amount: number,
     currency: string,
     sellerAccountId: string,
@@ -8,7 +8,7 @@ export interface PaymentInterface {
     receiptEmail: string,
 }
 
-export interface RentingInterface {
+export interface IRentingInterface {
     vehicleId: string,
     vehicleType: string,
     customerId: string,

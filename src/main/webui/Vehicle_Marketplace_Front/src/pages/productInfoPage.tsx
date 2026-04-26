@@ -24,8 +24,10 @@ export const ProductInfo = () => {
     }
   }, [id, vehicle])
 
+  console.log(vehicle)
+
   const redirectToCheckout = (byuOrRent: string) => {
-    byuOrRent === 'buy' ?  navigate('/purchasePage') : navigate('/rentingPage');
+    byuOrRent === 'buy' ?  navigate('/purchasePage', {state: {vehicle}}) : navigate('/rentingPage', {state: {vehicle}});
   }
 
   const item = vehicle;
