@@ -10,9 +10,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { IPaymentInterface } from "@/interfaces/tradeInterface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { paymentRequest } from "@/services/requests/tradesRequests";
 import { IUser } from "@/interfaces/userInteface";
+import { getUserByKeycloakId } from "@/services/requests/usersRequests";
 
 type Props = {
   data: {
@@ -23,12 +24,53 @@ type Props = {
 
 export const Checkout = ({ data }: Props) => {
   const [loading, setLoading] = useState(false);
+  const [buyerLoading, setBuyerLoading] = useState(false);
+  const [buyer, setBuyer] = useState<IUser>();
+  const [buyerEmail, setBuyerEmail] = useState(data.user.email || "");
 
-  console.log(data);
+  console.log('checkout', data);
 
   const vehicle = data.vehicle.info;
   const vehicleType = data.vehicle.type;
-  const buyer = data.user;
+
+  useEffect(() => {
+    if (!data.user.keycloakId) {
+      setBuyer(data.user);
+      setBuyerEmail(data.user.email || "");
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchBuyer = async () => {
+      try {
+        setBuyerLoading(true);
+        const fetchedBuyer = await getUserByKeycloakId(data.user.keycloakId);
+
+        if (isMounted) {
+          setBuyer(fetchedBuyer);
+          setBuyerEmail(fetchedBuyer.email || data.user.email || "");
+        }
+      } catch (error) {
+        console.error("Error loading buyer:", error);
+
+        if (isMounted) {
+          setBuyer(data.user);
+          setBuyerEmail(data.user.email || "");
+        }
+      } finally {
+        if (isMounted) {
+          setBuyerLoading(false);
+        }
+      }
+    };
+
+    fetchBuyer();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [data.user])
 
   const handlePurchase = async () => {
     const tradeData: IPaymentInterface = {
@@ -38,7 +80,7 @@ export const Checkout = ({ data }: Props) => {
       applicationFee: 0,
       vehicleId: vehicle.id,
       vehicleType: vehicleType,
-      receiptEmail: buyer.email,
+      receiptEmail: buyerEmail || buyer?.email || data.user.email || '',
     };
 
     try {
@@ -130,8 +172,9 @@ export const Checkout = ({ data }: Props) => {
                   </label>
                   <Input
                     type="email"
-                    placeholder={buyer.email}
-                    defaultValue={buyer.email}
+                    placeholder="john@example.com"
+                    value={buyerEmail}
+                    onChange={(event) => setBuyerEmail(event.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -199,7 +242,7 @@ export const Checkout = ({ data }: Props) => {
                   className="w-full py-6 text-lg"
                   size="lg"
                   onClick={handlePurchase}
-                  disabled={loading}
+                  disabled={loading || buyerLoading}
                 >
                   {loading ? "Processing..." : "Complete Purchase"}
                 </Button>

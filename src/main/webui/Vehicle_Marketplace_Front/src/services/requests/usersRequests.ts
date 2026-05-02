@@ -6,8 +6,13 @@ const { VITE_BACKEND_USERS_URL } = import.meta.env;
 export const getAllUsers = async () => {
   return execRequest("GET", `${VITE_BACKEND_USERS_URL}/get`, null);
 };
+
 export const getUserById = async (id: string) => {
   return execRequest("GET", `${VITE_BACKEND_USERS_URL}/get/${id}`, null);
+};
+
+export const getUserByKeycloakId = async (keycloakId: string) => {
+  return execRequest("GET", `${VITE_BACKEND_USERS_URL}/get/keycloak/${keycloakId}`, null);
 };
 
 export const createUser = async (data: Partial<IUser>) => {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { IVehicle } from '@/interfaces/vehiclesInteface';
+import { useEffect, useState } from 'react'
+import { IBike, IBoat, ICar, IPlane, IVehicle } from '@/interfaces/vehiclesInteface';
 import { Table, TableRow, TableBody, TableCell } from '@/components/ui/table';
 import { VehicleResumeSection } from '@/sections/vehicleResumeSection';
 import { Button } from '@/components/ui/button';
@@ -7,30 +7,59 @@ import { useLocation, useParams } from 'react-router';
 import { getVehicleByKindAndId } from '@/services/requests/vehiclesRequest';
 import { useNavigate } from "react-router";
 
+type TypedVehicle = IBike | ICar | IBoat | IPlane;
+
+const vehicleTypeByKind: Record<string, TypedVehicle["type"]> = {
+  bikes: "bike",
+  cars: "car",
+  boats: "boat",
+  planes: "plane",
+};
+
+const toTypedVehicle = (vehicle: IVehicle, kind?: string): TypedVehicle | null => {
+  const type = kind ? vehicleTypeByKind[kind] : undefined;
+
+  return type ? { type, info: vehicle } as TypedVehicle : null;
+};
+
 export const ProductInfo = () => {
   const navigate = useNavigate();  
   const location = useLocation();
   const { kind, id } = useParams();
-  const [vehicle, setVehicle] = useState<IVehicle | null>(location.state?.vehicle || null);
+  const [vehicle, setVehicle] = useState<TypedVehicle | null>(() => {
+    const stateVehicle = location.state?.vehicle;
+
+    if (!stateVehicle) {
+      return null;
+    }
+
+    return "info" in stateVehicle
+      ? stateVehicle
+      : toTypedVehicle(stateVehicle as IVehicle, kind);
+  });
 
   useEffect(() => {
     if(!vehicle && id){
       const fetchVehicle = async () => {
         const response = await getVehicleByKindAndId(kind as string, id);
-        setVehicle(response.data as IVehicle);
+        setVehicle(toTypedVehicle(response as IVehicle, kind));
       }
 
       fetchVehicle();
     }
-  }, [id, vehicle])
+  }, [id, kind, vehicle])
 
-  console.log(vehicle)
-
+  
   const redirectToCheckout = (byuOrRent: string) => {
-    byuOrRent === 'buy' ?  navigate('/purchasePage', {state: {vehicle}}) : navigate('/rentingPage', {state: {vehicle}});
+    const currentUser = sessionStorage.getItem("currentUser");
+    const user = currentUser ? JSON.parse(currentUser) : null;
+    
+    console.log('productInfo', vehicle, byuOrRent, user)
+    window.sessionStorage.setItem('purchasePageData', JSON.stringify({vehicle}));
+    byuOrRent === 'buy' ?  navigate('/purchasePage') : navigate('/rentingPage');
   }
 
-  const item = vehicle;
+  const item = vehicle?.info;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -41,8 +70,8 @@ export const ProductInfo = () => {
             <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               <picture className="h-full w-full block">
                 <source srcSet={item?.webp} type="image/webp" />
-                <img
-                  src={item?.image}
+                  <img
+                  src={item?.images?.[0]}
                   alt={item?.name}
                   className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
                 />

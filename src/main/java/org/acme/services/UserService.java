@@ -87,6 +87,11 @@ public class UserService {
         return user != null ? userMapper.toUserResponseDTO(user) : null;
     }
 
+    public UsersResponseDTO getUserByKeycloakId(String keycloakId) {
+        Users user = usersRepository.find("keycloakId = ?1", keycloakId).firstResult();
+        return user != null ? userMapper.toUserResponseDTO(user) : null;
+    }
+
     /**
      * Retrieves a user by their unique identifier
      * <p>

@@ -82,6 +82,26 @@ public class UsersController {
         }
     }
 
+    @GET
+    @Path("/get/keycloak/{keycloakId}")
+    @PermitAll
+    public Response getUserByKeycloakId(@PathParam("keycloakId") String keycloakId) {
+        try {
+            UsersResponseDTO user = userService.getUserByKeycloakId(keycloakId);
+            if (user != null) {
+                return Response.ok(user).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found with Keycloak ID: " + keycloakId)
+                        .build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving user: " + e.getMessage())
+                    .build();
+        }
+    }
+
     /**
      * Handles HTTP POST requests to create a new user.
      * <p>

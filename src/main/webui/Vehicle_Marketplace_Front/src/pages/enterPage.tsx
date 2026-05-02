@@ -18,7 +18,7 @@ export const EnterPage = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { login, initialized, isAuthenticated } = useAuth();
+  const { login, initialized, isAuthenticated, getUser } = useAuth();
   const from = (location.state as { from?: string } | null)?.from || "/";
 
   const [registerData, setRegisterData] = useState({
@@ -54,9 +54,30 @@ export const EnterPage = () => {
 
   useEffect(() => {
     if (initialized && isAuthenticated) {
+      const authUser = getUser() as
+        | {
+            sub?: string;
+            email?: string;
+            name?: string;
+            preferred_username?: string;
+          }
+        | undefined;
+
+      if (!sessionStorage.getItem("currentUser")) {
+        sessionStorage.setItem(
+          "currentUser",
+          JSON.stringify({
+            id: authUser?.sub || "",
+            keycloakId: authUser?.sub || "",
+            email: authUser?.email || "",
+            name: authUser?.name || authUser?.preferred_username || "",
+          }),
+        );
+      }
+
       navigate(from, { replace: true });
     }
-  }, [from, initialized, isAuthenticated, navigate]);
+  }, [from, getUser, initialized, isAuthenticated, navigate]);
 
   const handleLogin = async () => {
     setError("");
@@ -71,9 +92,6 @@ export const EnterPage = () => {
     }
   };
   
-  // -------------------------
-  // REGISTER (Your Backend)
-  // -------------------------
   const handleRegister = async () => {
     setError("");
 
@@ -105,7 +123,18 @@ export const EnterPage = () => {
         userType: 1,
       };
 
-      await createUser(fixedRegisterData);
+      const createdUser = await createUser(fixedRegisterData);
+      const userWithoutPassword = {
+        ...fixedRegisterData,
+        ...createdUser,
+      };
+      delete userWithoutPassword.password;
+
+      sessionStorage.setItem(
+        "currentUser",
+        JSON.stringify(userWithoutPassword),
+      );
+
       await login({
         redirectUri: `${window.location.origin}${from}`,
       });
@@ -128,9 +157,6 @@ export const EnterPage = () => {
     }
   };
 
-  // -------------------------
-  // HANDLERS
-  // -------------------------
   const updateField = (field: string, value: string) => {
     setRegisterData((prev) => ({
       ...prev,
@@ -138,9 +164,6 @@ export const EnterPage = () => {
     }));
   };
 
-  // -------------------------
-  // UI
-  // -------------------------
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4">
       <Card className="w-full max-w-2xl shadow-lg">
