@@ -17,6 +17,8 @@ const vehicleTypeByKind: Record<string, TypedVehicle["type"]> = {
 };
 
 const toTypedVehicle = (vehicle: IVehicle, kind?: string): TypedVehicle | null => {
+  console.log('Prod info vehicle', vehicle);
+  
   const type = kind ? vehicleTypeByKind[kind] : undefined;
 
   return type ? { type, info: vehicle } as TypedVehicle : null;

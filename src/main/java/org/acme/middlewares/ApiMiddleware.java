@@ -212,28 +212,28 @@ public class ApiMiddleware {
             case "bikes" -> {
                 var dto = mapper.toBikesDTO((Bikes) vehicle);
                 var images = vehicleService.getVehicleImages(vehicle.getId());
-                yield new BikesResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                yield new BikesResponseDTO(dto.id(),dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
                 dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
                 dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), images);
             }
             case "cars" -> {
                 var dto = mapper.toCarsDTO((Cars) vehicle);
                 var images = vehicleService.getVehicleImages(vehicle.getId());
-                yield new CarsResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                yield new CarsResponseDTO(dto.id(), dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
                 dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
                 dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), images);
             }
             case "boats" -> {
                 var dto = mapper.toBoatsDTO((Boats) vehicle);
                 var images = vehicleService.getVehicleImages(vehicle.getId());
-                yield new BoatsResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                yield new BoatsResponseDTO(dto.id(), dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
                 dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
                 dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), dto.numberOfCabins(), images);
             }
             case "planes" -> {
                 var dto = mapper.toPlanesDTO((Planes) vehicle);
                 var images = vehicleService.getVehicleImages(vehicle.getId());
-                yield new PlanesResponseDTO(dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
+                yield new PlanesResponseDTO(dto.id(), dto.name(), dto.brand(), dto.year(), dto.price(), dto.model(),
                 dto.horsepower(), dto.transmissionType(), dto.description(), dto.storage(),
                 dto.vehicleStatus(), dto.category(), dto.color(), dto.fuelType(), dto.owner(), images);
             }
