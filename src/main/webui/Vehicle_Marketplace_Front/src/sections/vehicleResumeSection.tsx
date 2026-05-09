@@ -8,30 +8,48 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { dataToShowInResume } from "@/services/tempMethods";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { redirectMethod } from "@/services/utils";
-import { IBike, IBoat, ICar, IPlane } from "@/interfaces/vehiclesInteface";
+import { IVehicle } from "@/interfaces/vehiclesInteface";
+import { getAllVehicleByKind } from "@/services/requests/vehiclesRequest";
+import placeholderPng from "../assets/others/placeholder.png";
 
-type vehiclesProps = {
-  bikes?: IBike[];
-  boats?: IBoat[];
-  cars?: ICar[];
-  planes?: IPlane[];
-};
+type VehicleKind = "bikes" | "boats" | "cars" | "planes";
+type VehiclesByKind = Partial<Record<VehicleKind, Partial<IVehicle>[]>>;
 
-export const VehicleResumeSection = ({ bikes, boats, cars, planes }: vehiclesProps) => {
-  const [tabValue, setTabValue] = useState("bikes");
-  
-  const data: Record<string, any[] | undefined> = {
-    bikes,
-    boats,
-    cars,
-    planes,
-  };
+export const VehicleResumeSection = () => {
+  const page: number = 0;
+  const size: number = 6;
+  const [tabValue, setTabValue] = useState<VehicleKind>("bikes");
+  const [vehicles, setVehicles] = useState<VehiclesByKind>({});
 
-  const values = data[tabValue] || dataToShowInResume(tabValue);
-  const categories = ["bikes", "boats", "cars", "planes"];
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchValues = async () => {
+      try {
+        const values = await getAllVehicleByKind(tabValue, page, size);
+
+        if (!ignore) {
+          setVehicles((currentVehicles) => ({
+            ...currentVehicles,
+            [tabValue]: values,
+          }));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchValues();
+    
+    return () => {
+      ignore = true;
+    };
+  }, [tabValue]);
+
+  const categories: VehicleKind[] = ["bikes", "boats", "cars", "planes"];
+  const vehiclesList = vehicles[tabValue] ?? [];
 
   return (
     <section className="w-full py-12 bg-slate-50">
@@ -45,7 +63,11 @@ export const VehicleResumeSection = ({ bikes, boats, cars, planes }: vehiclesPro
           </p>
         </div>
 
-        <Tabs value={tabValue} onValueChange={setTabValue} className="w-full">
+        <Tabs
+          value={tabValue}
+          onValueChange={(value) => setTabValue(value as VehicleKind)}
+          className="w-full"
+        >
           <TabsList className="flex w-full max-w-md mx-auto h-12 items-center justify-center rounded-lg bg-slate-200 p-1 text-slate-600">
             {categories.map((category) => (
               <TabsTrigger
@@ -62,14 +84,14 @@ export const VehicleResumeSection = ({ bikes, boats, cars, planes }: vehiclesPro
             className="mt-8 focus-visible:outline-none"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {values.map((value: any, index: number) => (
+              {vehiclesList.map((value) => (
                 <Card
-                  key={index}
+                  key={value.id}
                   className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
                 >
                   <div className="aspect-video w-full overflow-hidden bg-gray-100 relative">
                     <img
-                      src={value.image}
+                      src={value.images?.[0] ?? placeholderPng}
                       alt={value.name}
                       className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
                     />

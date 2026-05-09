@@ -6,7 +6,6 @@ import {
   MenubarContent,
   MenubarItem,
 } from "@radix-ui/react-menubar";
-import { Button } from "@/components/ui/button";
 import logo from "../assets/logo/horse_power_vehicle_logo.png";
 
 const Header = () => {

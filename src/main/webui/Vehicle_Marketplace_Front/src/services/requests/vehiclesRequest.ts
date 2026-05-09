@@ -1,7 +1,4 @@
-import {
-  ICreateVehicleObject,
-  ICreateVehicleWithDocsObject,
-} from "@/interfaces/createVehicleInterface";
+import { ICreateVehicleObject } from "@/interfaces/createVehicleInterface";
 import { VehicleSearchInterface } from "@/interfaces/vehicleSearchInterface";
 import { execRequest } from "./genericRequests";
 import { IVehicle } from "@/interfaces/vehiclesInteface";

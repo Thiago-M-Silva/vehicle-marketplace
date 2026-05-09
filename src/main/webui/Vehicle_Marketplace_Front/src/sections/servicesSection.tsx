@@ -52,9 +52,11 @@ export const ServicesSection = () => {
               </p>
             </CardContent>
             <CardFooter className="mt-auto pb-8">
-              <Button size="lg" className="w-full sm:w-auto">
-                Start Selling
-              </Button>
+              <a href="/announcePage">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Start Selling
+                </Button>
+              </a>
             </CardFooter>
           </Card>
 
@@ -82,9 +84,11 @@ export const ServicesSection = () => {
               </p>
             </CardContent>
             <CardFooter className="mt-auto pb-8">
-              <Button size="lg" className="w-full sm:w-auto">
-                Find a Rental
-              </Button>
+              <a href="/rentingPage">
+                <Button size="lg" className="w-full sm:w-auto">
+                  Find a Rental
+                </Button>
+              </a>
             </CardFooter>
           </Card>
         </div>

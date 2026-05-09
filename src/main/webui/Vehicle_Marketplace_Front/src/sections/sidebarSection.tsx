@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { IUser } from "@/interfaces/userInteface";
 import { FileCode, Home, Code, Search } from "lucide-react";
 
 const items = [
@@ -36,31 +37,38 @@ const items = [
 type Props = {};
 
 export const SidebarSection = ({}: Props) => {
+  const user = window.sessionStorage.getItem("currentUser");
+  const isAdmin = Object(user).userRole;
+  
+  console.log(isAdmin);
+
+  if (isAdmin !== "admin") return null;
+
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarTrigger />
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter />
-    </Sidebar>
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
+          <SidebarTrigger />
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Application</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter />
+      </Sidebar>
   );
 };
