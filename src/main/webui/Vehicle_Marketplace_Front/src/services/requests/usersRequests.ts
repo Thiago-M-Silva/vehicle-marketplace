@@ -1,4 +1,5 @@
 import { IUser } from "@/interfaces/userInteface";
+import { EUserRoles } from "@/enums/ERoles";
 import { execRequest } from "./genericRequests";
 
 const { VITE_BACKEND_USERS_URL } = import.meta.env;
@@ -12,10 +13,16 @@ export const getUserById = async (id: string) => {
 };
 
 export const getUserByKeycloakId = async (keycloakId: string) => {
-  return execRequest("GET", `${VITE_BACKEND_USERS_URL}/get/keycloak/${keycloakId}`, null);
+  return execRequest(
+    "GET",
+    `${VITE_BACKEND_USERS_URL}/get/keycloak/${keycloakId}`,
+    null,
+  );
 };
 
-export const createUser = async (data: Partial<IUser>) => {
+export const createUser = async (
+  data: Partial<IUser> & { userRole?: EUserRoles },
+) => {
   return execRequest("POST", `${VITE_BACKEND_USERS_URL}/save`, data);
 };
 
@@ -23,7 +30,11 @@ export const editUserById = async (id: string, data: IUser) => {
   return execRequest("PUT", `${VITE_BACKEND_USERS_URL}/put/${id}`, data);
 };
 export const createStripeConnectAccount = async (id: string) => {
-  return execRequest("PUT", `${VITE_BACKEND_USERS_URL}/put/setSeller/${id}`, null);
+  return execRequest(
+    "PUT",
+    `${VITE_BACKEND_USERS_URL}/put/setSeller/${id}`,
+    null,
+  );
 };
 
 export const deleteUserById = async (id: string) => {

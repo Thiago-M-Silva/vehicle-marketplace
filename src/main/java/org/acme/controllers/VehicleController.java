@@ -115,7 +115,8 @@ public class VehicleController {
     ) {
         try {
             Vehicles vehicle = vehicleService.findById(vehicleType, UUID.fromString(id));
-            return Response.ok(vehicle).build();
+            var responseDTO = apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicle);
+            return Response.ok(responseDTO).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("Vehicle not found: " + e.getMessage())

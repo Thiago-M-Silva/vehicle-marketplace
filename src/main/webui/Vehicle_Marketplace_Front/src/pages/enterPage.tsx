@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { IUser } from "@/interfaces/userInteface";
+import { EUserRoles } from "@/enums/ERoles";
 import {
   Card,
   CardContent,
@@ -21,7 +22,8 @@ export const EnterPage = () => {
   const { login, initialized, isAuthenticated, getUser } = useAuth();
   const from = (location.state as { from?: string } | null)?.from || "/";
 
-  const [registerData, setRegisterData] = useState({
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [registerData, setRegisterData] = useState<IUser>({
     name: "",
     email: "",
     password: "",
@@ -30,10 +32,13 @@ export const EnterPage = () => {
     city: "",
     state: "",
     country: "",
-    cpf: "",
-    rg: "",
-    birthDate: "",
-    confirmPassword: "",
+    cpf: "", //federal register document
+    rg: "", //register document
+    birthDate: new Date(),
+    userType: EUserRoles.CLIENT,
+    profileImage: "",
+    keycloakId: "",
+    id: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -91,16 +96,28 @@ export const EnterPage = () => {
       setError("Unable to start login right now.");
     }
   };
-  
+
   const handleRegister = async () => {
     setError("");
 
-    if (!registerData.email || !registerData.password || !registerData.name) {
+    if (
+      !registerData.email ||
+      !registerData.password ||
+      !registerData.name ||
+      !registerData.phoneNumber ||
+      !registerData.address ||
+      !registerData.city ||
+      !registerData.state ||
+      !registerData.country ||
+      !registerData.cpf ||
+      !registerData.rg ||
+      !registerData.birthDate
+    ) {
       setError("Please fill in all required fields.");
       return;
     }
 
-    if (registerData.password !== registerData.confirmPassword) {
+    if (registerData.password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
@@ -120,10 +137,15 @@ export const EnterPage = () => {
         cpf: registerData.cpf,
         rg: registerData.rg,
         birthDate: new Date(registerData.birthDate),
-        userType: 1,
+        userType: EUserRoles.CLIENT,
+        keycloakId: "",
+        profileImage: registerData.profileImage,
       };
 
-      const createdUser = await createUser(fixedRegisterData);
+      const createdUser = await createUser({
+        ...fixedRegisterData,
+        userRole: EUserRoles.CLIENT,
+      });
       const userWithoutPassword = {
         ...fixedRegisterData,
         ...createdUser,
@@ -139,7 +161,6 @@ export const EnterPage = () => {
         redirectUri: `${window.location.origin}${from}`,
       });
     } catch (err: any) {
-      // Captura mensagens específicas do backend/Keycloak (como o 409 Conflict)
       const apiError = err.response?.data?.errorMessage || err.errorMessage;
 
       if (apiError) {
@@ -200,41 +221,193 @@ export const EnterPage = () => {
 
             {/* ---------------- REGISTER ---------------- */}
             <TabsContent value="register">
-              <div className="space-y-4">
-                <Input
-                  placeholder="Enter your name"
-                  value={registerData.name}
-                  onChange={(e) => updateField("name", e.target.value)}
-                />
+              <div className="space-y-6 max-h-[500px] overflow-y-auto pr-4">
+                {/* Personal Information */}
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                    Personal Information
+                  </h3>
+                  <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        Full Name *
+                      </label>
+                      <Input
+                        placeholder="John Doe"
+                        value={registerData.name}
+                        onChange={(e) => updateField("name", e.target.value)}
+                        className="text-sm"
+                      />
+                    </div>
 
-                <Input
-                  type="date"
-                  value={registerData.birthDate}
-                  onChange={(e) => updateField("birthDate", e.target.value)}
-                />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          Birth Date *
+                        </label>
+                        <Input
+                          type="date"
+                          value={String(registerData.birthDate)}
+                          onChange={(e) =>
+                            updateField("birthDate", e.target.value)
+                          }
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          Phone *
+                        </label>
+                        <Input
+                          type="tel"
+                          placeholder="(555) 123-4567"
+                          value={registerData.phoneNumber}
+                          onChange={(e) =>
+                            updateField("phoneNumber", e.target.value)
+                          }
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
 
-                <Input
-                  placeholder="Enter your email"
-                  type="email"
-                  value={registerData.email}
-                  onChange={(e) => updateField("email", e.target.value)}
-                />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          CPF *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="000.000.000-00"
+                          value={registerData.cpf}
+                          onChange={(e) => updateField("cpf", e.target.value)}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          RG *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="00.000.000-0"
+                          value={registerData.rg}
+                          onChange={(e) => updateField("rg", e.target.value)}
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                <Input
-                  placeholder="Enter your password"
-                  type="password"
-                  value={registerData.password}
-                  onChange={(e) => updateField("password", e.target.value)}
-                />
+                {/* Location Information */}
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                    Location
+                  </h3>
+                  <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        Address *
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="123 Main Street"
+                        value={registerData.address}
+                        onChange={(e) => updateField("address", e.target.value)}
+                        className="text-sm"
+                      />
+                    </div>
 
-                <Input
-                  placeholder="Confirm your password"
-                  type="password"
-                  value={registerData.confirmPassword}
-                  onChange={(e) =>
-                    updateField("confirmPassword", e.target.value)
-                  }
-                />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          City *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="New York"
+                          value={registerData.city}
+                          onChange={(e) => updateField("city", e.target.value)}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-700 mb-1">
+                          State *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="NY"
+                          value={registerData.state}
+                          onChange={(e) => updateField("state", e.target.value)}
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        Country *
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="United States"
+                        value={registerData.country}
+                        onChange={(e) => updateField("country", e.target.value)}
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Account Information */}
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                    Account Details
+                  </h3>
+                  <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        Email *
+                      </label>
+                      <Input
+                        placeholder="you@example.com"
+                        type="email"
+                        value={registerData.email}
+                        onChange={(e) => updateField("email", e.target.value)}
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        Password *
+                      </label>
+                      <Input
+                        placeholder="••••••••"
+                        type="password"
+                        value={registerData.password}
+                        onChange={(e) =>
+                          updateField("password", e.target.value)
+                        }
+                        className="text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-slate-700 mb-1">
+                        Confirm Password *
+                      </label>
+                      <Input
+                        placeholder="••••••••"
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
 
                 {error && (
                   <div className="flex items-center gap-3 p-3 rounded-lg border border-red-200 bg-red-50 text-red-800 animate-in fade-in slide-in-from-top-1">

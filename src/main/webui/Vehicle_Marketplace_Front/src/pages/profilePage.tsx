@@ -7,25 +7,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { VehicleResumeSection } from "@/sections/vehicleResumeSection";
+import { IUser } from "@/interfaces/userInteface";
+import type { IVehicle } from "@/interfaces/vehiclesInteface";
+import { getUserByKeycloakId } from "@/services/requests/usersRequests";
+import { NotFountError } from "@/sections/NotFoundErrorSection";
 import type { KeycloakTokenParsed } from "keycloak-js";
+import { useState, useEffect } from "react";
 
 // Mock user data for display
-const MOCK_USER = {
-  username: "johndoe",
-  fullName: "John Doe",
-  email: "john.doe@example.com",
-  phone: "+1 (555) 123-4567",
-  address: "1234 Main St",
-  city: "New York",
-  state: "NY",
-  country: "USA",
-  zip: "10001",
-  cpf: "123.456.789-00",
-  rg: "12.345.678-9",
-  birthDate: "1990-01-01",
-  avatar: "https://github.com/shadcn.png",
-};
+// const MOCK_USER = {
+//   username: "johndoe",
+//   fullName: "John Doe",
+//   email: "john.doe@example.com",
+//   phone: "+1 (555) 123-4567",
+//   address: "1234 Main St",
+//   city: "New York",
+//   state: "NY",
+//   country: "USA",
+//   zip: "10001",
+//   cpf: "123.456.789-00",
+//   rg: "12.345.678-9",
+//   birthDate: "1990-01-01",
+//   avatar: "https://github.com/shadcn.png",
+// };
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 export const ProfilePage = () => {
   const { logout, getUser } = useAuth();
@@ -37,12 +46,34 @@ export const ProfilePage = () => {
       })
     | undefined;
 
-  const profileData = {
-    ...MOCK_USER,
-    username: authUser?.preferred_username || MOCK_USER.username,
-    fullName: authUser?.name || authUser?.preferred_username || MOCK_USER.fullName,
-    email: authUser?.email || MOCK_USER.email,
-  };
+  const [profileData, setProfileData] = useState<IUser | null>(null);
+
+  useEffect(() => {
+    if (!authUser) return;
+    const fetchUser = async (keycloakId: string) => {
+      try {
+        const user = await getUserByKeycloakId(keycloakId);
+        setProfileData(user ?? null);
+      } catch (e) {
+        console.error("Failed to fetch user by keycloak id", e);
+        setProfileData(null);
+      }
+    };
+
+    void fetchUser(authUser.sub as string);
+  }, [authUser]);
+
+  if (!profileData) return <NotFountError />;
+
+  const p = profileData as IUser;
+  const userVehicles = [
+    p.Bike ? { kind: "Bike", vehicle: p.Bike.info } : null,
+    p.Boat ? { kind: "Boat", vehicle: p.Boat.info } : null,
+    p.Car ? { kind: "Car", vehicle: p.Car.info } : null,
+    p.Plane ? { kind: "Plane", vehicle: p.Plane.info } : null,
+  ].filter(
+    (item): item is { kind: string; vehicle: IVehicle } => item !== null,
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -63,16 +94,16 @@ export const ProfilePage = () => {
             <CardHeader className="flex flex-col items-center text-center pb-2">
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-100 mb-4 shadow-sm">
                 <img
-                  src={profileData.avatar}
-                  alt={profileData.username}
+                  src={p.profileImage}
+                  alt={p.name || p.email}
                   className="w-full h-full object-cover"
                 />
               </div>
               <CardTitle className="text-2xl font-bold text-slate-900">
-                {profileData.fullName}
+                {p.name}
               </CardTitle>
               <CardDescription className="text-sm font-medium">
-                @{profileData.username}
+                @{p.keycloakId || (p.email).split("@")[0]}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -98,11 +129,14 @@ export const ProfilePage = () => {
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
-                  { label: "Email", value: profileData.email },
-                  { label: "Phone", value: profileData.phone },
-                  { label: "Birth Date", value: profileData.birthDate },
-                  { label: "CPF", value: profileData.cpf },
-                  { label: "RG", value: profileData.rg },
+                  { label: "Email", value: p.email },
+                  { label: "Phone", value: p.phoneNumber },
+                  {
+                    label: "Birth Date",
+                    value: p.birthDate ? String(p.birthDate) : "",
+                  },
+                  { label: "CPF", value: p.cpf },
+                  { label: "RG", value: p.rg },
                 ].map((item) => (
                   <div key={item.label} className="space-y-1">
                     <label className="text-sm font-medium text-slate-500">
@@ -125,14 +159,14 @@ export const ProfilePage = () => {
                       Street Address
                     </label>
                     <p className="text-base font-medium text-slate-900">
-                      {profileData.address}
+                      {p.address}
                     </p>
                   </div>
                   {[
-                    { label: "City", value: profileData.city },
-                    { label: "State", value: profileData.state },
-                    { label: "Country", value: profileData.country },
-                    { label: "Zip Code", value: profileData.zip },
+                    { label: "City", value: p.city },
+                    { label: "State", value: p.state },
+                    { label: "Country", value: p.country },
+                    { label: "Zip Code", value: "" },
                   ].map((item) => (
                     <div key={item.label} className="space-y-1">
                       <label className="text-sm font-medium text-slate-500">
@@ -158,7 +192,60 @@ export const ProfilePage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <VehicleResumeSection />
+            {userVehicles.length > 0 ? (
+              <div className="divide-y divide-slate-100">
+                {userVehicles.map(({ kind, vehicle }) => (
+                  <div
+                    key={`${kind}-${vehicle.id}`}
+                    className="grid grid-cols-1 md:grid-cols-[160px_1fr_auto] gap-4 p-6 items-center"
+                  >
+                    <div className="aspect-[4/3] overflow-hidden rounded-md bg-slate-100">
+                      {vehicle.images?.[0] ? (
+                        <img
+                          src={vehicle.images[0]}
+                          alt={vehicle.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-sm font-medium text-slate-500">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0 space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-lg font-semibold text-slate-900">
+                          {vehicle.name}
+                        </h3>
+                        <span className="rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600">
+                          {kind}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-600">
+                        {[vehicle.brand, vehicle.model, vehicle.year]
+                          .filter(Boolean)
+                          .join(" - ")}
+                      </p>
+                      <p className="line-clamp-2 text-sm text-slate-500">
+                        {vehicle.description}
+                      </p>
+                    </div>
+                    <div className="text-left md:text-right">
+                      <p className="text-lg font-bold text-slate-900">
+                        {currencyFormatter.format(Number(vehicle.price ?? 0))}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {vehicle.vehicleStatus}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 text-center text-slate-500">
+                No vehicles listed yet.
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

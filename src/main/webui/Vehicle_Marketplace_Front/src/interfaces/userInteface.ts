@@ -2,7 +2,7 @@ import { EUserRoles } from "@/enums/ERoles";
 import { IBike, IBoat, ICar, IPlane } from "./vehiclesInteface";
 
 export interface IUser {
-    id: string;
+    id?: string;
     address: string;
     birthDate: Date;
     email: string;
@@ -16,9 +16,10 @@ export interface IUser {
     state: string;
     userType: EUserRoles;
     stripeAccountId?: string;
-    keycloakId: string;
+    keycloakId?: string;
     Bike?: IBike;
     Boat?: IBoat;
     Car?: ICar;
     Plane?: IPlane;
+    profileImage?: string;
 }

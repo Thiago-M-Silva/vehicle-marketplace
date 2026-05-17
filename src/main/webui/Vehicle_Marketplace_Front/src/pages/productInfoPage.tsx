@@ -63,6 +63,11 @@ export const ProductInfo = () => {
 
   const item = vehicle?.info;
 
+  const formattedPrice = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(Number(item?.price));
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto px-4 py-12">
@@ -85,7 +90,7 @@ export const ProductInfo = () => {
           <div className="flex flex-col gap-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{item?.name}</h1>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">{item?.price}</p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{formattedPrice}</p>
             </div>
 
             <div className="flex m-auto flex-col sm:flex-row gap-4">
