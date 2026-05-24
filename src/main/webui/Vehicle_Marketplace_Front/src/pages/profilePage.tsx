@@ -10,26 +10,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { IUser } from "@/interfaces/userInteface";
 import type { IVehicle } from "@/interfaces/vehiclesInteface";
 import { getUserByKeycloakId } from "@/services/requests/usersRequests";
-import { NotFountError } from "@/sections/NotFoundErrorSection";
+import { NotFountError } from "@/sections/notFoundErrorSection";
 import type { KeycloakTokenParsed } from "keycloak-js";
 import { useState, useEffect } from "react";
-
-// Mock user data for display
-// const MOCK_USER = {
-//   username: "johndoe",
-//   fullName: "John Doe",
-//   email: "john.doe@example.com",
-//   phone: "+1 (555) 123-4567",
-//   address: "1234 Main St",
-//   city: "New York",
-//   state: "NY",
-//   country: "USA",
-//   zip: "10001",
-//   cpf: "123.456.789-00",
-//   rg: "12.345.678-9",
-//   birthDate: "1990-01-01",
-//   avatar: "https://github.com/shadcn.png",
-// };
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",

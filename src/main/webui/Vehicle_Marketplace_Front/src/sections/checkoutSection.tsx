@@ -27,8 +27,12 @@ export const Checkout = ({ data }: Props) => {
   const [buyerLoading, setBuyerLoading] = useState(false);
   const [buyer, setBuyer] = useState<IUser>();
   const [buyerEmail, setBuyerEmail] = useState(data.user.email || "");
+  const [firstName, setFirstName] = useState(data.user.name || "");
+  const [address, setAddress] = useState(data.user.address || "");
+  const [city, setCity] = useState(data.user.city || "");
+  const [state, setState] = useState(data.user.state || "");
 
-  console.log('checkout', data);
+  console.log("checkout", data);
 
   const vehicle = data.vehicle.info;
   const vehicleType = data.vehicle.type;
@@ -37,6 +41,10 @@ export const Checkout = ({ data }: Props) => {
     if (!data.user.keycloakId) {
       setBuyer(data.user);
       setBuyerEmail(data.user.email || "");
+      setFirstName(data.user.name || "");
+      setAddress(data.user.address || "");
+      setCity(data.user.city || "");
+      setState(data.user.state || "");
       return;
     }
 
@@ -45,11 +53,16 @@ export const Checkout = ({ data }: Props) => {
     const fetchBuyer = async () => {
       try {
         setBuyerLoading(true);
+        if(!data.user.keycloakId) return;
         const fetchedBuyer = await getUserByKeycloakId(data.user.keycloakId);
 
         if (isMounted) {
           setBuyer(fetchedBuyer);
           setBuyerEmail(fetchedBuyer.email || data.user.email || "");
+          setFirstName(fetchedBuyer.firstName || data.user.name || "");
+          setAddress(fetchedBuyer.address || data.user.address || "");
+          setCity(fetchedBuyer.city || data.user.city || "");
+          setState(fetchedBuyer.state || data.user.state || "");
         }
       } catch (error) {
         console.error("Error loading buyer:", error);
@@ -57,6 +70,10 @@ export const Checkout = ({ data }: Props) => {
         if (isMounted) {
           setBuyer(data.user);
           setBuyerEmail(data.user.email || "");
+          setFirstName(data.user.name || "");
+          setAddress(data.user.address || "");
+          setCity(data.user.city || "");
+          setState(data.user.state || "");
         }
       } finally {
         if (isMounted) {
@@ -70,7 +87,7 @@ export const Checkout = ({ data }: Props) => {
     return () => {
       isMounted = false;
     };
-  }, [data.user])
+  }, [data.user]);
 
   const handlePurchase = async () => {
     const tradeData: IPaymentInterface = {
@@ -80,13 +97,12 @@ export const Checkout = ({ data }: Props) => {
       applicationFee: 0,
       vehicleId: vehicle.id,
       vehicleType: vehicleType,
-      receiptEmail: buyerEmail || buyer?.email || data.user.email || '',
+      receiptEmail: buyerEmail || buyer?.email || data.user.email || "",
     };
 
     try {
       setLoading(true);
       await paymentRequest(tradeData);
-      
     } catch (error) {
       console.error("Error processing purchase:", error);
     } finally {
@@ -157,13 +173,11 @@ export const Checkout = ({ data }: Props) => {
                     <label className="text-sm font-medium text-slate-900">
                       First Name
                     </label>
-                    <Input placeholder="John" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-900">
-                      Last Name
-                    </label>
-                    <Input placeholder="Doe" />
+                    <Input
+                      placeholder="John"
+                      value={firstName}
+                      onChange={(event) => setFirstName(event.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -181,26 +195,32 @@ export const Checkout = ({ data }: Props) => {
                   <label className="text-sm font-medium text-slate-900">
                     Address
                   </label>
-                  <Input placeholder="1234 Main St" />
+                  <Input
+                    placeholder="1234 Main St"
+                    value={address}
+                    onChange={(event) => setAddress(event.target.value)}
+                  />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
                       City
                     </label>
-                    <Input placeholder="New York" />
+                    <Input
+                      placeholder="New York"
+                      value={city}
+                      onChange={(event) => setCity(event.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
                       State
                     </label>
-                    <Input placeholder="NY" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-900">
-                      Zip Code
-                    </label>
-                    <Input placeholder="10001" />
+                    <Input
+                      placeholder="NY"
+                      value={state}
+                      onChange={(event) => setState(event.target.value)}
+                    />
                   </div>
                 </div>
               </CardContent>

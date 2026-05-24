@@ -9,17 +9,48 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { IUser } from "@/interfaces/userInteface";
+import { useEffect, useState } from "react";
 
 type Props = {
   data: IBike | ICar | IBoat | IPlane | null;
+  user?: IUser;
 };
 
-export const Checkout = ({ data }: Props) => {
+export const RentCheckout = ({ data, user }: Props) => {
+  const [loading, setLoading] = useState(false);
+  const [firstName, setFirstName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [address, setAddress] = useState(user?.address || "");
+  const [city, setCity] = useState(user?.city || "");
+  const [state, setState] = useState(user?.state || "");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.name || "");
+      setEmail(user.email || "");
+      setAddress(user.address || "");
+      setCity(user.city || "");
+      setState(user.state || "");
+    }
+  }, [user]);
+
   // Fallback values if data is null (for preview purposes or graceful degradation)
-  const vehicleName = (data as any)?.name || "Vehicle Name";
-  const vehiclePrice = (data as any)?.price || "$ 0.00";
-  const vehicleImage = (data as any)?.webp || (data as any)?.image || "";
-  const vehicleDescription = (data as any)?.description || "No description available.";
+  const vehicleName =
+    (data as any)?.info?.name || (data as any)?.name || "Vehicle Name";
+  const vehiclePrice =
+    (data as any)?.info?.price || (data as any)?.price || "$ 0.00";
+  const vehicleImage =
+    (data as any)?.info?.webp ||
+    (data as any)?.webp ||
+    (data as any)?.image ||
+    "";
+  const vehicleDescription =
+    (data as any)?.info?.description ||
+    (data as any)?.description ||
+    "No description available.";
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -75,45 +106,76 @@ export const Checkout = ({ data }: Props) => {
                     <label className="text-sm font-medium text-slate-900">
                       First Name
                     </label>
-                    <Input placeholder="John" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-900">
-                      Last Name
-                    </label>
-                    <Input placeholder="Doe" />
+                    <Input
+                      placeholder="John"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-900">
                     Email Address
                   </label>
-                  <Input type="email" placeholder="john.doe@example.com" />
+                  <Input
+                    type="email"
+                    placeholder="john.doe@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-slate-900">
                     Address
                   </label>
-                  <Input placeholder="1234 Main St" />
+                  <Input
+                    placeholder="1234 Main St"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                  />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
                       City
                     </label>
-                    <Input placeholder="New York" />
+                    <Input
+                      placeholder="New York"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
                       State
                     </label>
-                    <Input placeholder="NY" />
+                    <Input
+                      placeholder="NY"
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-900">
+                      Rental Start Date
+                    </label>
+                    <Input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-900">
-                      Zip Code
+                      Rental End Date
                     </label>
-                    <Input placeholder="10001" />
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -151,8 +213,12 @@ export const Checkout = ({ data }: Props) => {
                 </div>
               </CardContent>
               <CardFooter className="pt-2 pb-6">
-                <Button className="w-full py-6 text-lg" size="lg">
-                  Confirm Rental
+                <Button
+                  className="w-full py-6 text-lg"
+                  size="lg"
+                  disabled={loading}
+                >
+                  {loading ? "Processing..." : "Confirm Rental"}
                 </Button>
               </CardFooter>
             </Card>

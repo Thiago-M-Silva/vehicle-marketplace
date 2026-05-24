@@ -9,6 +9,7 @@ import { RentingPage } from "@/pages/rentingPage";
 import { PurchasePage } from "@/pages/purchasePage";
 import { ProfilePage } from "@/pages/profilePage";
 import { ProtectedRoute } from "./protectedRoute";
+import { RentCheckout } from "@/sections/rentCheckoutSection";
 
 export const AppRoutes: React.FC = () => {
   return (

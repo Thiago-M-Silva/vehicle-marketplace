@@ -42,17 +42,7 @@ const Header = () => {
             <MenubarTrigger className={triggerStyle}><a href="/announcePage">Announce</a></MenubarTrigger>
           </MenubarMenu>
           <MenubarMenu>
-            <MenubarTrigger className={triggerStyle}>Rent</MenubarTrigger>
-            <MenubarContent
-              className={contentStyle}
-              align="start"
-              sideOffset={5}
-            >
-              <MenubarItem className={itemStyle}> Bikes </MenubarItem>
-              <MenubarItem className={itemStyle}> Boats </MenubarItem>
-              <MenubarItem className={itemStyle}> Cars </MenubarItem>
-              <MenubarItem className={itemStyle}> Planes </MenubarItem>
-            </MenubarContent>
+            <MenubarTrigger className={triggerStyle}><a href="/rentingPage">Rent</a></MenubarTrigger>
           </MenubarMenu>
           <MenubarMenu>
             <MenubarTrigger className={triggerStyle}>About</MenubarTrigger>
