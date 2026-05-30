@@ -9,6 +9,7 @@ import { RentingPage } from "@/pages/rentingPage";
 import { PurchasePage } from "@/pages/purchasePage";
 import { ProfilePage } from "@/pages/profilePage";
 import { ProtectedRoute } from "./protectedRoute";
+import { RentingCheckoutPage } from "@/pages/rentingCheckoutPage";
 import { RentCheckout } from "@/sections/rentCheckoutSection";
 
 export const AppRoutes: React.FC = () => {
@@ -24,9 +25,11 @@ export const AppRoutes: React.FC = () => {
         <Route path="/profilePage" element={<ProfilePage />} />
         <Route path="/announcePage" element={<AnnouncePage />} />
         <Route path="/purchasePage" element={<PurchasePage />} />
+        <Route path="/rentingCheckoutPage" element={<RentingCheckoutPage />} />
       </Route>
       <Route path="/productInfo/:kind/:id" element={<ProductInfo />} />
       <Route path="/productList" element={<ProductList />} />
     </Routes>
   );
 };
+                        

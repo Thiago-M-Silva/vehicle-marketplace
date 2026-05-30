@@ -10,12 +10,13 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { LoadingSection } from "@/sections/loadingSection";
 
 type VehicleWithType = IVehicle & { type: string };
 
 export const RentingPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("bikes");
   const [vehicles, setVehicles] = useState<VehicleWithType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +63,6 @@ export const RentingPage = () => {
   }, []);
 
   const tabs = [
-    { id: "all", label: "All Rentals" },
     { id: "bikes", label: "Bikes" },
     { id: "cars", label: "Cars" },
     { id: "boats", label: "Boats" },
@@ -85,20 +85,8 @@ export const RentingPage = () => {
       : vehicles.filter((v) => v.type === activeTab);
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
+    <div className="bg-slate-50">
       <div className="container mx-auto px-4">
-        {/* Header Section */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight sm:text-5xl">
-            Rent a Vehicle
-          </h1>
-          <p className="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">
-            Choose from our wide range of premium vehicles available for daily,
-            weekly, or monthly rental. Find the perfect ride for your next
-            adventure.
-          </p>
-        </div>
-
         {/* Error State */}
         {error && (
           <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -109,13 +97,20 @@ export const RentingPage = () => {
         {/* Loading State */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <p className="mt-4 text-slate-600">Carregando veículos...</p>
-            </div>
+            <LoadingSection />
           </div>
         ) : (
           <>
+            <div className="mb-12 text-center">
+              <h1 className="text-4xl font-bold text-slate-900 tracking-tight sm:text-5xl">
+                Rent a Vehicle
+              </h1>
+              <p className="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">
+                Choose from our wide range of premium vehicles available for daily,
+                weekly, or monthly rental. Find the perfect ride for your next
+                adventure.
+              </p>
+            </div>
             {/* Filter Tabs */}
             <div className="flex flex-wrap justify-center gap-2 mb-10">
               {tabs.map((tab) => (
@@ -158,7 +153,7 @@ export const RentingPage = () => {
                         {item.name}
                       </CardTitle>
                     </div>
-                    <p className="text-lg font-bold text-blue-600">
+                    <p className="text-lg font-bold ">
                       ${Number(item.price || 0).toFixed(2)} / day
                     </p>
                   </CardHeader>

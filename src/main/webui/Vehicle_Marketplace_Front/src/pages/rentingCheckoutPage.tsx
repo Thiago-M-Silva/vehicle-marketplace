@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { IBike, IBoat, ICar, IPlane } from "@/interfaces/vehiclesInteface";
 import { IUser } from "@/interfaces/userInteface";
-import { Checkout } from "@/sections/rentCheckoutSection";
+import { RentCheckout } from "@/sections/rentCheckoutSection";
 import { useNavigate } from "react-router";
 
 type TypedVehicle = IBike | ICar | IBoat | IPlane;
@@ -37,7 +37,7 @@ export const RentingCheckoutPage = () => {
     }
   }, [navigate]);
 
-  if (!vehicle) {
+  if (!vehicle || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-lg text-slate-600">Carregando...</p>
@@ -45,5 +45,16 @@ export const RentingCheckoutPage = () => {
     );
   }
 
-  return <Checkout data={vehicle} user={user} />;
+  const tradeData: {
+    user: IUser;
+    vehicle: IBike | ICar | IBoat | IPlane;
+  } = {user: {} as IUser, vehicle: {} as IBike | ICar | IBoat | IPlane};
+
+  tradeData.user = user;
+  tradeData.vehicle = vehicle;
+
+  console.log('tradeData: ', tradeData);
+  
+
+  return <RentCheckout data={tradeData} />;
 };

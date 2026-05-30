@@ -11,46 +11,66 @@ import {
 } from "@/components/ui/card";
 import { IUser } from "@/interfaces/userInteface";
 import { useEffect, useState } from "react";
+import { IRentingInterface } from "@/interfaces/tradeInterface";
+import { rentingRequest } from "@/services/requests/tradesRequests";
 
 type Props = {
-  data: IBike | ICar | IBoat | IPlane | null;
-  user?: IUser;
+  data: {
+    user: IUser;
+    vehicle: IBike | ICar | IBoat | IPlane;
+  };
 };
 
-export const RentCheckout = ({ data, user }: Props) => {
+export const RentCheckout = ({ data }: Props) => {
   const [loading, setLoading] = useState(false);
-  const [firstName, setFirstName] = useState(user?.name || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [address, setAddress] = useState(user?.address || "");
-  const [city, setCity] = useState(user?.city || "");
-  const [state, setState] = useState(user?.state || "");
+  const [firstName, setFirstName] = useState(data.user?.name || "");
+  const [email, setEmail] = useState(data.user?.email || "");
+  const [address, setAddress] = useState(data.user?.address || "");
+  const [city, setCity] = useState(data.user?.city || "");
+  const [state, setState] = useState(data.user?.state || "");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const vehicle = data.vehicle.info;
+  const vehicleType = data.vehicle.type;
+
   useEffect(() => {
-    if (user) {
-      setFirstName(user.name || "");
-      setEmail(user.email || "");
-      setAddress(user.address || "");
-      setCity(user.city || "");
-      setState(user.state || "");
+    if (data.user) {
+      setFirstName(data.user.name || "");
+      setEmail(data.user.email || "");
+      setAddress(data.user.address || "");
+      setCity(data.user.city || "");
+      setState(data.user.state || "");
     }
-  }, [user]);
+  }, [data.user]);
+
+    const handleRenting = async () => {
+      const tradeData: IRentingInterface = {
+        vehicleId: vehicle.id,
+        vehicleType: vehicleType,
+        customerId: data.user.stripeAccountId || "",
+        sellerAccountId: vehicle.owner?.stripeAccountId || "",
+        applicationFee: 0,
+      };
+  
+      try {
+        setLoading(true);
+        await rentingRequest(tradeData);
+      } catch (error) {
+        console.error("Error processing Renting:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
   // Fallback values if data is null (for preview purposes or graceful degradation)
-  const vehicleName =
-    (data as any)?.info?.name || (data as any)?.name || "Vehicle Name";
-  const vehiclePrice =
-    (data as any)?.info?.price || (data as any)?.price || "$ 0.00";
-  const vehicleImage =
-    (data as any)?.info?.webp ||
-    (data as any)?.webp ||
-    (data as any)?.image ||
-    "";
-  const vehicleDescription =
-    (data as any)?.info?.description ||
-    (data as any)?.description ||
-    "No description available.";
+  const vehicleName = vehicle.name;
+  const vehiclePrice = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(vehicle.price || 0);
+  const vehicleImage = vehicle.webp || vehicle.images?.[0] || "";
+  const vehicleDescription = vehicle.description || "No description available.";
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -217,6 +237,7 @@ export const RentCheckout = ({ data, user }: Props) => {
                   className="w-full py-6 text-lg"
                   size="lg"
                   disabled={loading}
+                  onClick={handleRenting}
                 >
                   {loading ? "Processing..." : "Confirm Rental"}
                 </Button>

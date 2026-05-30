@@ -105,10 +105,13 @@ public class StripeService {
      * - Account links are intended for short-term use; consult Stripe documentation for lifetime and usage constraints.
      */
     public String generateOnboardingLink(String accountId) throws StripeException {
+        String refreshUrl = System.getenv("REFRESH_URL");
+        String returnUrl = System.getenv("RETURN_URL");
+
         AccountLinkCreateParams params = AccountLinkCreateParams.builder()
                 .setAccount(accountId)
-                .setRefreshUrl("https://example.com/reauth") // TODO: update this where to send if user abadons
-                .setReturnUrl("https://example.com/return") // TODO: update this  where to send after onboarding
+                .setRefreshUrl(refreshUrl)
+                .setReturnUrl(returnUrl)
                 .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                 .build();
         
