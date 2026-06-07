@@ -22,9 +22,19 @@ import {
   createVehicleWithDocs,
   createOneVehicle,
 } from "@/services/requests/vehiclesRequest";
+import { ICreateVehicleObject } from "@/interfaces/createVehicleInterface";
+import {
+  createStripeConnectAccount,
+  getUserByKeycloakId,
+} from "@/services/requests/usersRequests";
+import { useAuth } from "@/hooks/use-auth";
 import logo from "../assets/logo/horse_power_vehicle_logo.png";
 
+type VehicleFormData = Record<string, FormDataEntryValue | number>;
+
 export const AnnouncePage = () => {
+  const { getUser } = useAuth();
+
   const vehicleKinds: Map<string, string> = new Map([
     ["Bike", "bikes"],
     ["Boat", "boats"],
@@ -32,11 +42,31 @@ export const AnnouncePage = () => {
     ["Plane", "planes"],
   ]);
 
+  const ensureDevSellerAccount = async () => {
+    const authUser = getUser();
+    const keycloakId = authUser?.sub;
+
+    if (!keycloakId) {
+      console.warn("Unable to create Stripe seller account: missing Keycloak ID.");
+      return;
+    }
+
+    const user = await getUserByKeycloakId(keycloakId || '');
+
+    if (!user?.id || user.stripeAccountId) {
+      return;
+    }
+
+    const onboardingLink = await createStripeConnectAccount(user.id);
+    console.info("Stripe seller onboarding link (development only):", onboardingLink);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const data: any = Object.fromEntries(formData.entries());
+    const data: VehicleFormData = Object.fromEntries(formData.entries());
+    const vehicleKind = String(data.kind || "");
 
     const fileInput = form.querySelector(
       'input[type="file"]',
@@ -44,8 +74,10 @@ export const AnnouncePage = () => {
     const files = fileInput?.files;
 
     try {
+      await ensureDevSellerAccount();
+
       if (files && files.length > 0) {
-        const vehicleData: { [key: string]: any } = {};
+        const vehicleData: VehicleFormData = {};
         formData.forEach((value, key) => {
           if (key !== "files") {
             vehicleData[key] = value;
@@ -61,12 +93,15 @@ export const AnnouncePage = () => {
           uploadFormData.append("files", file);
         }
 
-        const response = await createVehicleWithDocs(data.kind, uploadFormData);
+        const response = await createVehicleWithDocs(vehicleKind, uploadFormData);
         console.log(response);
       } else {
         delete data.files; // Remove empty file entry if present
         if (data.year) data.year = Number(data.year);
-        const response = await createOneVehicle(data.kind, data);
+        const response = await createOneVehicle(
+          vehicleKind,
+          data as unknown as ICreateVehicleObject,
+        );
         console.log(response);
       }
     } catch (error) {

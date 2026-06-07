@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
 import org.acme.services.UserService;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,6 +28,9 @@ public class UsersController {
 
     @Inject
     UserService userService;
+
+    @ConfigProperty(name = "stripe.seller-onboarding.enabled", defaultValue = "false")
+    boolean sellerOnboardingEnabled;
 
     /**
      * Retrieves a list of all users.
@@ -196,6 +200,12 @@ public class UsersController {
     @Path("/put/setSeller/{id}")
     @PermitAll
     public Response setUserAsSeller(@PathParam("id") String id) {
+        if (!sellerOnboardingEnabled) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("Stripe seller onboarding is disabled in this environment.")
+                    .build();
+        }
+
         try {
             userService.onboardSeller(UUID.fromString(id));
             var onboardedSeller = userService.generateOnboardingLink(UUID.fromString(id));

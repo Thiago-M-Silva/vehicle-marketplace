@@ -723,7 +723,7 @@
     {
       "id": "6907ddf1-ee16-4582-ac06-dbc923d8d39f",
       "clientId": "quarkus-service",
-      "name": "Rice Power Vehicls",
+      "name": "Horse Power Vehicls",
       "description": "",
       "rootUrl": "http://localhost:8080",
       "adminUrl": "",
@@ -1642,7 +1642,7 @@
     "replyTo": "",
     "host": "127.0.0.1",
     "from": "thiagobossun06@gmail.com",
-    "fromDisplayName": "Rice Power Vehicles ",
+    "fromDisplayName": "Horse Power Vehicles ",
     "envelopeFrom": "",
     "ssl": "false"
   },

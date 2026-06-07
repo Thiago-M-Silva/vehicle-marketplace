@@ -11,6 +11,7 @@ import { ProfilePage } from "@/pages/profilePage";
 import { ProtectedRoute } from "./protectedRoute";
 import { RentingCheckoutPage } from "@/pages/rentingCheckoutPage";
 import { RentCheckout } from "@/sections/rentCheckoutSection";
+import { CreateAdminPage } from "@/pages/createAdminPage";
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="/announcePage" element={<AnnouncePage />} />
         <Route path="/purchasePage" element={<PurchasePage />} />
         <Route path="/rentingCheckoutPage" element={<RentingCheckoutPage />} />
+        <Route path="/addADM" element={<CreateAdminPage />} />
       </Route>
       <Route path="/productInfo/:kind/:id" element={<ProductInfo />} />
       <Route path="/productList" element={<ProductList />} />
