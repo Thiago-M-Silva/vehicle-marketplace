@@ -66,3 +66,4 @@ queries
 .dev-data/postgresql
 .dev-data/mongodb
 .stripe
+test.sql

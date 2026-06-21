@@ -166,3 +166,22 @@ VEHICLE-MARKETPLACE/
 For comprehensive documentation including architecture diagrams, domain models, API examples, and integration guides:
 
 **👉 [Visit the Wiki](https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki)**
+
+
+ngrok docker run --rm -it -e NGROK_AUTHTOKEN=34vTbTxPWZlZ9FxrKfzp3roV1L0_7QUweoqxtPZ2mU5gkzL7W ngrok/ngrok:latest http host.docker.internal:8080
+
+\# Login and generate token
+
+docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest login
+
+\# Run Stripe CLI for webhook testing
+
+docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest listen --forward-to http://host.docker.internal:8080/webhook
+
+\# Test payment success event
+
+docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest trigger payment_intent.succeeded
+
+\# Test invoice paid event
+
+docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest trigger invoice.paid

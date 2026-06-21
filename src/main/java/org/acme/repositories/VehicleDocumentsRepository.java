@@ -1,9 +1,9 @@
 package org.acme.repositories;
 
-import io.quarkus.mongodb.panache.PanacheMongoRepository;
-import jakarta.enterprise.context.ApplicationScoped;
-
 import org.acme.model.VehicleDocuments;
 
+import io.quarkus.mongodb.panache.PanacheMongoRepositoryBase;
+import jakarta.enterprise.context.ApplicationScoped;
+
 @ApplicationScoped
-public class VehicleDocumentsRepository implements PanacheMongoRepository<VehicleDocuments> {}
+public class VehicleDocumentsRepository implements PanacheMongoRepositoryBase<VehicleDocuments, String> {}

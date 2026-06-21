@@ -24,6 +24,7 @@ type Props = {
 
 export const Checkout = ({ data }: Props) => {
   const [loading, setLoading] = useState(false);
+  const [sellButtonMsg, setSellButtonMsg] = useState(false);
   const [buyerLoading, setBuyerLoading] = useState(false);
   const [buyer, setBuyer] = useState<IUser>();
   const [buyerEmail, setBuyerEmail] = useState(data.user.email || "");
@@ -118,6 +119,8 @@ export const Checkout = ({ data }: Props) => {
   }).format(vehicle.price || 0);
   const vehicleImage = vehicle.webp || vehicle.images?.[0] || "";
   const vehicleDescription = vehicle.description || "No description available.";
+
+  const handleButtonText = () => setSellButtonMsg(!sellButtonMsg)
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -258,14 +261,27 @@ export const Checkout = ({ data }: Props) => {
                 </div>
               </CardContent>
               <CardFooter className="pt-2 pb-6">
-                <Button
-                  className="w-full py-6 text-lg"
-                  size="lg"
-                  onClick={handlePurchase}
-                  disabled={loading || buyerLoading}
-                >
-                  {loading ? "Processing..." : "Complete Purchase"}
-                </Button>
+                {String(import.meta.env.VITE_ENV) === 'DEV' ? (
+                  <Button
+                    className="w-full py-6 text-lg"
+                    size="lg"
+                    onClick={handlePurchase}
+                    disabled={loading || buyerLoading}
+                  >
+                    {loading ? "Processing..." : "Complete Purchase"}
+                  </Button>
+
+                ) :
+                (
+                  <Button
+                    className="w-full py-6 text-lg"
+                    size="lg"
+                    onClick={handleButtonText}
+                    disabled={loading || buyerLoading}
+                  >
+                    {sellButtonMsg ? "Purchase available" : "Complete Purchase"}
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           </div>

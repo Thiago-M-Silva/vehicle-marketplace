@@ -208,7 +208,7 @@ public class UsersController {
 
         try {
             userService.onboardSeller(UUID.fromString(id));
-            var onboardedSeller = userService.generateOnboardingLink(UUID.fromString(id));
+            var onboardedSeller = userService.generateOnboardingLink(UUID.fromString(id)); //TODO adicionar isso quando add novos veiculos
             return Response.ok(onboardedSeller).build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)

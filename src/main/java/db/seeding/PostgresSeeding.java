@@ -1,19 +1,23 @@
 package db.seeding;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.acme.enums.ECategory;
 import org.acme.enums.EColors;
 import org.acme.enums.EFuelType;
 import org.acme.enums.EStatus;
+import org.acme.enums.EUserRole;
 import org.acme.model.Bikes;
 import org.acme.model.Boats;
 import org.acme.model.Cars;
 import org.acme.model.Planes;
+import org.acme.model.Users;
 import org.acme.repositories.BikesRepository;
 import org.acme.repositories.BoatsRepository;
 import org.acme.repositories.CarsRepository;
 import org.acme.repositories.PlanesRepository;
+import org.acme.repositories.UsersRepository;
 
 import io.quarkus.runtime.Startup;
 import jakarta.annotation.PostConstruct;
@@ -24,17 +28,11 @@ import jakarta.transaction.Transactional;
 @Startup
 @ApplicationScoped
 public class PostgresSeeding {
-    @Inject
-    BikesRepository bikesRepository;
-
-    @Inject
-    BoatsRepository boatsRepository;
-
-    @Inject
-    CarsRepository carsRepository;
-
-    @Inject
-    PlanesRepository planesRepository;
+    @Inject BikesRepository bikesRepository;
+    @Inject BoatsRepository boatsRepository;
+    @Inject CarsRepository carsRepository;
+    @Inject PlanesRepository planesRepository;
+    @Inject UsersRepository usersRepository;
 
     @PostConstruct
     void init(){
@@ -43,6 +41,43 @@ public class PostgresSeeding {
     
     @Transactional
     public void seedDatabase() {
+        Users seller;
+
+        if(usersRepository.count() == 0){
+            usersRepository.persist(createSeedUser(
+                "Admin",
+                "admin@email.com",
+                "admin1234",
+                "556299999997",
+                "11111111111",
+                "1111111",
+                LocalDate.of(1990, 1, 15),
+                EUserRole.ADMIN,
+                null,
+                "cus_seed_admin",
+                "keycloak-seed-admin"
+            ));
+
+            usersRepository.persist(createSeedUser(
+                "Jose",
+                "jose@email.com",
+                "jose1234",
+                "556299999999",
+                "22222222222",
+                "2222222",
+                LocalDate.of(1995, 5, 20),
+                EUserRole.CLIENT,
+                null,
+                "cus_seed_jose",
+                "keycloak-seed-jose"
+            ));
+
+            seller = createSeedSeller();
+            usersRepository.persist(seller);
+        } else {
+            seller = getSeedSeller();
+        }
+
         if(bikesRepository.count() == 0) {
             // Seed bikes
             Bikes bike = new Bikes();
@@ -62,6 +97,7 @@ public class PostgresSeeding {
             bike.setColor(EColors.GREEN);
             bike.setPrice(BigDecimal.valueOf(85000.00));
             bike.setFuelType(EFuelType.ETHANOL);
+            bike.setOwner(seller);
 
             bike1.setName("Harley-Davidson Street 750");
             bike1.setBrand("Harley-Davidson");
@@ -75,6 +111,7 @@ public class PostgresSeeding {
             bike1.setCategory(ECategory.CRUISERS);
             bike1.setColor(EColors.BLACK);
             bike1.setFuelType(EFuelType.GASOLINE);
+            bike1.setOwner(seller);
             bike1.setPrice(BigDecimal.valueOf(40000.00));
 
             bike2.setName("Factor 150 Standard");
@@ -89,6 +126,7 @@ public class PostgresSeeding {
             bike2.setCategory(ECategory.SPORTIVE);
             bike2.setColor(EColors.RED);
             bike2.setFuelType(EFuelType.GASOLINE);
+            bike2.setOwner(seller);
             bike2.setPrice(BigDecimal.valueOf(5000.00));
 
             bikesRepository.persist(bike);
@@ -115,6 +153,7 @@ public class PostgresSeeding {
             boat.setCategory(ECategory.DAYCRUISER);
             boat.setColor(EColors.RED);
             boat.setFuelType(EFuelType.GASOLINE);
+            boat.setOwner(seller);
             boat.setNumberOfCabins(2);
 
             boat1.setName("Bayliner_VR5");
@@ -130,6 +169,7 @@ public class PostgresSeeding {
             boat1.setCategory(ECategory.BOW_RIDER);
             boat1.setColor(EColors.YELLOW);
             boat1.setFuelType(EFuelType.GASOLINE);  
+            boat1.setOwner(seller);
             boat1.setNumberOfCabins(1);
 
             boat2.setName("Princess_V50");
@@ -145,6 +185,7 @@ public class PostgresSeeding {
             boat2.setCategory(ECategory.ALUMINIUM);
             boat2.setColor(EColors.WHITE);
             boat2.setFuelType(EFuelType.GASOLINE);
+            boat2.setOwner(seller);
             boat2.setNumberOfCabins(3);
 
             boatsRepository.persist(boat);
@@ -170,6 +211,7 @@ public class PostgresSeeding {
             car.setCategory(ECategory.SEDAN);
             car.setColor(EColors.WHITE);
             car.setFuelType(EFuelType.ELECTRIC);
+            car.setOwner(seller);
             car.setPrice(BigDecimal.valueOf(79999.99));
             car.setRentalPriceMonthly(BigDecimal.valueOf(500));
 
@@ -185,6 +227,7 @@ public class PostgresSeeding {
             car1.setCategory(ECategory.SUV);
             car1.setColor(EColors.BLACK);
             car1.setFuelType(EFuelType.GASOLINE);
+            car1.setOwner(seller);
             car1.setPrice(BigDecimal.valueOf(55000.00));
 
             car2.setName("Onix");
@@ -199,6 +242,7 @@ public class PostgresSeeding {
             car2.setCategory(ECategory.SEDAN);
             car2.setColor(EColors.WHITE);
             car2.setFuelType(EFuelType.GASOLINE);
+            car2.setOwner(seller);
             car2.setPrice(BigDecimal.valueOf(60000.00));
 
             carsRepository.persist(car);
@@ -224,6 +268,7 @@ public class PostgresSeeding {
             plane.setCategory(ECategory.JET);
             plane.setColor(EColors.WHITE);
             plane.setFuelType(EFuelType.DIESEL);
+            plane.setOwner(seller);
             plane.setPrice(BigDecimal.valueOf(320000.00));
 
             plane1.setName("Cirrus SR22");
@@ -238,6 +283,7 @@ public class PostgresSeeding {
             plane1.setCategory(ECategory.TWIN_ENGINE);
             plane1.setColor(EColors.WHITE);
             plane1.setFuelType(EFuelType.JET_FUEL);
+            plane1.setOwner(seller);
             plane1.setPrice(BigDecimal.valueOf(750000.00));
 
             plane2.setName("Piper PA-28");
@@ -252,6 +298,7 @@ public class PostgresSeeding {
             plane2.setCategory(ECategory.SINGLE_ENGINE);
             plane2.setColor(EColors.WHITE);
             plane2.setFuelType(EFuelType.PROPANE);
+            plane2.setOwner(seller);
             plane2.setPrice(BigDecimal.valueOf(280000.00));
 
             planesRepository.persist(plane);
@@ -259,6 +306,65 @@ public class PostgresSeeding {
             planesRepository.persist(plane2);
         }
 
-        System.out.println("✅ PostgresSQL seeded with vehicles");
+        System.out.println("PostgresSQL seeded with users and vehicles");
+    }
+
+    private Users getSeedSeller() {
+        Users seller = usersRepository.find("email", "seller@email.com").firstResult();
+
+        if (seller == null) {
+            seller = createSeedSeller();
+            usersRepository.persist(seller);
+        }
+
+        return seller;
+    }
+
+    private Users createSeedSeller() {
+        return createSeedUser(
+            "Seller",
+            "seller@email.com",
+            "seller1234",
+            "556299999998",
+            "33333333333",
+            "3333333",
+            LocalDate.of(1988, 8, 10),
+            EUserRole.CLIENT,
+            "acct_seed_seller",
+            "cus_seed_seller",
+            "keycloak-seed-seller"
+        );
+    }
+
+    private Users createSeedUser(
+        String name,
+        String email,
+        String password,
+        String phoneNumber,
+        String cpf,
+        String rg,
+        LocalDate birthDate,
+        EUserRole userRole,
+        String stripeAccountId,
+        String stripeCustomerId,
+        String keycloakId
+    ) {
+        Users user = new Users();
+        user.setName(name);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setPhoneNumber(phoneNumber);
+        user.setAddress("Example address");
+        user.setCity("Example");
+        user.setState("Example");
+        user.setCountry("Brazil");
+        user.setCpf(cpf);
+        user.setRg(rg);
+        user.setBirthDate(birthDate);
+        user.setUserRole(userRole);
+        user.setStripeAccountId(stripeAccountId);
+        user.setStripeCustomerId(stripeCustomerId);
+        user.setKeycloakId(keycloakId);
+        return user;
     }
 }

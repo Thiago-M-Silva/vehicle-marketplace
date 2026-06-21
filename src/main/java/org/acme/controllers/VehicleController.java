@@ -189,7 +189,8 @@ public class VehicleController {
     @POST
     @Path("/save/{vehicleType}")
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed("client")
+    // @RolesAllowed("client")
+    @PermitAll
     public Response addVehicle(
             @PathParam("vehicleType") String vehicleType,
             JsonObject body
@@ -219,7 +220,8 @@ public class VehicleController {
     @POST
     @Path("/save/{vehicleType}/docs")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @RolesAllowed("client")
+    // @RolesAllowed("client")
+    @PermitAll
     public Response saveVehicleWithDocs(
             @PathParam("vehicleType") String vehicleType,
             @FormParam("vehicles") String vehicles,

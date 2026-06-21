@@ -1,0 +1,1 @@
+ALTER TABLE mktplace.users DROP COLUMN password
