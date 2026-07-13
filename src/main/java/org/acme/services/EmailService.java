@@ -21,11 +21,11 @@ public class EmailService {
 
     private static final Logger LOGGER = Logger.getLogger(EmailService.class.getName());
 
-    private final Resend resend;
+    Resend resend;
 
     @Inject
     public EmailService(@ConfigProperty(name = "resend.api.key") String resendApiKey) {
-        this.resend = new Resend(resendApiKey);
+        this.resend = resendApiKey == null ? null : new Resend(resendApiKey);
     }
 
     /**

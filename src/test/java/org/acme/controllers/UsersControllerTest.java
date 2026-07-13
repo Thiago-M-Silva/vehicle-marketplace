@@ -83,7 +83,7 @@ public class UsersControllerTest {
     void testGetUserByIdSuccess() {
         when(userService.getUserById(testUserId)).thenReturn(testUserResponse);
 
-        Response response = usersController.getUserById(testUserId);
+        Response response = usersController.getUserById(testUserId.toString());
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals(testUserResponse, response.getEntity());
@@ -94,7 +94,7 @@ public class UsersControllerTest {
     void testGetUserByIdNotFound() {
         when(userService.getUserById(testUserId)).thenReturn(null);
 
-        Response response = usersController.getUserById(testUserId);
+        Response response = usersController.getUserById(testUserId.toString());
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("User not found"));
@@ -104,7 +104,7 @@ public class UsersControllerTest {
     void testGetUserByIdException() {
         when(userService.getUserById(testUserId)).thenThrow(new RuntimeException("Service error"));
 
-        Response response = usersController.getUserById(testUserId);
+        Response response = usersController.getUserById(testUserId.toString());
 
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error retrieving user"));
@@ -135,7 +135,7 @@ public class UsersControllerTest {
     void testDeleteUserSuccess() {
         doNothing().when(userService).deleteUser(testUserId);
 
-        Response response = usersController.deleteUser(testUserId);
+        Response response = usersController.deleteUser(testUserId.toString());
 
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
         verify(userService, times(1)).deleteUser(testUserId);
@@ -145,7 +145,7 @@ public class UsersControllerTest {
     void testDeleteUserException() {
         doThrow(new RuntimeException("User not found")).when(userService).deleteUser(testUserId);
 
-        Response response = usersController.deleteUser(testUserId);
+        Response response = usersController.deleteUser(testUserId.toString());
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error deleting user"));
@@ -155,7 +155,7 @@ public class UsersControllerTest {
     void testEditUserSuccess() {
         doNothing().when(userService).editUser(testUserId, testUserRequest);
 
-        Response response = usersController.editUser(testUserId, testUserRequest);
+        Response response = usersController.editUser(testUserId.toString(), testUserRequest);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         verify(userService, times(1)).editUser(testUserId, testUserRequest);
@@ -165,7 +165,7 @@ public class UsersControllerTest {
     void testEditUserException() {
         doThrow(new RuntimeException("Update failed")).when(userService).editUser(testUserId, testUserRequest);
 
-        Response response = usersController.editUser(testUserId, testUserRequest);
+        Response response = usersController.editUser(testUserId.toString(), testUserRequest);
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error editing user"));
@@ -176,7 +176,7 @@ public class UsersControllerTest {
         doNothing().when(userService).onboardSeller(testUserId);
         when(userService.generateOnboardingLink(testUserId)).thenReturn("http://onboarding.link");
 
-        Response response = usersController.setUserAsSeller(testUserId);
+        Response response = usersController.setUserAsSeller(testUserId.toString());
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals("http://onboarding.link", response.getEntity());
@@ -188,7 +188,7 @@ public class UsersControllerTest {
     void testSetUserAsSellerException() throws Exception {
         doThrow(new RuntimeException("User not found")).when(userService).onboardSeller(testUserId);
 
-        Response response = usersController.setUserAsSeller(testUserId);
+        Response response = usersController.setUserAsSeller(testUserId.toString());
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error setting user as seller"));

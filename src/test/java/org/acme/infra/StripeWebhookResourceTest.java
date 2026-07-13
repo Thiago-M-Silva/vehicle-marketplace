@@ -97,7 +97,7 @@ public class StripeWebhookResourceTest {
         Response response = resource.handleWebhook(payload, validSignature);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(emailService, times(1)).sendPaymentSuccessEmailTeste(paymentIntent);
+        verify(emailService, times(1)).sendPaymentSuccessEmail(paymentIntent);
         verify(utilsService, times(1)).updateOwner(anyString(), anyString(), any(UUID.class), anyString());
     }
 
@@ -180,6 +180,6 @@ public class StripeWebhookResourceTest {
         Response response = resource.handleWebhook(payload, validSignature);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(emailService, never()).sendPaymentSuccessEmailTeste(any());
+        verify(emailService, never()).sendPaymentSuccessEmail(any());
     }
 }

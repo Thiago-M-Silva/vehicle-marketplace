@@ -113,12 +113,12 @@ public class VehicleDocumentController {
      * download
      */
     @GET
-    @Path("/")
+    @Path("/{filename}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @PermitAll
-    public Response downloadDocument(@PathParam("vehicleId") String vehicleId) {
+    public Response downloadDocument(@PathParam("vehicleId") String vehicleId, @PathParam("filename") String filename) {
         try {
-            VehicleDocuments doc = repository.find("vehicleId = ?1", vehicleId).firstResult();
+            VehicleDocuments doc = repository.find("vehicleId = ?1 and fileName = ?2", vehicleId, filename).firstResult();
 
             if (doc == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("Não há arquivos").build();

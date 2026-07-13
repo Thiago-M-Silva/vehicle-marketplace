@@ -49,20 +49,20 @@ class VehicleControllerTest {
         List<Vehicles> vehicles = Arrays.asList(mockVehicle);
         List<Object> responseDTOs = Arrays.asList(new Object());
 
-        when(vehicleService.listAll()).thenReturn(vehicles);
+        when(vehicleService.listAll(0, 10)).thenReturn(vehicles);
         when(apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles)).thenReturn(responseDTOs);
 
-        Response response = vehicleController.getAllVehiclesByType(vehicleType);
+        Response response = vehicleController.getAllVehiclesByType(vehicleType, 0, 10);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        verify(vehicleService).listAll(vehicleType);
+        verify(vehicleService).listAll(vehicleType, 0, 10);
     }
 
     @Test
     void testgetAllVehiclesByTypeException() {
-        when(vehicleService.listAll()).thenThrow(new RuntimeException("DB Error"));
+        when(vehicleService.listAll(0, 10)).thenThrow(new RuntimeException("DB Error"));
 
-        Response response = vehicleController.getAllVehiclesByType(vehicleType);
+        Response response = vehicleController.getAllVehiclesByType(vehicleType, 0, 10);
 
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error retrieving vehicles"));
@@ -84,7 +84,7 @@ class VehicleControllerTest {
     void testGetVehiclesByIdSuccess() {
         when(vehicleService.findById(vehicleType, testId)).thenReturn(mockVehicle);
 
-        Response response = vehicleController.getVehiclesById(vehicleType, testId);
+        Response response = vehicleController.getVehiclesById(vehicleType, testId.toString());
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         verify(vehicleService).findById(vehicleType, testId);
@@ -94,24 +94,12 @@ class VehicleControllerTest {
     void testGetVehiclesByIdNotFound() {
         when(vehicleService.findById(vehicleType, testId)).thenThrow(new RuntimeException("Not found"));
 
-        Response response = vehicleController.getVehiclesById(vehicleType, testId);
+        Response response = vehicleController.getVehiclesById(vehicleType, testId.toString());
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Vehicle not found"));
     }
 
-    //FIXME
-    // @Test 
-    // void testSearchSuccess() {
-    //     VehicleSearchDTO searchParams = new VehicleSearchDTO();
-    //     List<Vehicles> results = Arrays.asList(mockVehicle);
-    //     when(vehicleService.searchVehicle(eq(vehicleType), any(VehicleSearchDTO.class))).thenReturn(results);
-    //     Response response = vehicleController.search(vehicleType, searchParams);
-    //     assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-    //     assertEquals(results, response.getEntity()); // now expects raw vehicles list
-    //     verify(vehicleService).searchVehicle(vehicleType, searchParams);
-    //     verifyNoInteractions(apiMiddleware); // optional but recommended
-    // }
     @Test
     void testSearchException() {
         VehicleSearchDTO searchParams = new VehicleSearchDTO();
@@ -181,7 +169,7 @@ class VehicleControllerTest {
     void testDeleteVehicleSuccess() {
         doNothing().when(vehicleService).deleteById(vehicleType, testId);
 
-        Response response = vehicleController.deleteVehicle(vehicleType, testId);
+        Response response = vehicleController.deleteVehicle(vehicleType, testId.toString());
 
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
         verify(vehicleService).deleteById(vehicleType, testId);
@@ -191,7 +179,7 @@ class VehicleControllerTest {
     void testDeleteVehicleException() {
         doThrow(new RuntimeException("Delete error")).when(vehicleService).deleteById(vehicleType, testId);
 
-        Response response = vehicleController.deleteVehicle(vehicleType, testId);
+        Response response = vehicleController.deleteVehicle(vehicleType, testId.toString());
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error deleting vehicle"));
@@ -228,7 +216,7 @@ class VehicleControllerTest {
         when(apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, body)).thenReturn(mockVehicle);
         doNothing().when(vehicleService).editVehicleInfo(vehicleType, testId, mockVehicle);
 
-        Response response = vehicleController.editVehicle(vehicleType, testId, body);
+        Response response = vehicleController.editVehicle(vehicleType, testId.toString(), body);
 
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
         verify(vehicleService).editVehicleInfo(vehicleType, testId, mockVehicle);
@@ -240,7 +228,7 @@ class VehicleControllerTest {
 
         when(apiMiddleware.manageVehiclesTypeRequestDTO(vehicleType, body)).thenThrow(new RuntimeException("Edit error"));
 
-        Response response = vehicleController.editVehicle(vehicleType, testId, body);
+        Response response = vehicleController.editVehicle(vehicleType, testId.toString(), body);
 
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertTrue(response.getEntity().toString().contains("Error editing vehicle"));
