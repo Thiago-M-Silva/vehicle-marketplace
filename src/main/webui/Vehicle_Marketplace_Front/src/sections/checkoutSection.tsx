@@ -26,6 +26,8 @@ export const Checkout = ({ data }: Props) => {
   const [loading, setLoading] = useState(false);
   const [sellButtonMsg, setSellButtonMsg] = useState(false);
   const [buyerLoading, setBuyerLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
   const [buyer, setBuyer] = useState<IUser>();
   const [buyerEmail, setBuyerEmail] = useState(data.user.email || "");
   const [firstName, setFirstName] = useState(data.user.name || "");
@@ -54,7 +56,7 @@ export const Checkout = ({ data }: Props) => {
     const fetchBuyer = async () => {
       try {
         setBuyerLoading(true);
-        if(!data.user.keycloakId) return;
+        if (!data.user.keycloakId) return;
         const fetchedBuyer = await getUserByKeycloakId(data.user.keycloakId);
 
         if (isMounted) {
@@ -106,6 +108,8 @@ export const Checkout = ({ data }: Props) => {
       await paymentRequest(tradeData);
     } catch (error) {
       console.error("Error processing purchase:", error);
+      setModalMessage("Compra não permitida na demo");
+      setIsModalOpen(true);
     } finally {
       setLoading(false);
     }
@@ -120,10 +124,21 @@ export const Checkout = ({ data }: Props) => {
   const vehicleImage = vehicle.webp || vehicle.images?.[0] || "";
   const vehicleDescription = vehicle.description || "No description available.";
 
-  const handleButtonText = () => setSellButtonMsg(!sellButtonMsg)
+  const handleButtonText = () => setSellButtonMsg(!sellButtonMsg);
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-slate-900">Atenção</h2>
+            <p className="mt-2 text-sm text-slate-600">{modalMessage}</p>
+            <div className="mt-6 flex justify-end">
+              <Button onClick={() => setIsModalOpen(false)}>Fechar</Button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto max-w-6xl">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-8">
           Checkout
@@ -261,7 +276,7 @@ export const Checkout = ({ data }: Props) => {
                 </div>
               </CardContent>
               <CardFooter className="pt-2 pb-6">
-                {String(import.meta.env.VITE_ENV) === 'DEV' ? (
+                {String(import.meta.env.VITE_ENV) === "DEV" ? (
                   <Button
                     className="w-full py-6 text-lg"
                     size="lg"
@@ -270,9 +285,7 @@ export const Checkout = ({ data }: Props) => {
                   >
                     {loading ? "Processing..." : "Complete Purchase"}
                   </Button>
-
-                ) :
-                (
+                ) : (
                   <Button
                     className="w-full py-6 text-lg"
                     size="lg"

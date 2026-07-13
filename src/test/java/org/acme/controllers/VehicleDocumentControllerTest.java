@@ -97,7 +97,7 @@ class VehicleDocumentControllerTest {
 
         @SuppressWarnings("unchecked")
         PanacheQuery<VehicleDocuments> pq = mock(PanacheQuery.class);
-        when(repository.find("vehicleId = ?1 and fileName = ?2", vehicleId, filename)).thenReturn(pq);
+        when(repository.find("vehicleId = ?1 and fileName = ?2", vehicleId, filename)).thenReturn((io.quarkus.mongodb.panache.PanacheQuery<VehicleDocuments>) pq);
         when(pq.firstResult()).thenReturn(doc);
 
         byte[] fileBytes = "file-bytes".getBytes();
@@ -123,7 +123,7 @@ class VehicleDocumentControllerTest {
 
         @SuppressWarnings("unchecked")
         PanacheQuery<VehicleDocuments> pq = mock(PanacheQuery.class);
-        when(repository.find("vehicleId = ?1 and fileName = ?2", vehicleId, filename)).thenReturn(pq);
+        when(repository.find("vehicleId = ?1 and fileName = ?2", vehicleId, filename)).thenReturn((io.quarkus.mongodb.panache.PanacheQuery<VehicleDocuments>) pq);
         when(pq.firstResult()).thenReturn(null);
 
         Response resp = controller.downloadDocument(vehicleId, filename);
@@ -140,7 +140,7 @@ class VehicleDocumentControllerTest {
 
         @SuppressWarnings("unchecked")
         PanacheQuery<VehicleDocuments> pq = mock(PanacheQuery.class);
-        when(repository.find("vehicleId = ?1 and fileName = ?2", vehicleId, filename)).thenReturn(pq);
+        when(repository.find("vehicleId = ?1 and fileName = ?2", vehicleId, filename)).thenReturn((io.quarkus.mongodb.panache.PanacheQuery<VehicleDocuments>) pq);
         when(pq.firstResult()).thenReturn(doc);
 
         doThrow(new RuntimeException("io error")).when(gridFSService).downloadFile(eq(filename), any(ByteArrayOutputStream.class));
