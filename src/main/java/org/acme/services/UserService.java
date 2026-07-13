@@ -1,5 +1,6 @@
 package org.acme.services;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,11 @@ import org.acme.dtos.UsersRequestDTO;
 import org.acme.dtos.UsersResponseDTO;
 import org.acme.infra.KeycloakAdminClient;
 import org.acme.interfaces.UserMapper;
+import org.acme.model.UserDocuments;
 import org.acme.model.Users;
+import org.acme.repositories.UserDocumentsRepository;
 import org.acme.repositories.UsersRepository;
+import org.bson.types.ObjectId;
 
 import com.stripe.model.Customer;
 
@@ -28,6 +32,8 @@ public class UserService {
     @Inject StripeService stripeService;
     @Inject UsersRepository usersRepository;
     @Inject KeycloakAdminClient keycloakAdminClient;
+    @Inject GridFSService gridFSService;
+    @Inject UserDocumentsRepository repository;
 
     /**
      * Creates a new user in the system
@@ -55,6 +61,37 @@ public class UserService {
         usersRepository.persist(user);
 
         return userMapper.toUserResponseDTO(user);
+    }
+
+
+    /**
+     * 
+     * @param userId
+     * @param filename
+     * @param contentType
+     * @param fileStream
+     * @return
+     */
+    public UserDocuments createUserWithDocument(UUID userId, String filename, String contentType, InputStream fileStream) {
+        ObjectId fileObjectId = null;
+        try (InputStream is = fileStream) {
+            fileObjectId = gridFSService.uploadFile(filename, contentType, is);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload document for user ID: " + userId, e);
+        }
+
+        UserDocuments doc = new UserDocuments();
+
+        doc.userId = userId == null ? null : userId.toString();
+        doc.fileName = filename;
+        doc.contentType = contentType;
+
+        doc.id = fileObjectId.toHexString();
+        doc.uploadDate = java.time.Instant.now();
+
+        repository.persist(doc);
+
+        return doc;
     }
 
     /**

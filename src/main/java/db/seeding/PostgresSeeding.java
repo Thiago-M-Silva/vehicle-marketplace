@@ -352,7 +352,6 @@ public class PostgresSeeding {
         Users user = new Users();
         user.setName(name);
         user.setEmail(email);
-        user.setPassword(password);
         user.setPhoneNumber(phoneNumber);
         user.setAddress("Example address");
         user.setCity("Example");

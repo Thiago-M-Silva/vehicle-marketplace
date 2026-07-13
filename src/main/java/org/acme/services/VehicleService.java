@@ -41,22 +41,14 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class VehicleService {
 
-    @Inject
-    BikesRepository bikesRepository;
-    @Inject
-    CarsRepository carsRepository;
-    @Inject
-    BoatsRepository boatsRepository;
-    @Inject
-    PlanesRepository planesRepository;
-    @Inject
-    GridFSService gridFSService;
-    @Inject
-    VehicleDocumentsRepository repository;
-    @Inject
-    VehicleMapper vehicleMapper;
-    @Inject
-    UserService userService;
+    @Inject BikesRepository bikesRepository;
+    @Inject CarsRepository carsRepository;
+    @Inject BoatsRepository boatsRepository;
+    @Inject PlanesRepository planesRepository;
+    @Inject GridFSService gridFSService;
+    @Inject VehicleDocumentsRepository repository;
+    @Inject VehicleMapper vehicleMapper;
+    @Inject UserService userService;
 
     /**
      * Retrieves the appropriate PanacheRepositoryBase instance for the

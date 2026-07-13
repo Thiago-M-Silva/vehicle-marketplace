@@ -11,22 +11,22 @@ import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonId;
 
 /**
- * Class representing vehicle documents stored in MongoDB. This class includes
- * details about the vehicle ID, file name, content type, and timestamps for upload and update.
+ * Class representing users documents stored in MongoDB. This class includes
+ * details about the users ID, file name, content type, and timestamps for upload and update.
  * Used for storing documents such as registration, insurance, etc.
  */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@MongoEntity(collection = "vehicleDocuments")
-public class VehicleDocuments {
+@MongoEntity(collection = "userDocuments")
+public class UserDocuments {
 
     @BsonId
     public String id;
 
     @NotNull
-    public String vehicleId;
+    public String userId;
 
     @NotNull
     public String fileName;

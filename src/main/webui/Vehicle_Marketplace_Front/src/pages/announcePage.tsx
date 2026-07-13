@@ -28,12 +28,14 @@ import {
   getUserByKeycloakId,
 } from "@/services/requests/usersRequests";
 import { useAuth } from "@/hooks/use-auth";
+import { useNavigate } from "react-router";
 import logo from "../assets/logo/horse_power_vehicle_logo.png";
 
 type VehicleFormData = Record<string, FormDataEntryValue | number>;
 
 export const AnnouncePage = () => {
   const { getUser } = useAuth();
+  const navigate = useNavigate();
 
   const vehicleKinds: Map<string, string> = new Map([
     ["Bike", "bikes"],
@@ -93,19 +95,27 @@ export const AnnouncePage = () => {
           uploadFormData.append("files", file);
         }
 
-        const response = await createVehicleWithDocs(vehicleKind, uploadFormData);
-        console.log(response);
+        await createVehicleWithDocs(vehicleKind, uploadFormData);
       } else {
         delete data.files; // Remove empty file entry if present
         if (data.year) data.year = Number(data.year);
-        const response = await createOneVehicle(
+        await createOneVehicle(
           vehicleKind,
           data as unknown as ICreateVehicleObject,
         );
-        console.log(response);
       }
+
+      navigate("/");
     } catch (error) {
       console.error("Error creating vehicle:", error);
+      const message =
+        typeof error === "string"
+          ? error
+          : error instanceof Error
+            ? error.message
+            : "Erro ao cadastrar o veículo. Tente novamente.";
+
+      window.alert(`Erro ao cadastrar o veículo: ${message}`);
     }
   };
 
@@ -330,10 +340,11 @@ export const AnnouncePage = () => {
                       Storage / Capacity
                     </label>
                     <Input
-                      placeholder="e.g. 14L"
+                      placeholder="e.g. 14"
                       name="storage"
                       aria-label="storage"
                       className="border-slate-400"
+                      type="number"
                     />
                   </div>
                   <div className="space-y-2">

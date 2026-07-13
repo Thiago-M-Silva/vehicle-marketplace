@@ -1,1 +1,1 @@
-ALTER TABLE mktplace.users DROP COLUMN password
+--ALTER TABLE mktplace.users DROP COLUMN password
