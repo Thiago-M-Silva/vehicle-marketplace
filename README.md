@@ -1,187 +1,98 @@
-# **Horse Power Vehicles — Vehicle Marketplace (Backend)**
+# Horse Power Vehicles — Vehicle Marketplace (Backend)
 
-A robust backend API built with **Quarkus 3.21.1** and **Java 21** that powers a comprehensive vehicle marketplace for buying, selling, and renting cars, bikes, boats, planes, and more. The system provides complete vehicle lifecycle management, document handling, payment processing, and role-based access control for both customers and administrators.
+Projeto backend em **Quarkus 3.21.1** e **Java 21** que oferece API REST para um marketplace de veículos (carros, motos, barcos, aviões etc.).
 
----
+Resumo rápido: aplicação monolítica com integrações externas (PostgreSQL, MongoDB, Keycloak, Stripe) e UI de referência em [src/main/resources/webui].
 
-## **📘 About This Documentation**
+## Pré-requisitos
 
-This README provides a high-level overview of the backend architecture, core features, and setup instructions.
+- Java 21
+- Maven (ou usar o wrapper `./mvnw` / `mvnw.cmd`)
+- Node.js (para a web UI, opcional)
+- Docker & Docker Compose (para ambientes locais com dependências)
 
-**📚 For detailed documentation, visit the [Wiki](https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki)**
+## Instalação e execução em desenvolvimento
 
----
+1. Clone o repositório e entre na pasta:
 
-## **🚀 Getting Started**
-
-### **Prerequisites**
-
-- **Java** 21
-- **Quarkus** 3.21.1
-- **Node.js** 22.14.0
-- **Docker** & Docker Compose
-
-### **Installation & Running**
-
-\# Clone the repository  
-git clone https://github.com/Thiago-M-Silva/vehicle-marketplace.git  
+```bash
+git clone https://github.com/Thiago-M-Silva/vehicle-marketplace.git
 cd vehicle-marketplace
+```
 
-\# Configure environment variables  
+2. Copie o arquivo de exemplo de variáveis de ambiente e ajuste conforme necessário:
+
+```bash
 cp .env.example .env
+# (no Windows PowerShell use: Copy-Item .env.example .env)
+```
 
-\# Start the application  
+3. Executar em modo desenvolvimento (Quarkus Dev):
+
+```bash
 ./mvnw quarkus:dev
+```
 
-### **Development URLs**
+A aplicação ficará disponível em http://localhost:8080. A documentação OpenAPI aparece em `/q/swagger-ui/`.
 
-| Service              | URL                                                                                    |
-| -------------------- | -------------------------------------------------------------------------------------- |
-| Quarkus Dev UI       | [http://localhost:8080/q/dev-ui/extensions](http://localhost:8080/q/dev-ui/extensions) |
-| Swagger API Docs     | [http://localhost:8080/q/swagger-ui/](http://localhost:8080/q/swagger-ui/)             |
-| Keycloak             | [http://localhost:8081](http://localhost:8081/)                                        |
-| Frontend (reference) | [http://localhost:5173](http://localhost:5173/)                                        |
+## Comandos úteis
 
----
+- Build (jar):
 
-## **🏗️ Architecture Overview**
+```bash
+./mvnw package -DskipTests
+```
 
-The application follows a **monolithic architecture** with a clean layered structure, integrating multiple external services:
+- Empacotar imagem Docker (por projeto):
 
-### **Technology Stack**
+```bash
+./mvnw -Dquarkus.container-image.build=true package
+```
 
-- **PostgreSQL** — Structured relational data
-- **MongoDB** — Document and file storage
-- **Stripe** — Payment processing
-- **Keycloak** — Authentication and role-based access control (RBAC)
+- Rodar testes unitários:
 
-### **Application Layers**
+```bash
+./mvnw test
+```
 
-Controllers → HTTP endpoints and request handling  
-Services → Business logic and orchestration  
-Repositories → Data access and persistence  
-Models → Domain objects and entities  
-Middlewares → Request validation and filtering  
-Infra → External service integrations
+## Variáveis de ambiente importantes
 
----
+- `DATABASE_URL` / `QUARKUS_DATASOURCE_URL` — string de conexão PostgreSQL
+- `MONGODB_URI` — string de conexão MongoDB
+- `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID` — Keycloak (auth)
+- `STRIPE_API_KEY` — chave da API Stripe (modo teste)
 
-## **✨ Core Features**
+Verifique `.env.example` para a lista completa e valores recomendados para desenvolvimento.
 
-### **🚗 Vehicle Management**
+## Docker / docker-compose
 
-- Full CRUD operations for vehicles
-- Multi-type support (cars, bikes, boats, planes, etc.)
-- Document upload and management (PDF, JPG, PNG)
-- Advanced search and filtering capabilities
+O projeto inclui um `docker-compose.yml` para subir serviços dependentes localmente (Postgres, MongoDB, Keycloak). Exemplo:
 
-### **👥 User Management**
+```bash
+docker-compose up --build
+```
 
-- Self-service customer registration
-- Admin-controlled seller and admin account creation
-- Personal dashboard with trade history
-- Role-based permissions and access control
+Use logs e `docker-compose down` para parar e remover containers.
 
-### **💼 Transaction System**
+## Testes e troubleshooting
 
-- Vehicle purchase workflows
-- Flexible rental options (daily or custom periods)
-- Stripe-powered secure payment processing
-- Automated email confirmations and invoices
+- Logs de testes ficam em `target/surefire-reports/` para inspeção de falhas.
+- Se o build nativo falhar, tente executar sem o perfil nativo e com `-DskipTests` para isolar problemas.
 
----
+## Estrutura do projeto
 
-## **🧰 Technology Stack**
+Principais pastas:
 
-| Category           | Technologies            |
-| ------------------ | ----------------------- |
-| **Core**           | Java 21, Quarkus 3.21.1 |
-| **Databases**      | PostgreSQL, MongoDB     |
-| **Payments**       | Stripe                  |
-| **Email**          | Resend                  |
-| **Authentication** | Keycloak (OIDC)         |
-| **Infrastructure** | Docker, Docker Compose  |
-| **Documentation**  | Swagger (OpenAPI)       |
-| **Testing**        | JUnit, Mockito          |
+- `src/main/java` — código-fonte Java (controllers, services, repositories)
+- `src/main/resources` — migrations, arquivos estáticos e `application.properties`
+- `src/test/java` — testes JUnit
 
----
+## Contribuição
 
-## **📂 Project Structure**
+1. Abra uma issue descrevendo o que deseja implementar.
+2. Crie uma branch com nome descritivo.
+3. Abra um PR com descrição e testes quando aplicável.
 
-VEHICLE-MARKETPLACE/  
-└── src/  
- ├── main/  
- │ ├── java/org/acme/  
- │ │ ├── abstracts/ \# Abstract base classes  
- │ │ ├── controllers/ \# REST endpoints  
- │ │ ├── db/seeding/ \# Database seeders  
- │ │ ├── dtos/ \# Data transfer objects  
- │ │ ├── enums/ \# Enumerations  
- │ │ ├── exceptions/ \# Custom exceptions  
- │ │ ├── infra/ \# External integrations  
- │ │ ├── interfaces/ \# Contracts and interfaces  
- │ │ ├── middlewares/ \# Request interceptors  
- │ │ ├── model/ \# Domain models  
- │ │ ├── repositories/ \# Data access layer  
- │ │ └── services/ \# Business logic  
- │ └── resources/  
- │ ├── db/ \# Database migrations  
- │ ├── files/ \# Static files  
- │ ├── import/ \# Import data  
- │ ├── webui/ \# Web UI assets  
- │ └── application.properties  
- └── test/java/org/acme/ \# Test suite  
- ├── controllers/  
- ├── exceptions/  
- ├── infra/  
- ├── middlewares/  
- └── services/
+## Contato e referências
 
----
-
-## **🔌 External Integrations**
-
-### **Keycloak**
-
-- **OIDC-based authentication** for secure user sessions
-- **Role-based authorization** (Customer, Seller, Admin)
-- **Automated synchronization** with marketplace database
-
-### **Stripe**
-
-- **Secure payment processing** for purchases and rentals
-- **Webhook integration** for real-time transaction events
-- **Multiple payment methods** (Card, Boleto, PIX) in test mode
-
-### **Resend**
-
-- **Transactional email delivery** for confirmations and notifications
-- **Automated invoice generation** and distribution
-- **Password recovery** (planned feature)
-
----
-
-## **📎 Additional Resources**
-
-For comprehensive documentation including architecture diagrams, domain models, API examples, and integration guides:
-
-**👉 [Visit the Wiki](https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki)**
-
-
-ngrok docker run --rm -it -e NGROK_AUTHTOKEN=34vTbTxPWZlZ9FxrKfzp3roV1L0_7QUweoqxtPZ2mU5gkzL7W ngrok/ngrok:latest http host.docker.internal:8080
-
-\# Login and generate token
-
-docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest login
-
-\# Run Stripe CLI for webhook testing
-
-docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest listen --forward-to http://host.docker.internal:8080/webhook
-
-\# Test payment success event
-
-docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest trigger payment_intent.succeeded
-
-\# Test invoice paid event
-
-docker run -it -v "${PWD}\\.stripe:/root/.config/stripe" stripe/stripe-cli:latest trigger invoice.paid
+- Wiki do projeto: https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki
