@@ -1,4 +1,4 @@
-# **Horse Power Vehicles — Vehicle Marketplace (Backend)**
+# **Horse Power Vehicles — Vehicle Marketplace**
 
 A robust backend API built with **Quarkus 3.21.1** and **Java 21** that powers a comprehensive vehicle marketplace for buying, selling, and renting cars, bikes, boats, planes, and more. The system provides complete vehicle lifecycle management, document handling, payment processing, and role-based access control for both customers and administrators.
 
