@@ -10,7 +10,6 @@ import { PurchasePage } from "@/pages/purchasePage";
 import { ProfilePage } from "@/pages/profilePage";
 import { ProtectedRoute } from "./protectedRoute";
 import { RentingCheckoutPage } from "@/pages/rentingCheckoutPage";
-import { RentCheckout } from "@/sections/rentCheckoutSection";
 import { CreateAdminPage } from "@/pages/createAdminPage";
 
 export const AppRoutes: React.FC = () => {
@@ -34,4 +33,3 @@ export const AppRoutes: React.FC = () => {
     </Routes>
   );
 };
-                        

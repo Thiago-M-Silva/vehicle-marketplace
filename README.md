@@ -51,7 +51,7 @@ The application follows a **monolithic architecture** with a clean layered struc
 ### **Technology Stack**
 
 - **Java** - Main language
-- **Quarkus** - Main java framework 
+- **Quarkus** - Main java framework
 - **React** - Frontend node framework
 - **PostgreSQL** — Structured relational data
 - **MongoDB** — Document and file storage
@@ -166,6 +166,13 @@ VEHICLE-MARKETPLACE/
 
 ## **Demo**
 
+- Demo video: [vehicle_marketplace_add_vehicle](Vehicle_marketplace_prints_videos/2026-07-16%2015-20-57.mkv)
+
+## **Images**
+
+- ![vehicle_marketplace_home](Vehicle_marketplace_prints_videos/vehicle_marketplace_home.png)
+- ![vehicle_marketplace_catalog](Vehicle_marketplace_prints_videos/vehicle_marketplace_catalog.png)
+- ![vehicle_marketplace_profile_page](Vehicle_marketplace_prints_videos/vehicle_marketplace_profile_page.png)
 
 ## **📎 Additional Resources**
 
