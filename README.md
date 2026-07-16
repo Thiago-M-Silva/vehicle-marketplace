@@ -163,11 +163,6 @@ VEHICLE-MARKETPLACE/
 - **Password recovery** (planned feature)
 
 ---
-
-## **Demo**
-
-- Demo video: [vehicle_marketplace_add_vehicle](Vehicle_marketplace_prints_videos/2026-07-16%2015-20-57.mkv)
-
 ## **Images**
 
 - ![vehicle_marketplace_home](Vehicle_marketplace_prints_videos/vehicle_marketplace_home.png)
