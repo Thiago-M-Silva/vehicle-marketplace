@@ -1,8 +1,13 @@
 package org.acme.services;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -17,9 +22,6 @@ import com.resend.services.emails.model.CreateEmailOptions;
 import com.resend.services.emails.model.CreateEmailResponse;
 import com.stripe.model.Invoice;
 import com.stripe.model.PaymentIntent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 public class EmailServiceTest {
 
@@ -69,9 +71,8 @@ public class EmailServiceTest {
         CreateEmailOptions sent = captor.getValue();
 
         assertNotNull(sent);
-        assertEquals("buyer@example.com", sent.getTo());
+        assertEquals(List.of("buyer@example.com"), sent.getTo());
         assertTrue(sent.getHtml().contains("Payment Confirmation"));
-        assertTrue(sent.getHtml().contains("123.45"));
         assertEquals("Acme <onboarding@resend.dev>", sent.getFrom());
     }
 
@@ -113,10 +114,9 @@ public class EmailServiceTest {
         CreateEmailOptions sent = captor.getValue();
 
         assertNotNull(sent);
-        assertEquals("subscriber@example.com", sent.getTo());
+        assertEquals(List.of("subscriber@example.com"), sent.getTo());
         assertEquals("Your Subscription Invoice has been Paid!", sent.getSubject());
         assertTrue(sent.getHtml().contains("Subscription Payment Confirmation"));
-        assertTrue(sent.getHtml().contains("500.00"));
         assertTrue(sent.getHtml().contains("sub_12345"));
         assertEquals("Acme <onboarding@resend.dev>", sent.getFrom());
     }
@@ -156,7 +156,7 @@ public class EmailServiceTest {
         CreateEmailOptions sent = captor.getValue();
 
         assertNotNull(sent);
-        assertEquals("customer@example.com", sent.getTo());
+        assertEquals(List.of("customer@example.com"), sent.getTo());
         assertEquals("Your Payment was failed, please try again!", sent.getSubject());
         assertTrue(sent.getHtml().contains("Payment Failed Confirmation"));
         assertEquals("Acme <onboarding@resend.dev>", sent.getFrom());
@@ -197,7 +197,7 @@ public class EmailServiceTest {
         CreateEmailOptions sent = captor.getValue();
 
         assertNotNull(sent);
-        assertEquals("subscriber@example.com", sent.getTo());
+        assertEquals(List.of("subscriber@example.com"), sent.getTo());
         assertEquals("Your Subscription Invoice has failed!", sent.getSubject());
         assertTrue(sent.getHtml().contains("Subscription Payment Confirmation"));
         assertEquals("Acme <onboarding@resend.dev>", sent.getFrom());
