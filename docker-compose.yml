@@ -56,7 +56,7 @@ services:
       start_period: 30s
 
   app:
-    image: ${APP_IMAGE}
+    image: ${APP_IMAGE:?APP_IMAGE must be set}
     container_name: vehicle-marketplace-app
     restart: unless-stopped
     environment:
