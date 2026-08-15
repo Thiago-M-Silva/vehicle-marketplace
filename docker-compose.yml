@@ -49,11 +49,12 @@ services:
       postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/9000; printf \"GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200 OK\" <&3'"]
+      # Keycloak 24 exposes health endpoints on its main HTTP port (8080).
+      test: ["CMD-SHELL", "{ printf 'HEAD /health/ready HTTP/1.0\\r\\n\\r\\n' >&0; grep -q 'HTTP/1.0 200'; } 0<>/dev/tcp/localhost/8080"]
       interval: 10s
       timeout: 5s
       retries: 18
-      start_period: 30s
+      start_period: 60s
 
   app:
     image: ${APP_IMAGE:?APP_IMAGE must be set}
