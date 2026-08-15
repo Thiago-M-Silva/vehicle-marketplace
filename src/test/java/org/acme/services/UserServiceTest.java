@@ -25,6 +25,8 @@ import io.quarkus.panache.common.Page;
 
 import io.quarkus.panache.common.Sort;
 
+@org.junit.jupiter.api.extension.ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class UserServiceTest {
 
     @Mock

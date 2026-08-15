@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import jakarta.ws.rs.core.Response;
 
+@org.junit.jupiter.api.extension.ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 public class UsersControllerTest {
 
     @Mock
@@ -153,7 +154,7 @@ public class UsersControllerTest {
 
     @Test
     void testEditUserSuccess() {
-        doNothing().when(userService).editUser(testUserId, testUserRequest);
+        when(userService.editUser(testUserId, testUserRequest)).thenReturn(testUserResponse);
 
         Response response = usersController.editUser(testUserId.toString(), testUserRequest);
 
@@ -173,7 +174,8 @@ public class UsersControllerTest {
 
     @Test
     void testSetUserAsSellerSuccess() throws Exception {
-        doNothing().when(userService).onboardSeller(testUserId);
+        usersController.sellerOnboardingEnabled = true;
+        when(userService.onboardSeller(testUserId)).thenReturn(testUserResponse);
         when(userService.generateOnboardingLink(testUserId)).thenReturn("http://onboarding.link");
 
         Response response = usersController.setUserAsSeller(testUserId.toString());
@@ -186,6 +188,7 @@ public class UsersControllerTest {
 
     @Test
     void testSetUserAsSellerException() throws Exception {
+        usersController.sellerOnboardingEnabled = true;
         doThrow(new RuntimeException("User not found")).when(userService).onboardSeller(testUserId);
 
         Response response = usersController.setUserAsSeller(testUserId.toString());

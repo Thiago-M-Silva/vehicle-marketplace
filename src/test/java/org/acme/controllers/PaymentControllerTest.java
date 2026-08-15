@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Response;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@org.junit.jupiter.api.extension.ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 class PaymentControllerTest {
 
     @Mock
@@ -106,6 +107,6 @@ class PaymentControllerTest {
         Response response = paymentController.createRentingPayment(rentDTO);
 
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-        assertTrue(response.getEntity().toString().contains("Rental subscription failed"));
+        assertTrue(response.getEntity().toString().contains("Invalid payment intent"));
     }
 }

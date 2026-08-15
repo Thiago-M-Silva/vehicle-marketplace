@@ -1,6 +1,11 @@
-*
-!target/*-runner
-!target/*-runner.jar
-!target/lib/*
-!target/quarkus-app/*
-test.sql
+.git
+.github
+.idea
+.vscode
+target
+.dev-data
+.env
+*.log
+Vehicle_marketplace_prints_videos
+src/main/webui/Vehicle_Marketplace_Front/node_modules
+src/main/webui/Vehicle_Marketplace_Front/dist

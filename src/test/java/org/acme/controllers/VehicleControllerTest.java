@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.Response;
 
+@org.junit.jupiter.api.extension.ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 class VehicleControllerTest {
 
     @Mock
@@ -49,7 +50,7 @@ class VehicleControllerTest {
         List<Vehicles> vehicles = Arrays.asList(mockVehicle);
         List<Object> responseDTOs = Arrays.asList(new Object());
 
-        when(vehicleService.listAll(0, 10)).thenReturn(vehicles);
+        when(vehicleService.listAll(vehicleType, 0, 10)).thenReturn(vehicles);
         when(apiMiddleware.manageVehicleTypeResponseDTO(vehicleType, vehicles)).thenReturn(responseDTOs);
 
         Response response = vehicleController.getAllVehiclesByType(vehicleType, 0, 10);
@@ -60,7 +61,7 @@ class VehicleControllerTest {
 
     @Test
     void testgetAllVehiclesByTypeException() {
-        when(vehicleService.listAll(0, 10)).thenThrow(new RuntimeException("DB Error"));
+        when(vehicleService.listAll(vehicleType, 0, 10)).thenThrow(new RuntimeException("DB Error"));
 
         Response response = vehicleController.getAllVehiclesByType(vehicleType, 0, 10);
 
@@ -167,7 +168,7 @@ class VehicleControllerTest {
 
     @Test
     void testDeleteVehicleSuccess() {
-        doNothing().when(vehicleService).deleteById(vehicleType, testId);
+        when(vehicleService.deleteById(vehicleType, testId)).thenReturn(true);
 
         Response response = vehicleController.deleteVehicle(vehicleType, testId.toString());
 
@@ -189,7 +190,7 @@ class VehicleControllerTest {
     void testDeleteManyVehiclesSuccess() {
         List<UUID> ids = Arrays.asList(testId);
 
-        doNothing().when(vehicleService).deleteManyVehicles(vehicleType, ids);
+        when(vehicleService.deleteManyVehicles(vehicleType, ids)).thenReturn(1L);
 
         Response response = vehicleController.deleteManyVehicles(vehicleType, ids);
 
