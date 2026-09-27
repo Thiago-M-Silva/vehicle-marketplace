@@ -1,4 +1,5 @@
 import logo from "../assets/logo/horse_power_vehicle_logo.png";
+import { KEYCLOAK_URL } from "@/config/endpoints";
 
 export const Footer = () => {
   const title = "Horse Power Vehicles";
@@ -108,7 +109,7 @@ export const Footer = () => {
             <ul className="space-y-2 text-slate-600">
             <li>
                 <a
-                href="http://localhost:8080/q/dev-ui/welcome"
+                href="/q/dev-ui/welcome"
                 className="hover:text-slate-900 transition-colors"
                 >
                 Dev UI
@@ -116,7 +117,7 @@ export const Footer = () => {
             </li>
             <li>
                 <a
-                href="http://localhost:8080/q/dev-ui/extensions"
+                href="/q/dev-ui/extensions"
                 className="hover:text-slate-900 transition-colors"
                 >
                 Dev Services
@@ -124,7 +125,7 @@ export const Footer = () => {
             </li>
             <li>
                 <a
-                href="http://localhost:8081"
+                href={KEYCLOAK_URL}
                 className="hover:text-slate-900 transition-colors"
                 >
                 Keycloak
@@ -154,7 +155,7 @@ export const Footer = () => {
             </li>
             <li>
                 <a
-                href="http://localhost:8080/q/swagger-ui/"
+                href="/q/swagger-ui/"
                 className="hover:text-slate-900 transition-colors"
                 >
                 Swagger API

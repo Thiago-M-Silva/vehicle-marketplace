@@ -53,7 +53,7 @@ const Header = () => {
             >
               <MenubarItem className={itemStyle}> <a href="/aboutPage"> Project </a> </MenubarItem>
               <MenubarItem className={itemStyle}> <a href="https://github.com/Thiago-M-Silva/vehicle-marketplace/wiki"> Wiki </a> </MenubarItem>
-              <MenubarItem className={itemStyle}> <a href="http://localhost:8080/q/swagger-ui/"> Swagger API </a> </MenubarItem>
+              <MenubarItem className={itemStyle}> <a href="/q/swagger-ui/"> Swagger API </a> </MenubarItem>
               <MenubarItem className={itemStyle}> <a href=""> Postman Doc </a> </MenubarItem>
             </MenubarContent>
           </MenubarMenu>

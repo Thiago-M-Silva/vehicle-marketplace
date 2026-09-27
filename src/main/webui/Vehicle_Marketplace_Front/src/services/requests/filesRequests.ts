@@ -1,6 +1,5 @@
 import { execRequest } from "./genericRequests";
-
-const { VITE_BACKEND_VEHICLE_URL } = import.meta.env;
+import { BACKEND_VEHICLE_URL } from "@/config/endpoints";
 
 //TODO: finish this later
 export const uploadImage = async (id: string, uploadImage: any) => {
@@ -9,9 +8,9 @@ export const uploadImage = async (id: string, uploadImage: any) => {
   data.append("filename", uploadImage.name);
   data.append("contentType", uploadImage.type);
 
-  return execRequest("POST", `${VITE_BACKEND_VEHICLE_URL}/${id}`, data);
+  return execRequest("POST", `${BACKEND_VEHICLE_URL}/${id}`, data);
 };
 
 export const downloadImage = async (id: string, filename: string) => {
-  return execRequest("GET", `${VITE_BACKEND_VEHICLE_URL}/${id}/${filename}`, null);
+  return execRequest("GET", `${BACKEND_VEHICLE_URL}/${id}/${filename}`, null);
 };
