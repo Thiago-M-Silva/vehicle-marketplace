@@ -12,25 +12,26 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { FileCode, Home, Code, Search } from "lucide-react";
+import { KEYCLOAK_URL } from "@/config/endpoints";
 
 const items = [
-  { title: "Home", url: "http://localhost:5173/", icon: Home },
+  { title: "Home", url: "/", icon: Home },
   {
     title: "Dev UI",
-    url: "http://localhost:8080/q/dev-ui/welcome",
+    url: "/q/dev-ui/welcome",
     icon: Code,
   },
   {
     title: "Dev Services",
-    url: "http://localhost:8080/q/dev-ui/extensions",
+    url: "/q/dev-ui/extensions",
     icon: Code,
   },
   {
     title: "Api Docs",
-    url: "http://localhost:8080/q/swagger-ui/",
+    url: "/q/swagger-ui/",
     icon: FileCode,
   },
-  { title: "Keycloak", url: "http://localhost:8081", icon: Search },
+  { title: "Keycloak", url: KEYCLOAK_URL, icon: Search },
 ];
 
 type Props = {};

@@ -3,8 +3,7 @@ import { VehicleSearchInterface } from "@/interfaces/vehicleSearchInterface";
 import { execRequest } from "./genericRequests";
 import { IVehicle } from "@/interfaces/vehiclesInteface";
 import { IBackendErrorMessageInterface } from "@/interfaces/backendErrorMessageInterface";
-
-const { VITE_BACKEND_VEHICLE_URL } = import.meta.env;
+import { BACKEND_VEHICLE_URL } from "@/config/endpoints";
 
 export const getAllVehicleByKind = async (
   kind: string,
@@ -13,7 +12,7 @@ export const getAllVehicleByKind = async (
 ): Promise<any | IBackendErrorMessageInterface> => {
   return execRequest(
     "GET",
-    `${VITE_BACKEND_VEHICLE_URL}/get/${kind}/${page}/${size}`,
+    `${BACKEND_VEHICLE_URL}/get/${kind}/${page}/${size}`,
     null,
   );
 };
@@ -24,7 +23,7 @@ export const getVehicleByKindAndId = async (
 ): Promise<IVehicle | IBackendErrorMessageInterface> => {
   return execRequest(
     "GET",
-    `${VITE_BACKEND_VEHICLE_URL}/get/${kind}/${id}`,
+    `${BACKEND_VEHICLE_URL}/get/${kind}/${id}`,
     null,
   );
 };
@@ -33,7 +32,7 @@ export const searchVehicles = async (
   kind: string,
   params: Partial<VehicleSearchInterface>,
 ): Promise<any | IBackendErrorMessageInterface> => {
-  const url = new URL(`${VITE_BACKEND_VEHICLE_URL}/get/search/${kind}?`);
+  const url = new URL(`${BACKEND_VEHICLE_URL}/get/search/${kind}?`);
 
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.append(key, String(value));
@@ -54,7 +53,7 @@ export const createManyVehicles = async (
 ): Promise<any | IBackendErrorMessageInterface> => {
   return execRequest(
     "POST",
-    `${VITE_BACKEND_VEHICLE_URL}/save/saveAllVehicles/${kind}`,
+    `${BACKEND_VEHICLE_URL}/save/saveAllVehicles/${kind}`,
     vehicles,
   );
 };
@@ -65,7 +64,7 @@ export const createOneVehicle = async (
 ): Promise<any | IBackendErrorMessageInterface> => {
   return execRequest(
     "POST",
-    `${VITE_BACKEND_VEHICLE_URL}/save/${kind}`,
+    `${BACKEND_VEHICLE_URL}/save/${kind}`,
     vehicle,
   );
 };
@@ -76,7 +75,7 @@ export const createVehicleWithDocs = async (
 ): Promise<any | IBackendErrorMessageInterface> => {
   return execRequest(
     "POST",
-    `${VITE_BACKEND_VEHICLE_URL}/save/${kind}/docs`,
+    `${BACKEND_VEHICLE_URL}/save/${kind}/docs`,
     vehicle,
   );
 };
@@ -87,7 +86,7 @@ export const deleteVehicleById = async (
 ): Promise<any | IBackendErrorMessageInterface> => {
   return execRequest(
     "DELETE",
-    `${VITE_BACKEND_VEHICLE_URL}/delete/${kind}/${id}`,
+    `${BACKEND_VEHICLE_URL}/delete/${kind}/${id}`,
     null,
   );
 };
@@ -98,7 +97,7 @@ export const deleteManyVehicles = async (
 ): Promise<any | IBackendErrorMessageInterface> => {
   return execRequest(
     "DELETE",
-    `${VITE_BACKEND_VEHICLE_URL}/delete/${kind}`,
+    `${BACKEND_VEHICLE_URL}/delete/${kind}`,
     ids,
   );
 };
@@ -110,7 +109,7 @@ export const editVehicleById = async (
 ): Promise<any | IBackendErrorMessageInterface> => {
   return execRequest(
     "PUT",
-    `${VITE_BACKEND_VEHICLE_URL}/edit/${kind}/${id}`,
+    `${BACKEND_VEHICLE_URL}/edit/${kind}/${id}`,
     vehicle,
   );
 };

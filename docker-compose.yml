@@ -77,7 +77,8 @@ services:
       RESEND_FROM: ${RESEND_FROM:?RESEND_FROM must be set}
       RESEND_API_TOKEN: ${RESEND_API_TOKEN:?RESEND_API_TOKEN must be set}
     ports:
-      - "${APP_PORT:-8080}:8080"
+      # Publica a aplicacao (frontend + API Quarkus) em todas as interfaces.
+      - "0.0.0.0:${APP_PORT:-5173}:8080"
     depends_on:
       postgres:
         condition: service_healthy

@@ -3,12 +3,11 @@ import {
   IRentingInterface,
 } from "@/interfaces/tradeInterface";
 import { execRequest } from "./genericRequests";
-
-const { VITE_BACKEND_BASIC_URL } = import.meta.env;
+import { BACKEND_BASIC_URL } from "@/config/endpoints";
 
 export const paymentRequest = async (data: IPaymentInterface) => {
-  return execRequest("POST", `${VITE_BACKEND_BASIC_URL}/payment`, data);
+  return execRequest("POST", `${BACKEND_BASIC_URL}/payment`, data);
 };
 export const rentingRequest = async (data: IRentingInterface) => {
-  return execRequest("POST", `${VITE_BACKEND_BASIC_URL}/payment/reting`, data);
+  return execRequest("POST", `${BACKEND_BASIC_URL}/payment/reting`, data);
 };
