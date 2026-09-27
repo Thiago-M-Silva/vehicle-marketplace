@@ -44,7 +44,7 @@ services:
     ports:
       - "${KEYCLOAK_PORT:-8081}:8080"
     volumes:
-      - ./src/main/resources/import/vehicle_marketplace_realm.json:/opt/keycloak/data/import/vehicle_marketplace_realm.json:ro
+      - "${KEYCLOAK_REALM_FILE:-./src/main/resources/import/vehicle_marketplace_realm.json}:/opt/keycloak/data/import/vehicle_marketplace_realm.json:ro"
     depends_on:
       postgres:
         condition: service_healthy
