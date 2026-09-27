@@ -2,9 +2,14 @@ name: CI/CD
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches:
+      - master
+      - develop
+
   push:
-    branches: [main, develop]
+    branches:
+      - master
+      - develop
 
 concurrency:
   group: vehicle-marketplace-${{ github.workflow }}-${{ github.ref }}
@@ -15,61 +20,97 @@ env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/vehicle-marketplace
 
 jobs:
+
+  # ========================================
+  # CI
+  # ========================================
   test:
-    name: Testes e compilacao
+    name: Testes e compilação
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Tornar mvnw executavel
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tornar mvnw executável
         run: chmod +x ./mvnw
-      - uses: actions/setup-java@v4
+
+      - name: Configurar Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "21"
           cache: maven
+
       - name: Executar testes
         run: ./mvnw -B test
+
       - name: Compilar e empacotar
         run: ./mvnw -B -DskipTests package
 
+
+  # ========================================
+  # Docker Hub
+  # ========================================
   publish:
     name: Publicar imagem no Docker Hub
     needs: test
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
-    outputs:
-      image: ${{ steps.image.outputs.name }}
+
     steps:
       - uses: actions/checkout@v4
-      - name: Definir tags da imagem
-        id: image
-        run: echo "name=${{ env.IMAGE_NAME }}:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Configurar emula\u00e7\u00e3o para ARM64
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
+
+      - name: Build e Push
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ steps.image.outputs.name }}
-            ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
 
+
+  # ========================================
+  # Deploy
+  # ========================================
   deploy:
     name: Deploy na VPS Oracle
+
     needs: publish
-    if: github.ref == 'refs/heads/main'
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+
     runs-on: ubuntu-latest
+
     environment: production
+
     permissions:
       contents: read
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Copiar compose para a VPS
         uses: appleboy/scp-action@v1.0.0
         with:
@@ -91,15 +132,28 @@ jobs:
       - name: Atualizar containers
         uses: appleboy/ssh-action@v1.2.0
         env:
-          APP_IMAGE: ${{ needs.publish.outputs.image }}
+          APP_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           envs: APP_IMAGE
+
           script: |
+            set -e
+
+            echo "APP_IMAGE recebido: [$APP_IMAGE]"
+
+            if [ -z "$APP_IMAGE" ]; then
+              echo "ERRO: APP_IMAGE está vazio!"
+              exit 1
+            fi
+
             cd "${{ secrets.VPS_DEPLOY_PATH }}"
-            printf 'APP_IMAGE=%s\n' "$APP_IMAGE" > .image.env
-            docker compose --env-file .env --env-file .image.env pull app
-            docker compose --env-file .env --env-file .image.env up -d --no-build --remove-orphans
+
+            export APP_IMAGE="$APP_IMAGE"
+
+            docker compose pull app
+            docker compose up -d --no-build --remove-orphans
