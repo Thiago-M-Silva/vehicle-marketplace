@@ -157,5 +157,5 @@ jobs:
             export APP_IMAGE="$APP_IMAGE"
             export KEYCLOAK_REALM_FILE="./deploy-assets/vehicle_marketplace_realm.json"
 
-            docker compose pull app
+            docker compose pull app keycloak
             docker compose up -d --no-build --remove-orphans

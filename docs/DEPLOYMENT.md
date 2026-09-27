@@ -13,6 +13,8 @@ Antes do primeiro deploy, instale Docker Engine com o plugin Docker Compose na V
 
 O usuario da VPS precisa conseguir executar `docker compose` sem senha. Se o repositorio Docker Hub for privado, autentique a VPS uma vez com `docker login`. O workflow envia o realm para `deploy-assets/vehicle_marketplace_realm.json`; esse diretorio e separado dos caminhos que o Docker pode criar como `root`. O arquivo e montado pelo container do Keycloak e importado quando o realm ainda nao existe.
 
+O realm versionado foi exportado na linha 26 do Keycloak. O Compose usa `KEYCLOAK_VERSION=26.7.4` por padrao; antes de atualizar uma instalacao existente, faca backup do volume `postgres-data`, pois o Keycloak atualiza seu schema de banco e o downgrade posterior nao e suportado.
+
 ## Acesso externo
 
 O Compose publica a aplicacao (frontend e API) em `0.0.0.0:5173` por padrao. Depois do deploy, acesse:
