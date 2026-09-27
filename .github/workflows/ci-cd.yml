@@ -120,8 +120,16 @@ jobs:
           port: ${{ secrets.VPS_SSH_PORT }}
           source: docker-compose.yml
           target: ${{ secrets.VPS_DEPLOY_PATH }}
-
-      - name: Deploy
+      - name: Copiar realm do Keycloak para a VPS
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          source: src/main/resources/import/vehicle_marketplace_realm.json
+          target: ${{ secrets.VPS_DEPLOY_PATH }}
+      - name: Atualizar containers
         uses: appleboy/ssh-action@v1.2.0
         env:
           APP_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
