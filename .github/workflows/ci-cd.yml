@@ -128,7 +128,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           port: ${{ secrets.VPS_SSH_PORT }}
           source: src/main/resources/import/vehicle_marketplace_realm.json
-          target: ${{ secrets.VPS_DEPLOY_PATH }}
+          target: ${{ secrets.VPS_DEPLOY_PATH }}/deploy-assets
+          strip_components: 4
       - name: Atualizar containers
         uses: appleboy/ssh-action@v1.2.0
         env:
@@ -154,6 +155,7 @@ jobs:
             cd "${{ secrets.VPS_DEPLOY_PATH }}"
 
             export APP_IMAGE="$APP_IMAGE"
+            export KEYCLOAK_REALM_FILE="./deploy-assets/vehicle_marketplace_realm.json"
 
             docker compose pull app
             docker compose up -d --no-build --remove-orphans

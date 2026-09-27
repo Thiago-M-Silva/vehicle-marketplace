@@ -9,9 +9,9 @@ Configure estes secrets no repositorio GitHub:
 - `VPS_HOST`, `VPS_USER`, `VPS_SSH_PRIVATE_KEY` e `VPS_SSH_PORT`;
 - `VPS_DEPLOY_PATH` (por exemplo, `/opt/vehicle-marketplace`).
 
-Antes do primeiro deploy, instale Docker Engine com o plugin Docker Compose na VPS e crie `${VPS_DEPLOY_PATH}/.env`. Use `.env.example` como base e preencha, no minimo, `KEYCLOAK_SECRET`, `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_FROM` e `RESEND_API_TOKEN`. Esse arquivo permanece somente na VPS; o workflow envia apenas o compose e a tag imutavel da imagem.
+Antes do primeiro deploy, instale Docker Engine com o plugin Docker Compose na VPS e crie `${VPS_DEPLOY_PATH}/.env`. Use `.env.example` como base e preencha, no minimo, `KEYCLOAK_SECRET`, `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_FROM` e `RESEND_API_TOKEN`. Esse arquivo permanece somente na VPS; o workflow envia o compose, o realm do Keycloak e a tag imutavel da imagem.
 
-O usuario da VPS precisa conseguir executar `docker compose` sem senha. Se o repositorio Docker Hub for privado, autentique a VPS uma vez com `docker login`. O workflow tambem envia `src/main/resources/import/vehicle_marketplace_realm.json` para o diretorio de deploy; esse arquivo e montado pelo container do Keycloak e importado quando o realm ainda nao existe.
+O usuario da VPS precisa conseguir executar `docker compose` sem senha. Se o repositorio Docker Hub for privado, autentique a VPS uma vez com `docker login`. O workflow envia o realm para `deploy-assets/vehicle_marketplace_realm.json`; esse diretorio e separado dos caminhos que o Docker pode criar como `root`. O arquivo e montado pelo container do Keycloak e importado quando o realm ainda nao existe.
 
 ## Acesso externo
 
