@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
@@ -44,6 +45,14 @@ public class GlobalExceptionMapper implements ExceptionMapper<Throwable> {
 
         if (e instanceof IllegalArgumentException iae) {
             return build(Response.Status.BAD_REQUEST, "ILLEGAL_ARGUMENT", iae.getMessage(), null);
+        }
+
+        // Preserve HTTP errors (notably 404s) instead of reporting them as 500s.
+        if (e instanceof WebApplicationException wae) {
+            Response.Status status = Response.Status.fromStatusCode(wae.getResponse().getStatus());
+            if (status != null) {
+                return build(status, "HTTP_" + status.getStatusCode(), status.getReasonPhrase(), null);
+            }
         }
 
         /*
