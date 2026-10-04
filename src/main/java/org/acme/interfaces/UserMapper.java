@@ -11,6 +11,7 @@ import org.acme.model.Users;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 
 /**
  * Mapper interface for converting between Users entities and their
@@ -41,6 +42,15 @@ public interface UserMapper {
     Users toUser(UsersResponseDTO dto);
 
     UsersResponseDTO toUserResponseDTO(Users user);
+
+    /** Maps a vehicle owner without mapping their vehicles again. */
+    @Named("vehicleOwner")
+    @Mapping(target = "bikes", ignore = true)
+    @Mapping(target = "boats", ignore = true)
+    @Mapping(target = "cars", ignore = true)
+    @Mapping(target = "planes", ignore = true)
+    UsersResponseDTO toVehicleOwnerResponseDTO(Users user);
+
     UsersRequestDTO toUserRequestDTO(Users user);
 
     List<UsersResponseDTO> toUserResponseDTOList(List<Users> users);

@@ -43,6 +43,7 @@ public interface VehicleMapper {
     // Cars
     @Mapping(target = "owner", ignore = true)
     Cars toCars(CarsRequestDTO dto);
+    @Mapping(target = "owner", qualifiedByName = "vehicleOwner")
     CarsResponseDTO toCarsDTO(Cars car);
     List<CarsResponseDTO> toCarsDTOList(List<Cars> cars);
     CarsRequestDTO toCarsRequestDTO(Cars car);
@@ -52,6 +53,7 @@ public interface VehicleMapper {
     // Bikes
     @Mapping(target = "owner", ignore = true)
     Bikes toBikes(BikesRequestDTO dto);
+    @Mapping(target = "owner", qualifiedByName = "vehicleOwner")
     BikesResponseDTO toBikesDTO(Bikes bike);
     List<BikesResponseDTO> toBikesDTOList(List<Bikes> bikes);
     BikesRequestDTO toBikesRequestDTO(Bikes vehicle);
@@ -61,6 +63,7 @@ public interface VehicleMapper {
     // Boats
     @Mapping(target = "owner", ignore = true)
     Boats toBoats(BoatsRequestDTO dto);
+    @Mapping(target = "owner", qualifiedByName = "vehicleOwner")
     BoatsResponseDTO toBoatsDTO(Boats boat);
     List<BoatsResponseDTO> toBoatsDTOList(List<Boats> boats);
     BoatsRequestDTO toBoatsRequestDTO(Boats boat);
@@ -70,6 +73,7 @@ public interface VehicleMapper {
     // Planes
     @Mapping(target = "owner", ignore = true)
     Planes toPlanes(PlanesRequestDTO dto);
+    @Mapping(target = "owner", qualifiedByName = "vehicleOwner")
     PlanesResponseDTO toPlanesDTO(Planes plane);
     List<PlanesResponseDTO> toPlanesDTOList(List<Planes> planes);
     PlanesRequestDTO toPlanesRequestDTO(Planes plane);
